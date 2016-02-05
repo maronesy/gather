@@ -116,6 +116,17 @@
 					<haltOnFailure>true</haltOnFailure>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.2.1.v20140609</version>
+				<configuration>
+					<httpConnector>
+						<!--host>localhost</host -->
+						<port>1234</port>
+					</httpConnector>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
