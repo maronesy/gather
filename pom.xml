@@ -10,7 +10,9 @@
 
 	<properties>
 		<spring.version>4.0.1.RELEASE</spring.version>
+		<jetty.http.port>9999</jetty.http.port>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
