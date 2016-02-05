@@ -10,7 +10,7 @@
 
 	<properties>
 		<spring.version>4.0.1.RELEASE</spring.version>
-		<jetty.http.port>1234</jetty.http.port>
+		<jetty.http.port>1024</jetty.http.port>
 	</properties>
 
 	<dependencies>
@@ -123,7 +123,7 @@
 				<configuration>
 					<httpConnector>
 						<!--host>localhost</host -->
-						<port>1234</port>
+						<port>1024</port>
 					</httpConnector>
 				</configuration>
 			</plugin>
