@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.programcreek</groupId>
-	<artifactId>HelloWorld</artifactId>
+	<groupId>gather</groupId>
+	<artifactId>gather</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>HelloWorld Maven Webapp</name>
+	<version>1.0</version>
+	<name>gather</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -43,7 +43,7 @@
 
 
 	<build>
-		<finalName>HelloWorld</finalName>
+		<finalName>gather</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
