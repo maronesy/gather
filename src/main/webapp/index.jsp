@@ -14,7 +14,7 @@ pageEncoding="ISO-8859-1"%>
 		<h3>
 			<a href="hello?name=Team Gather">Click Here</a>
 		</h3>
-		<h2>Good Luck Team Gather!</h2>
+		<h2>Good Luck!</h2>
 	</center>
 </body>
 </html>
