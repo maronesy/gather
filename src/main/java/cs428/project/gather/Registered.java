@@ -1,15 +1,11 @@
 package cs428.project.gather;
 
 import javax.persistence.*;
-
 import lombok.Data;
-
-
 
 @Data
 @Entity
 public class Registered {
-
 	private @Id @GeneratedValue Long id;
 	private String firstName;
 	private String lastName;
