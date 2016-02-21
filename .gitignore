@@ -15,3 +15,15 @@ hs_err_pid*
 
 target/*
 node/*
+
+# bundle.js is compiled on the fly
+src/main/resources/static/built/bundle.*
+
+# Ignore config files
+.DS_Store
+.classpath
+.project
+.settings/
+
+# Ignore log files
+phantomjsdriver.log
