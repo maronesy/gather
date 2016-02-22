@@ -34,6 +34,7 @@ class RegisteredList extends React.Component{
 					<th>First Name</th>
 					<th>Last Name</th>
 					<th>Age</th>
+					<th>Location</th>
 				</tr>
 				{registereds}
 			</table>
@@ -48,6 +49,7 @@ class Registered extends React.Component{
 				<td>{this.props.registered.firstName}</td>
 				<td>{this.props.registered.lastName}</td>
 				<td>{this.props.registered.age}</td>
+				<td>{this.props.registered.location}</td>
 			</tr>
 		)
 	}
