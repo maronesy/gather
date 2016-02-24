@@ -1,0 +1,22 @@
+package cs428.project.gather.model;
+
+
+import java.sql.Timestamp;
+
+import javax.persistence.*;
+import lombok.Data;
+
+@Entity
+public class Occurrence {
+	private @Id @GeneratedValue Long id;
+	private String description;
+	private Timestamp datetime;
+
+
+	private Occurrence() {}
+
+	public Occurrence(String description, Timestamp datetime) {
+		this.description = description;
+		this.datetime = datetime;
+	}
+}
