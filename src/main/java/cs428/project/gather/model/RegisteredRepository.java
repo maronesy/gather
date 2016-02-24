@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.model;
 
 import org.springframework.data.repository.CrudRepository;
 
