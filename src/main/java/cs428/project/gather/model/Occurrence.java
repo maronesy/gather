@@ -12,6 +12,8 @@ public class Occurrence {
 	private String description;
 	private Timestamp datetime;
 
+	@ManyToOne
+	private Location location;
 
 	private Occurrence() {}
 
