@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 @Entity
 public class Event {
-	private @Id @GeneratedValue Long id;
+	private @Id @Column(name="ID") @GeneratedValue Long id;
 	private String description;
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
@@ -29,21 +29,17 @@ public class Event {
 	@JoinColumn(name = "event_id")
 	private Set<ChangeLog> changeLog = new HashSet<ChangeLog>();
 	
-//	@ManyToMany
-//	@JoinTable(
-//			name="EJB_ROSTER_TEAM_PLAYER",
-//			   joinColumns=
-//			       @JoinColumn(name="Event_ID", referencedColumnName="ID"),
-//			   inverseJoinColumns=
-//			       @JoinColumn(name="Registrant_ID", referencedColumnName="ID")
-//			)
-//	private Set<Registrant> subscribters = new HashSet<Registrant>();
-//	
-//	@ManyToMany
-//	private Set<Registrant> owners = new HashSet<Registrant>();
-//	
-//	@ManyToMany
-//	private Set<Registrant> paricipants = new HashSet<Registrant>();
+	@ManyToMany
+	private Set<Registrant> subscribers = new HashSet<Registrant>();
+	
+	@ManyToMany
+	private Set<Registrant> owners = new HashSet<Registrant>();
+	
+	@ManyToMany
+	private Set<Registrant> participants = new HashSet<Registrant>();
+	
+	@ManyToMany
+	private Set<Category> categories = new HashSet<Category>();
 	
 	protected Event() {}
 	public Event(String description) {
