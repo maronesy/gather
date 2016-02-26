@@ -6,7 +6,8 @@ import java.util.Calendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import cs428.project.gather.model.*;
+
+import cs428.project.gather.data.model.*;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner {

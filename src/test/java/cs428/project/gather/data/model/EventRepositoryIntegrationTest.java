@@ -1,4 +1,4 @@
-package cs428.project.gather.model;
+package cs428.project.gather.data.model;
 
 //import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -14,6 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import cs428.project.gather.GatherApplication;
+import cs428.project.gather.data.model.Event;
+import cs428.project.gather.data.model.EventRepository;
+import cs428.project.gather.data.model.Occurrence;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

@@ -1,4 +1,4 @@
-package cs428.project.gather.model;
+package cs428.project.gather.data.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
