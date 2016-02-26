@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.utilities;
 
 import java.lang.*;
 import java.util.*;
