@@ -9,4 +9,15 @@ public class HomeController {
     public String index() {
         return "index";
     }
+    
+    @RequestMapping(value = "/signin")
+    public String signin() {
+        return "signin";
+    }
+    
+    @RequestMapping(value = "/registrants")
+    public String registrants() {
+        return "registrants";
+    }
+    
 }

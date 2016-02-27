@@ -1,0 +1,229 @@
+@font-face {
+	font-family: "chalkhandlettering";
+	src:url("../../assets/fonts/chalk-hand-lettering-shaded.ttf") format("truetype")
+}
+
+@font-face {
+	font-family: "soundofsilence";
+	src: url("../../assets/fonts/sound-of-silence.ttf") format("truetype")
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	padding-top: 130px;
+}
+
+#main, #main-row {
+	height: 100%;
+}
+
+#left-panel {
+	background-color: #F9F9F9;
+	height: 100%;
+	min-width: 290px;
+	overflow-y: scroll;
+}
+
+#map-canvas {
+	width: 50%;
+	position: absolute;
+	top: 50px;
+	right: 300px;
+	bottom: 100px;
+}
+
+#map-legend-container {
+	display: none;
+}
+
+#menu li a {
+	color:  #FFFFFF;
+	line-height: 130px;
+	font-size: larger;
+	padding-top: 0px;
+	height: 130px;
+}
+
+#menu li a:hover {
+	background-color: #008AE6;
+}
+
+#brand-header {
+	color:  #FFFFFF;
+	font-size: 3em;
+	font-family: soundofsilence, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	letter-spacing: 0.1em;
+	display: none;
+}
+
+#controls {
+	margin-top: 15px;
+}
+
+#food-location-cards {
+	margin-bottom: 0px;
+}
+
+#food-preferences-list {
+	padding: 15px 15px 15px 40px;
+}
+
+#food-preferences-list .controls {
+	padding-left: 20px;
+}
+
+#food-specializations-list {
+	padding: 15px 15px 15px 40px;
+}
+
+#food-specializations-list .controls {
+	padding-left: 20px;
+}
+
+#feedback-container {
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgb(169, 169, 169);
+	height: 200px;
+	overflow-y: auto;
+}
+
+#user-feedback-comments {
+	width: 100%;
+}
+
+#salutation {
+	margin-top: 20px;
+}
+
+.left-panel-header {
+	font-size: 1.2em;
+}
+
+.control-button button {
+	white-space: normal;
+	min-width: 210px;
+	text-align: left;
+}
+
+.control-button:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.food-location-card:not(:last-child) {
+	margin-bottom:  10px;
+}
+
+.food-location-card ul {
+	padding: 0px;
+}
+
+.food-location-card li {
+	list-style: none;
+}
+
+.food-location-card hr {
+	margin: 4px 0px 4px 0px;
+}
+
+.food-location-card-title {
+	font-weight: bold;
+}
+
+.new-food-location-popup hr {
+	margin: 4px 0px 4px 0px;
+}
+
+.established-food-location-popup hr {
+	margin: 4px 0px 4px 0px;
+}
+
+.established-food-location-popup ul {
+	padding: 0px;
+}
+
+.established-food-location-popup li {
+	font-size:  15px;
+	list-style: none;
+}
+
+.feedback-form-input {
+	font-weight: normal;
+}
+
+.form-label {
+	font-weight: 700;
+}
+
+.map-legend-item {
+	vertical-align: top;
+	text-align: center;
+}
+
+.mapbox-logo {
+	display: none;
+}
+
+.content-template {
+	display: none;
+}
+
+.content-fragment {
+	display: none;
+}
+
+@media (min-width: 768px) and (max-width: 980px) {
+	body {
+		padding-top: 50px;
+	}
+
+	#map-canvas {
+		top: 50px;
+	}
+
+	#navigation  {
+		background-image: none;
+	}
+
+	#menu li a {
+		line-height: 50px;
+		height: 50px;
+	}
+
+	#brand-header {
+		display: block;
+		margin: 4px 0px 0px 2px;
+	}
+}
+
+
+@media (max-width: 767px) {
+	body {
+		padding-top: 50px;
+	}
+
+	#map-canvas {
+		top: 50px;
+	}
+
+	#navigation  {
+		background-image: none;
+	}
+
+	#menu li a {
+		line-height: 50px;
+		height: 50px;
+	}
+
+	#navigation  {
+		background-image: none;
+	}
+
+	#brand-header {
+		display: block;
+		margin: 4px 0px 0px 17px;
+	}
+}
