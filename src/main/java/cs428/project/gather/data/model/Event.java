@@ -16,7 +16,9 @@ import lombok.Data;
 @Entity
 public class Event {
 	private @Id @Column(name="ID") @GeneratedValue Long id;
+
 	private String description;
+	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
 	private Set<Occurrence> occurrences = new HashSet<Occurrence>();
@@ -47,14 +49,23 @@ public class Event {
 		this.setDescription(description);
 	}
 	
-	public void add(Occurrence occurrence) {
+	public Long getId() {
+		return id;
+	}
+	
+	public void addOccurrence(Occurrence occurrence) {
 		Assert.notNull(occurrence);
 		this.occurrences.add(occurrence);
 	}
 	
-	public void add(Feedback feedback) {
+	public void addFeedback(Feedback feedback) {
 		Assert.notNull(feedback);
 		this.feedbacks.add(feedback);
+	}
+	
+	public void addChangeLog(ChangeLog changeLog){
+		Assert.notNull(changeLog);
+		this.changeLog.add(changeLog);
 	}
 	
 	public Set<Occurrence> getOccurrences() {
