@@ -18,9 +18,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cs428.project.gather.GatherApplication;
-import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.EventRepository;
-import cs428.project.gather.data.model.Occurrence;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -36,7 +33,7 @@ public class EventRepositoryIntegrationTest {
 	LocationRepository locationRepo;
 
 	@Test
-	public void savesCustomerCorrectly() {
+	public void testSavesEventCorrectly() {
 
 		Event testEvent = new Event("Test Event");
 		Occurrence occur=new Occurrence("Single Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
@@ -61,28 +58,18 @@ public class EventRepositoryIntegrationTest {
 	
 	@Test
 	@Transactional
-	public void testAddOccurrenceWithLocation(){
+	public void testSaveLoadEventWithLocation(){
 		Event testEvent = new Event("Test Event");
-		
-		Location location = new Location("Test Location");
-		location.setCity("Los Angeles");
-		location.setState("CA");
-		location.setLatitude(34.0498);
-		location.setLongtitude(-118.2498);
-		location.setStreetAddr("6542 Nowhere Blvd");
-		location.setZipCode("90005");
+		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		this.locationRepo.save(location);
-		
-		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
-		occur.setLocation(location);
-		
+		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
 		testEvent.addOccurrence(occur);
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
 		Set<Occurrence> occurrences = foundEvent.getOccurrences();
-		
 		assertEquals(occurrences.size(),1);
+		
 		Iterator<Occurrence> occurIt = occurrences.iterator();
 		Occurrence testOccur = occurIt.next();
 		assertEquals(testOccur.getDescription(),"Test Occurrence");

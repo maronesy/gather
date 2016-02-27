@@ -3,11 +3,12 @@ package cs428.project.gather.data.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.springframework.util.Assert;
-
-import lombok.Data;
 
 @Entity
 public class Occurrence {
@@ -23,6 +24,12 @@ public class Occurrence {
 	public Occurrence(String description, Timestamp datetime) {
 		this.description = description;
 		this.datetime = datetime;
+	}
+	
+	public Occurrence(String description, Timestamp datetime, Location location){
+		this.description = description;
+		this.datetime = datetime;
+		this.location = location;
 	}
 
 	public String getDescription() {
