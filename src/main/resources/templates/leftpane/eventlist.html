@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" href="styles/main.css" />
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+		integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+		crossorigin="anonymous" />
+	
+	<!-- Optional theme -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+		integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+		crossorigin="anonymous" />
+	
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.js"
+		type="text/javascript"></script>
+	<link href="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.css"
+		rel="stylesheet" />
+	
+	<link href="styles/map.css" rel="stylesheet" />
+	<script src="scripts/sprintf.js" type="text/javascript"></script>
+	<script src="scripts/bounce-marker.js" type="text/javascript"></script>
+	<script src="scripts/map.js" type="text/javascript"></script>
+</head>
+
+
+<body>
+	
+	
+	<div class="container col-lg-7 col-md-8" th:fragment="eventlist">
+	<div class="row">
+
+		<section class="content">
+			<h1>Event List</h1>
+			<div class="">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="pull-left">
+							<div class="btn-group">
+								<button type="button" class="btn btn-success btn-filter" data-target="pagado">Soccer</button>
+								<button type="button" class="btn btn-warning btn-filter" data-target="pendiente">Swimming</button>
+								<button type="button" class="btn btn-danger btn-filter" data-target="cancelado">Rowing</button>
+								<button type="button" class="btn btn-default btn-filter" data-target="all">All</button>
+							</div>
+						</div>
+						<div class="table-container">
+							<table class="table table-filter">
+								<tbody>
+									<tr data-status="pagado">
+										<td>
+											<div class="ckbox">
+												<input type="checkbox" id="checkbox1"/>
+												<label for="checkbox1"></label>
+											</div>
+										</td>
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img height="128px;" width="128px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/>
+												</a>
+												<div class="media-body">
+													<span class="media-meta pull-right">2 mi away</span>
+													<h4 class="title">
+														3-on-3 soccer games
+														<span class="pull-right pagado">(Soccer)</span>
+													</h4>
+													<p class="summary">date: 3/1/2016 3pm, place: Wilcox Soccer Complex</p>
+													
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr data-status="pendiente">
+										<td>
+											<div class="ckbox">
+												<input type="checkbox" id="checkbox3"/>
+												<label for="checkbox3"></label>
+											</div>
+										</td>
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img height="128px;" width="128px;" src="http://content.sportslogos.net/logos/27/1756/full/7ewsewd63wec6fgjjq3fh3rqf.gif" class="media-photo"/>
+												</a>
+												<div class="media-body">
+													<span class="media-meta pull-right">4 mi away</span>
+													<h4 class="title">
+														swim lessons
+														<span class="pull-right pendiente">(Swimming)</span>
+													</h4>
+													<p class="summary">date: 3/7/2016 10am, place: Wilson Swimming Center</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr data-status="cancelado">
+										<td>
+											<div class="ckbox">
+												<input type="checkbox" id="checkbox2"/>
+												<label for="checkbox2"></label>
+											</div>
+										</td>
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img height="128px;" width="128px;" src="http://content.sportslogos.net/logos/27/1756/full/wffgcilsda7il97eywebtjdky.gif" class="media-photo"/>
+												</a>
+												<div class="media-body">
+													<span class="media-meta pull-right">10 mi away</span>
+													<h4 class="title">
+														Rio Grande Rowing Competition
+														<span class="pull-right cancelado">(Rowing)</span>
+													</h4>
+													<p class="summary">date: 3/12/2016 11am, place: Rio Grande Lake Marina</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr data-status="pagado" class="selected">
+										<td>
+											<div class="ckbox">
+												<input type="checkbox" id="checkbox4" checked="checked"/>
+												<label for="checkbox4"></label>
+											</div>
+										</td>
+										<td>
+											<a href="javascript:;" class="star star-checked">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img height="128px;" width="128px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/>
+												</a>
+												<div class="media-body">
+													<span class="media-meta pull-right">7 mi away</span>
+													<h4 class="title">
+														9-on-9 City Soccer Tournament
+														<span class="pull-right pagado">(Soccer)</span>
+													</h4>
+													<p class="summary">date: 3/8/2016 6pm, place: Herny Soccer Complex</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr data-status="pendiente">
+										<td>
+											<div class="ckbox">
+												<input type="checkbox" id="checkbox5"/>
+												<label for="checkbox5"></label>
+											</div>
+										</td>
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img height="128px;" width="128px;" src="http://content.sportslogos.net/logos/27/1756/full/7ewsewd63wec6fgjjq3fh3rqf.gif" class="media-photo"/>
+												</a>
+												<div class="media-body">
+													<span class="media-meta pull-right">15 mi away</span>
+													<h4 class="title">
+														City Amateur Swimming Competition
+														<span class="pull-right pendiente">(Swimming)</span>
+													</h4>
+													<p class="summary">date: 3/18/2016 11am, place: Urbana Natatorium</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+	</div>
+</div>
+	
+</body>
+
+</html>

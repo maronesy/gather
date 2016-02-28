@@ -25,102 +25,54 @@
 	<script src="scripts/bounce-marker.js" type="text/javascript"></script>
 	<script src="scripts/map.js" type="text/javascript"></script>
 </head>
+
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top">
-	  <div class="container-fluid">
-	    <!-- Brand and toggle get grouped for better mobile display -->
-	    <div class="navbar-header">
-	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-	        <span class="sr-only">Toggle navigation</span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	      </button>
-	      <a class="navbar-brand" href="index.html">GATHER</a>
-	    </div>
-	
-	    <!-- Collect the nav links, forms, and other content for toggling -->
-	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-	      <ul class="nav navbar-nav">
-	        <li class="active"><a href="signin.html">Sign In <span class="sr-only">(current)</span></a></li>
-	        <li><a href="#">Link</a></li>
-	        <li class="dropdown">
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-	          <ul class="dropdown-menu">
-	            <li><a href="#">Action</a></li>
-	            <li><a href="#">Another action</a></li>
-	            <li><a href="#">Something else here</a></li>
-	            <li role="separator" class="divider"></li>
-	            <li><a href="#">Separated link</a></li>
-	            <li role="separator" class="divider"></li>
-	            <li><a href="#">One more separated link</a></li>
-	          </ul>
-	        </li>
-	      </ul>
-	      <form class="navbar-form navbar-left" role="search">
-	        <div class="form-group">
-	          <input type="text" class="form-control" placeholder="Zip Code"/>
-	        </div>
-	        <button type="submit" class="btn btn-default">ENTER</button>
-	      </form>
-	      <ul class="nav navbar-nav navbar-right">
-	        <li><a href="registrants.html">USERS</a></li>
-	        <li class="dropdown">
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-	          <ul class="dropdown-menu">
-	            <li><a href="#">Action</a></li>
-	            <li><a href="#">Another action</a></li>
-	            <li><a href="#">Something else here</a></li>
-	            <li role="separator" class="divider"></li>
-	            <li><a href="#">Separated link</a></li>
-	          </ul>
-	        </li>
-	      </ul>
-	    </div><!-- /.navbar-collapse -->
-	  </div><!-- /.container-fluid -->
-	</nav>
-	
-	<div id="map-canvas"></div>
-	<div id="map-legend-container">
-		<div class="map-legend-item">
-			<figure>
-				<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAzCAIAAADgokQjAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQHSURBVFhHrZbLaxRBEIf7mos3b178Jzx49k8QvHj15s2zDzyIEMhFFBFBBQUVBRGN+ECMIsZoYgKi8e3GB6J48i1x12/y69RWaqZnF7T4scx2V3/dU11dPanXapOTb+aOf3665/vLXb8Xdvx5t7PLL8+00E5v9itYkT518+2Tvd/eLhFLohcfPPOYmjXQWdHjsS/GfbWl+3h9d3ZNd2ZV916qfnmmhXabA//G94h0nHhxDetsrUAQS6IXHzkzqj7BCvr9y+87OxblPb8hskrCU0MYCyGzlqxPJ3xCD1xyXfYSEPw2ZPrkbEcBWdjWnR6Jg6Wr6dOBdI3f0C4xirEQqhDNdoTNdLaFDjS3Ng4zHUtT45tmDqdbod3EWEGgCVvReRdlSEus76Rf+0bGe90ev6XlI+0BNMWnonM0aCLDgqvXhbTAwqFPj77kJUKvlzIVZkUnRlr4g9XRzwvi8zMfoP/8uMjyb6cfwcEER8uHnDjQAxduYZF4iVPpYfDx0vIhJ4Xl0bp+H8scS+eDFBaJ5Yde5MMFDSbkpET0CU5W3N39zFjDCH+fS9BgQk46QaohEjE9mK4PPwGe+PudgAYTctKWWoc0/AR1tAQTcnq9vVp7PWGGmaCEVtpAznFvPKLtE5TQSIe2ivv86FeeSqeUY+lz0avl0OrEQs75TgEKHhJ5zeEMXIn2UtarnFX5znnVhdkYHIoi2R24Eu30Bn+ksMDMdUbBebYx+vHi/hBRCYiG6oFEbz04cKDBzHQuFP6jkDm+tgBipdQyfnnWC9EbKpqyBemSqugYVztNLzb3/VRboGjJhJgWtfOsl6CXB7VLEOBAEzbTrcRb9FVyteT669Oil0B4qlERh2OXX6Zjup64Hv14W3Jdegk/t65Wu5iwPp1yrHPLt4ohhhejGAvBLlWsT8cs90sXd0l2ZUPIrCVbQcdUGFou2EbpcDI2U5Yt0i07Gw9Xo7SZKHwqYZGOaXuHjI/FxG+mWQMdU3x8+pekBK/HRNZMJ2FVfNrzR3mCpyV4sGY6pvxBpW9KXZ4o5Im3Iv3G9LyqW+MGWLjxwTOPqVmk42q6OHFfG1AvnyqE9OLjh2TKsvXp5sEAE0mm+uM/ePS5Qju93tkImSi6tXrXM5cmJNsA1WersbSbjx9otIpuf6zbxpw4dwUdPX1B9ZkixYeKShUttMvB/I1gzEy3jsBFh46f3X/kpAqcdpJnWmiXg5/DOH26NZXQyDZA4VbjwAna6Aw2OlKF4Nda5PB/6Iid9H//ia4JPC5I6AH0gRNIHiq1o/v0+gRhjkZ5LjKCMQefJiRKkHfwA42Wz6rMWr0r8pSg4GmETBxYxYaRH5IpyxbpZn7MQOUxNSvSG60F1GC93l+ttfqRQ8WxNAAAAABJRU5ErkJggg==" alt="Your Current Location" />
-				<figcaption>Your Location</figcaption>
-			</figure>
-		</div>
-	</div>
-	
-	<script type="text/javascript">
-			var mapboxAccessToken = "pk.eyJ1Ijoic291aGF5bCIsImEiOiJjaWwycmJnbTIzam5zdW1rc3d2M25tczB0In0.5zdBaay8_6OcyavirPRVXQ";
-			var mapboxMapID = "mapbox.streets";
-			var mapManager = new MapManager(mapboxAccessToken, mapboxMapID);
-	</script>
-	
-	<div class="content-template" id="simple-user-marker-content-template" aria-hidden="true">
-		<div>
-			<p><b>Your Current Location</b></p>
-			<p>%f, %f</p>
-		</div>
-	</div>
-
-	<div class="content-template" id="enhanced-user-marker-content-template" aria-hidden="true">
-		<div>
-			<p><b>Your Current Location</b></p>
-			<p>%s</p>
-		</div>
-	</div>
-
-	<script type="text/javascript">
-		mapManager.performAction();
-	</script>
-	
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<!-- Latest compiled and minified JavaScript -->
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-		integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-		crossorigin="anonymous"></script>
-  
+	<div th:replace="header/header :: header"></div>
+<div class="container-fluid">
+    <div th:replace="leftpane/eventlist :: eventlist"></div>
+    <div th:replace="rightpane/map :: map"></div> 
+</div>
 </body>
+
+<!-- Required for displaying the map -->
+<script type="text/javascript">
+	var mapboxAccessToken = "pk.eyJ1Ijoic291aGF5bCIsImEiOiJjaWwycmJnbTIzam5zdW1rc3d2M25tczB0In0.5zdBaay8_6OcyavirPRVXQ";
+	var mapboxMapID = "mapbox.streets";
+	var mapManager = new MapManager(mapboxAccessToken, mapboxMapID);
+</script>
+<script type="text/javascript">
+	mapManager.performAction();
+</script>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+<script>
+$(document).ready(function () {
+
+	$('.star').on('click', function () {
+      $(this).toggleClass('star-checked');
+    });
+
+    $('.ckbox label').on('click', function () {
+      $(this).parents('tr').toggleClass('selected');
+    });
+
+    $('.btn-filter').on('click', function () {
+      var $target = $(this).data('target');
+      if ($target != 'all') {
+        $('.table tr').css('display', 'none');
+        $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
+      } else {
+        $('.table tr').css('display', 'none').fadeIn('slow');
+      }
+    });
+
+ });
+</script>
+
 </html>
