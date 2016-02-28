@@ -19,9 +19,20 @@ public class Location {
 
 	
 	protected Location() {}
+	
 	public Location(String description) {
 		Assert.hasText(description);
 		this.setDescription(description);
+	}
+	
+	public Location(String description, String streetAddr, String city, String state, String zipCode, double latitude, double longitude){
+		this.description = description;
+		this.streetAddr = streetAddr;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.latitude = latitude;
+		this.longtitude = longitude;
 	}
 	
 	public String getDescription() {
