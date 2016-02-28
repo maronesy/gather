@@ -7,3 +7,13 @@ td, th {
     padding: 0.5rem;
     text-align: left;
 }
+
+#react {
+	position: fixed;
+	top: 60px;
+}
+
+#signin {
+	position: fixed;
+	top: 0px;
+}
