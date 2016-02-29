@@ -3,7 +3,10 @@ package cs428.project.gather.data.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class ChangeLog {
