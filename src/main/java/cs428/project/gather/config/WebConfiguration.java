@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.config;
 
 import java.util.HashMap;
 import java.util.Map;
