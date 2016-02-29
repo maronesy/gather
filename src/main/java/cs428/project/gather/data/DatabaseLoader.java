@@ -39,5 +39,6 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
 		testEvent.addOccurrence(occur);
 		Event result = this.eventRepo.save(testEvent);
+		assert(result.getDescription().isEmpty()==false);
 	}
 }
