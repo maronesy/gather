@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.data;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
