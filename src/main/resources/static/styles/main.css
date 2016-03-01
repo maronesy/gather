@@ -1,3 +1,16 @@
+body {
+    padding-top: 50px;
+}
+
+.map-border{
+	padding: 15px;
+	border: 1px solid;
+	border-color: #ddd;
+	border-radius: 4px;
+	position: relative;
+	top: 70px;
+}
+
 table {
     border-collapse: collapse;
 }

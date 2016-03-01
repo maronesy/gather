@@ -27,4 +27,7 @@ src/main/resources/static/built/bundle.*
 
 # Ignore log files
 phantomjsdriver.log
+
+/bin/
+
 /target/
