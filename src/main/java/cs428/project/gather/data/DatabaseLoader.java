@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.data;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -39,5 +39,6 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
 		testEvent.addOccurrence(occur);
 		Event result = this.eventRepo.save(testEvent);
+		assert(result.getDescription().isEmpty()==false);
 	}
 }
