@@ -58,7 +58,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
-				determineCordByZipCode();
+				//determineCoordByZipCode();
 				if(typeof(failureCallback) === "function") {
 					failureCallback();
 				}
@@ -103,7 +103,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		else {
 			displayGeolocationUnsupportedModal();
-			determineCordByZipCode();
+			//determineCoordByZipCode();
 		}
 	}
 
@@ -277,7 +277,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$("#general-failure-modal").modal("show");
 	}
 	
-    function determineCordByZipCode() {
+    
+	this.determineCoordByZipCode = function(zipcode) {
+		
 		console.log("The user denied the request for geolocation.");
     	var httpRequest = new XMLHttpRequest();
         httpRequest.open("GET", 'zipcode.csv', false);
@@ -285,11 +287,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         //alert( httpRequest.responseText );
         CSVContents = httpRequest.responseText;
         //console.log($.csv.toObjects(CSVContents));
-        var zipcode = prompt('Please enter your Zip','Zip Code');
-        if (zipcode == null || zipcode == "") {
-            alert("you did not enter a zip please try again");
-            zipcode = prompt('Please enter your Zip','Zip Code');
-        }
+//        var zipcode = prompt('Please enter your Zip','Zip Code');
+//        if (zipcode == null || zipcode == "") {
+//            alert("you did not enter a zip please try again");
+//            zipcode = prompt('Please enter your Zip','Zip Code');
+//        }
         var zipList = $.csv.toObjects(CSVContents);
         
         console.log(zipList);
@@ -304,5 +306,4 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         processUserCoordinates(uCoordinates);
         //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
-    
 }
