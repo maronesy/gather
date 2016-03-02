@@ -8,12 +8,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.EventRepository;
 import cs428.project.gather.data.model.Location;
-import cs428.project.gather.data.model.LocationRepository;
 import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registered;
-import cs428.project.gather.data.model.RegisteredRepository;
+import cs428.project.gather.data.repo.EventRepository;
+import cs428.project.gather.data.repo.LocationRepository;
+import cs428.project.gather.data.repo.RegisteredRepository;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner {

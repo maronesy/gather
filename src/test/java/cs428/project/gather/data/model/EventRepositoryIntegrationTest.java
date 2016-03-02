@@ -19,6 +19,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cs428.project.gather.GatherApplication;
+import cs428.project.gather.data.repo.EventRepository;
+import cs428.project.gather.data.repo.LocationRepository;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

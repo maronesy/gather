@@ -1,8 +1,10 @@
-package cs428.project.gather.data.model;
+package cs428.project.gather.data.repo;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
+
+import cs428.project.gather.data.model.Event;
 
 public interface EventRepository  extends CrudRepository<Event, Long> {
 	/**

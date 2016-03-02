@@ -1,8 +1,11 @@
-package cs428.project.gather.data.model;
+package cs428.project.gather.data.repo;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
+
+import cs428.project.gather.data.model.Location;
+import cs428.project.gather.data.model.Registrant;
 
 public interface RegistrantRepository  extends CrudRepository<Registrant, Long> {
 	/**
