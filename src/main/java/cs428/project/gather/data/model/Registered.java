@@ -1,6 +1,9 @@
-package cs428.project.gather;
+package cs428.project.gather.data.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import lombok.Data;
 
 @Data

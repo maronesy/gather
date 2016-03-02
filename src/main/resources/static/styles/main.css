@@ -1,0 +1,32 @@
+body {
+    padding-top: 50px;
+}
+
+.map-border{
+	padding: 15px;
+	border: 1px solid;
+	border-color: #ddd;
+	border-radius: 4px;
+	position: relative;
+	top: 70px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+#react {
+	position: fixed;
+	top: 60px;
+}
+
+#signin {
+	position: fixed;
+	top: 0px;
+}
