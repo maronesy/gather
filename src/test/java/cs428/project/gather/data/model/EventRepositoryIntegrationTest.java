@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ public class EventRepositoryIntegrationTest {
 	@Autowired
 	LocationRepository locationRepo;
 
+	@Before
+	public void setUp() {
+		eventRepo.deleteAll();
+		locationRepo.deleteAll();
+	}
+	
 	@Test
 	public void testSavesEventCorrectly() {
 
