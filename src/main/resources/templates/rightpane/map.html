@@ -30,7 +30,30 @@
 
 <div class="container col-lg-5 col-md-4" th:fragment="map">
 	<div class="map-border">
-	    <div id="map-canvas"></div>
+		<div class="row">
+			<div class="container col-lg-3 col-md-3 col-sm-3">
+				<div class="pull-left">
+					<button id="locateMe" type="button" class="btn btn-default">Locate Me</button>
+				</div>
+			</div>
+			<div class="container col-lg-9 col-md-9 col-sm-9">
+				<form class="form-inline">
+					<div class="pull-right form-group">
+		    			<input id="zipcode" type="text" style="width:85px;" class="form-control" placeholder="Zip Code"/>
+		    			<button id="enterZip" type="button" class="btn btn-default">Enter</button>
+		  			</div>
+	  			</form>
+  			</div>
+		</div>
+		<div id="map-canvas">
+		<div class="leaflet-left leaflet-bottom">
+			<div class="leaflet-bar leaflet-control" style="padding: 5px 5px 1px 5px;">
+				<span style="z-index: 1; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-full"></span>
+			</div>
+		</div>
+			
+		</div>
+	    
 	</div>
 
     <div id="map-legend-container">
@@ -42,7 +65,25 @@
 		</div>
 	</div>
 	
+	<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Application Failure</h4>
+				</div>
 
+				<div class="modal-body">
+					<span>An application failure has occurred.  Please reload the page, or try again later.</span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		
 	<div class="content-template" id="simple-user-marker-content-template" aria-hidden="true">
 		<div>
 			<p><b>Your Current Location</b></p>

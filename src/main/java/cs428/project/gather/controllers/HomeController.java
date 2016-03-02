@@ -10,14 +10,19 @@ public class HomeController {
         return "index";
     }
     
-    @RequestMapping(value = "/signin")
-    public String signin() {
-        return "signin";
+    @RequestMapping(value = "/register")
+    public String register() {
+        return "register";
     }
     
     @RequestMapping(value = "/registrants")
     public String registrants() {
         return "registrants";
+    }
+    
+    @RequestMapping(value = "/zipcode")
+    public String zipcode() {
+        return "zipcode";
     }
     
 }

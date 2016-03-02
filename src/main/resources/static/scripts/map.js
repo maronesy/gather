@@ -58,8 +58,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
-				console.log("The user denied the request for geolocation.");
-
+				//determineCoordByZipCode();
 				if(typeof(failureCallback) === "function") {
 					failureCallback();
 				}
@@ -80,20 +79,20 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					processUserCoordinates(initialUserCoordinates);
 
 					// Update every 10 seconds.
-					var updateIntervalID = setInterval(function() {
-
-						determineUserCoordinates(function(updatedUserCoordinates) {
-
-							try {
-								processUserCoordinates(updatedUserCoordinates);
-							}
-							catch(updatedException) {
-								clearInterval(updateIntervalID);
-
-								doStandardExceptionHandling(updatedException);
-							}
-						});
-					}, 10000);
+//					var updateIntervalID = setInterval(function() {
+//
+//						determineUserCoordinates(function(updatedUserCoordinates) {
+//
+//							try {
+//								processUserCoordinates(updatedUserCoordinates);
+//							}
+//							catch(updatedException) {
+//								clearInterval(updateIntervalID);
+//
+//								doStandardExceptionHandling(updatedException);
+//							}
+//						});
+//					}, 10000);
 				}
 				catch(initialException) {
 					doStandardExceptionHandling(initialException);
@@ -104,6 +103,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		else {
 			displayGeolocationUnsupportedModal();
+			//determineCoordByZipCode();
 		}
 	}
 
@@ -276,4 +276,34 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
 	}
+	
+    
+	this.determineCoordByZipCode = function(zipcode) {
+		
+		console.log("The user denied the request for geolocation.");
+    	var httpRequest = new XMLHttpRequest();
+        httpRequest.open("GET", 'zipcode.csv', false);
+        httpRequest.send(null);
+        //alert( httpRequest.responseText );
+        CSVContents = httpRequest.responseText;
+        //console.log($.csv.toObjects(CSVContents));
+//        var zipcode = prompt('Please enter your Zip','Zip Code');
+//        if (zipcode == null || zipcode == "") {
+//            alert("you did not enter a zip please try again");
+//            zipcode = prompt('Please enter your Zip','Zip Code');
+//        }
+        var zipList = $.csv.toObjects(CSVContents);
+        
+        console.log(zipList);
+        for (i in zipList) {
+        	if(zipList[i].zip == zipcode){
+				var uCoordinates = {
+				latitude: zipList[i].latitude,
+				longitude: zipList[i].longitude
+				}
+        	}
+        }
+        processUserCoordinates(uCoordinates);
+        //alert(uCoordinates.latitude + uCoordinates.longitude);
+    }
 }
