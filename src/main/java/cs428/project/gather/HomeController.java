@@ -20,4 +20,9 @@ public class HomeController {
         return "registrants";
     }
     
+    @RequestMapping(value = "/zipcode")
+    public String zipcode() {
+        return "zipcode";
+    }
+    
 }

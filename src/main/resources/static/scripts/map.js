@@ -58,8 +58,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
-				console.log("The user denied the request for geolocation.");
-
+				determineCordByZipCode();
 				if(typeof(failureCallback) === "function") {
 					failureCallback();
 				}
@@ -276,4 +275,32 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
 	}
+	
+    function determineCordByZipCode() {
+		console.log("The user denied the request for geolocation.");
+    	var httpRequest = new XMLHttpRequest();
+        httpRequest.open("GET", 'zipcode.csv', false);
+        httpRequest.send(null);
+        //alert( httpRequest.responseText );
+        CSVContents = httpRequest.responseText;
+        //console.log($.csv.toObjects(CSVContents));
+        var zipcode = prompt('Please enter your Zip','Zip Code');
+        if (zipcode != null && zipcode != "") {
+            alert(zipcode);
+        }
+        var zipList = $.csv.toObjects(CSVContents);
+        
+        console.log(zipList);
+        for (i in zipList) {
+        	if(zipList[i].zip == zipcode){
+				var uCoordinates = {
+				latitude: zipList[i].latitude,
+				longitude: zipList[i].longitude
+				}
+        	}
+        }
+        processUserCoordinates(uCoordinates);
+        alert(uCoordinates.latitude + uCoordinates.longitude);
+    }
+    
 }
