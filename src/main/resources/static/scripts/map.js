@@ -103,6 +103,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		else {
 			displayGeolocationUnsupportedModal();
+			determineCordByZipCode();
 		}
 	}
 
@@ -285,8 +286,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         CSVContents = httpRequest.responseText;
         //console.log($.csv.toObjects(CSVContents));
         var zipcode = prompt('Please enter your Zip','Zip Code');
-        if (zipcode != null && zipcode != "") {
-            alert(zipcode);
+        if (zipcode == null || zipcode == "") {
+            alert("you did not enter a zip please try again");
+            zipcode = prompt('Please enter your Zip','Zip Code');
         }
         var zipList = $.csv.toObjects(CSVContents);
         
@@ -300,7 +302,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         	}
         }
         processUserCoordinates(uCoordinates);
-        alert(uCoordinates.latitude + uCoordinates.longitude);
+        //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
     
 }
