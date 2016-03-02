@@ -79,20 +79,20 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					processUserCoordinates(initialUserCoordinates);
 
 					// Update every 10 seconds.
-					var updateIntervalID = setInterval(function() {
-
-						determineUserCoordinates(function(updatedUserCoordinates) {
-
-							try {
-								processUserCoordinates(updatedUserCoordinates);
-							}
-							catch(updatedException) {
-								clearInterval(updateIntervalID);
-
-								doStandardExceptionHandling(updatedException);
-							}
-						});
-					}, 10000);
+//					var updateIntervalID = setInterval(function() {
+//
+//						determineUserCoordinates(function(updatedUserCoordinates) {
+//
+//							try {
+//								processUserCoordinates(updatedUserCoordinates);
+//							}
+//							catch(updatedException) {
+//								clearInterval(updateIntervalID);
+//
+//								doStandardExceptionHandling(updatedException);
+//							}
+//						});
+//					}, 10000);
 				}
 				catch(initialException) {
 					doStandardExceptionHandling(initialException);
