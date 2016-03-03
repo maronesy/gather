@@ -1,13 +1,11 @@
 package cs428.project.gather.data.model;
 
 //import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,36 +21,27 @@ import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
 
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("scratch")
-public class RegistrantRepositoryIntegration {
+public class RegistrantRepositoryIntegrationTest {
+	
 	@Autowired
 	EventRepository eventRepo;
 	
 	@Autowired
 	RegistrantRepository registrantRepo;
-
+	
 	@Before
-	@Transactional
 	public void setUp() {
+		//NOTE: Since Event currently owns the relationship, you must delete the events prior to deleting registrants
 		eventRepo.deleteAll();
 		registrantRepo.deleteAll();
-		//Set up test database entries
-		Event testEvent = new Event("Test Event For User Integration");
-		Occurrence occur=new Occurrence("Single Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
-		testEvent.addOccurrence(occur);
-		this.eventRepo.save(testEvent);
-
 	}
 	
 	@Test
 	public void testSavesRegistrantCorrectly() {
-		
-
 		
 		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
 		Registrant result = this.registrantRepo.save(aUser);
@@ -90,7 +80,6 @@ public class RegistrantRepositoryIntegration {
 
 	}
 	
-
 	@Test
 	public void testSearchRegistrantByDisplayName() {
 	
