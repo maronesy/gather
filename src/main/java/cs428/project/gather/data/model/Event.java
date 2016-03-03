@@ -86,4 +86,19 @@ public class Event {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public Set<Feedback> getFeedbacks() {
+		return Collections.unmodifiableSet(feedbacks);
+	}
+	
+	public Set<ChangeLog> getChangeLog() {
+		return Collections.unmodifiableSet(changeLog);
+	}
+	
+	public Set<Registrant> getParticipants(){
+		return Collections.unmodifiableSet(participants);
+	}
+	
+	public boolean addParticipant(Registrant aUser){
+		return participants.add(aUser);
+	}
 }
