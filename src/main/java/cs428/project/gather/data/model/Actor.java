@@ -13,7 +13,7 @@ public class Actor {
     }
 
     public Actor() {
-        this.actorType = ActorType.REGISTERED_USER;
+        this.actorType = ActorType.ANONYMOUS_USER;
     }
 
     public ActorType getActorType() {

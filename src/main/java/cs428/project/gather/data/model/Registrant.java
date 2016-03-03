@@ -35,15 +35,16 @@ public class Registrant extends Actor {
 	private Set<Category> preferences = new HashSet<Category>();
 
 	public Registrant() {
-
+        super(ActorType.REGISTERED_USER);
 	}
 
 	public Registrant(String username, String password) {
+        super(ActorType.REGISTERED_USER);
 		this.username = username;
 		this.password = password;
 	}
 
 	public Registrant(String review, int rating, Timestamp datetime) {
-
+        super(ActorType.REGISTERED_USER);
 	}
 }

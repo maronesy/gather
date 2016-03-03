@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.ActorTypeHelper;
 import cs428.project.gather.utilities.RedirectPathHelper;
+
+import com.google.gson.Gson;
 
 @Controller("signInController")
 public class SignInController {
@@ -60,10 +63,13 @@ public class SignInController {
 		return viewName;
 	}
 
-	@RequestMapping(value = "/sign-in", method = RequestMethod.POST)
-	public String signInProcessor(HttpServletRequest request, @ModelAttribute("signInData") SignInData signInData,
-			BindingResult bindingResult) {
+	@RequestMapping(value = "/sign-in", method = RequestMethod.POST, consumes="application/json", produces="application/json")
+	@ResponseBody
+	public String signInProcessor(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		String redirectPath = null;
+
+		Gson gson = new Gson();
+		SignInData signInData = gson.fromJson(rawData, SignInData.class);
 
 		if (ActorTypeHelper.isAnonymousUser(request)) {
 			// signInDataValidator.validate(signInData, bindingResult);
@@ -75,6 +81,8 @@ public class SignInController {
 
 				if (authenticate(signInData, authenticationDateTime)) {
 					String username = signInData.getUsername();
+
+					System.out.println("\n\n\n" + username + "\n\n\n");
 
 					// RegistrantType registrantType =
 					// registrantDataAdapter.getRegistrantType(username);
