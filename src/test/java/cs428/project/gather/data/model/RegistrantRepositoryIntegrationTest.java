@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("scratch")
-public class RegistrantRepositoryIntegration {
+public class RegistrantRepositoryIntegrationTest {
 	@Autowired
 	EventRepository eventRepo;
 	

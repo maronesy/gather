@@ -84,4 +84,49 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(testOccur.getDescription(),"Test Occurrence");
 		assertEquals(testOccur.getLocation().getCity(),"Los Angeles");
 	}
+	
+	@Test
+	@Transactional
+	public void testSaveLoadEventWithFeedback(){
+		Event testEvent = new Event("Test Event");
+		Timestamp feedbackTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+		Feedback feedback = new Feedback("What a great event!",5,feedbackTime);
+		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime, null);
+		testEvent.addOccurrence(occur);
+		testEvent.addFeedback(feedback);
+		Event result = this.eventRepo.save(testEvent);
+		
+		Event foundEvent = this.eventRepo.findOne(result.getId());
+		Set<Feedback> feedbacks = foundEvent.getFeedbacks();
+		assertEquals(feedbacks.size(),1);
+		
+		Iterator<Feedback> feedbackIt = feedbacks.iterator();
+		Feedback testFeedback = feedbackIt.next();
+		assertEquals(testFeedback.getRating(), 5);
+		assertEquals(testFeedback.getReview(), "What a great event!");
+		assertEquals(testFeedback.getDatetime(),feedbackTime);
+	}
+	
+	
+	@Test
+	@Transactional
+	public void testSaveLoadEventWithChangeLog(){
+		Event testEvent = new Event("Test Event");
+		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
+		Occurrence occur=new Occurrence("Test Occurrence",changeTime, null);
+		testEvent.addOccurrence(occur);
+		testEvent.addChangeLog(change);
+		Event result = this.eventRepo.save(testEvent);
+		
+		Event foundEvent = this.eventRepo.findOne(result.getId());
+		Set<ChangeLog> changeLog = foundEvent.getChangeLog();
+		assertEquals(changeLog.size(),1);
+		
+		Iterator<ChangeLog> changeLogIt = changeLog.iterator();
+		ChangeLog testChangeLogEntry = changeLogIt.next();
+		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
+		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
+		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
+	}
 }
