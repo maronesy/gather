@@ -93,4 +93,12 @@ public class Event {
 	public Set<ChangeLog> getChangeLog() {
 		return Collections.unmodifiableSet(changeLog);
 	}
+	
+	public Set<Registrant> getParticipants(){
+		return Collections.unmodifiableSet(participants);
+	}
+	
+	public boolean addParticipant(Registrant aUser){
+		return participants.add(aUser);
+	}
 }

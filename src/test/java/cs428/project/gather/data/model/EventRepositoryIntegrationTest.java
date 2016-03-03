@@ -1,7 +1,8 @@
 package cs428.project.gather.data.model;
 
 //import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -15,14 +16,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
-
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -70,7 +70,7 @@ public class EventRepositoryIntegrationTest {
 	public void testSaveLoadEventWithLocation(){
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
 		testEvent.addOccurrence(occur);
 		Event result = this.eventRepo.save(testEvent);
