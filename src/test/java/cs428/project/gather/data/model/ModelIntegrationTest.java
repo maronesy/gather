@@ -41,18 +41,21 @@ public class ModelIntegrationTest {
 	
 	@Before
 	public void setUp() {
+		//NOTE: Since Event currently owns the relationship, you must delete the events prior to deleting registrants
 		eventRepo.deleteAll();
 		registrantRepo.deleteAll();
 		locationRepo.deleteAll();
+		
+		//Getting the count from the repo has some effect on flushing the tables. 
+		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
+		assertEquals(this.eventRepo.count(),0);
+		assertEquals(this.registrantRepo.count(),0);
+		assertEquals(this.locationRepo.count(),0);
 	}
 	
 	@Test
 	@Transactional
 	public void testSaveLoadParticipants(){
-		//LEAVE THIS ASSERTION HERE
-		//Getting the count from the repo has some effect on flushing the tables. 
-		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll()
-		assertEquals(this.registrantRepo.count(),0);
 		
 		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
 		Registrant registrantResult = this.registrantRepo.save(aUser);

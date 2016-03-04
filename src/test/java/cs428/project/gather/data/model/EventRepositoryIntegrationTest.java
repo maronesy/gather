@@ -39,6 +39,11 @@ public class EventRepositoryIntegrationTest {
 	public void setUp() {
 		eventRepo.deleteAll();
 		locationRepo.deleteAll();
+		
+		//Getting the count from the repo has some effect on flushing the tables. 
+		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
+		assertEquals(this.eventRepo.count(),0);
+		assertEquals(this.locationRepo.count(),0);
 	}
 	
 	@Test
