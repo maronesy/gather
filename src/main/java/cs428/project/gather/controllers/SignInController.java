@@ -46,7 +46,7 @@ public class SignInController {
 	@ModelAttribute("signInData")
 	public SignInData signInData() {
 		SignInData signInData = new SignInData();
-
+		
 		return signInData;
 	}
 
@@ -59,13 +59,14 @@ public class SignInController {
 		} else {
 			viewName = RedirectPathHelper.buildRedirectPath(request, "/invalid-request");
 		}
-
+		
 		return viewName;
 	}
 
-	@RequestMapping(value = "/sign-in", method = RequestMethod.POST, consumes="application/json", produces="application/json")
+	@RequestMapping(value = "/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public String signInProcessor(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+	public String signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+			BindingResult bindingResult) {
 		String redirectPath = null;
 
 		Gson gson = new Gson();
