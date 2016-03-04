@@ -192,11 +192,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jsSrcDir>src/main/webapp/js/app</jsSrcDir>
-                    <jsTestSrcDir>src/test/webapp/js/specs</jsTestSrcDir>
-                    <preloadSources>
-                        <source>src/main/webapp/js/app/GreetingService.js</source>
-                    </preloadSources>
+                    <jsSrcDir>src/main/resources/static/scripts</jsSrcDir>
+                    <jsTestSrcDir>src/test/resources/static/scripts/specs</jsTestSrcDir>
                     <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
                     <webDriverCapabilities>
                         <capability>

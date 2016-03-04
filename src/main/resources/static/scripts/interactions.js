@@ -1,11 +1,3 @@
-$(document).ready(function() {
-	tableInteractions();
-	locateMe();
-	enterZip();
-	registerBox();
-	signUp();
-});
-
 function tableInteractions() {
 	$('.star').on('click', function() {
 		$(this).toggleClass('star-checked');
