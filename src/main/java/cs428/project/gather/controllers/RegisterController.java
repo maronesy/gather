@@ -72,7 +72,7 @@ public class RegisterController {
 
 	private Registrant buildRegistrant(RegistrationData registrationData) {
 		Registrant newRegistrant = new Registrant();
-		newRegistrant.setEmail(registrationData.getEmailAddress());
+		newRegistrant.setEmail(registrationData.getEmail());
 		newRegistrant.setPassword(registrationData.getPassword());
 		newRegistrant.setDisplayName(registrationData.getDisplayName());
 		return newRegistrant;

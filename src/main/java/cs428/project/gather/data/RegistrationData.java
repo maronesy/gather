@@ -6,11 +6,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class RegistrationData {
 
-	public static final String EMAIL_ADDRESS_FIELD_NAME = "emailAddress";
+	public static final String EMAIL_FIELD_NAME = "email";
 	public static final String PASSWORD_FIELD_NAME = "password";
 	public static final String DISPLAY_NAME_FIELD_NAME = "displayName";
 
-	private String emailAddress;
+	private String email;
 	private String password;
 	private String displayName;
 	
@@ -34,14 +34,14 @@ public class RegistrationData {
 		this.displayName = StringUtils.trimToNull(displayName);
 	}
 
-	public String getEmailAddress()
+	public String getEmail()
 	{
-		return emailAddress;
+		return email;
 	}
 
 	public void setEmailAddress(String emailAddress)
 	{
-		this.emailAddress = StringUtils.trimToNull(emailAddress);
+		this.email = StringUtils.trimToNull(emailAddress);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class RegistrationData {
 	{
 		HashCodeBuilder builder = new HashCodeBuilder();
 
-		builder.append(emailAddress);
+		builder.append(email);
 
 		int hashCode = builder.toHashCode();
 
@@ -71,7 +71,7 @@ public class RegistrationData {
 
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 
-			equalsBuilder.append(this.emailAddress, anotherUserRegistrationData.emailAddress);
+			equalsBuilder.append(this.email, anotherUserRegistrationData.email);
 			equalsBuilder.append(this.password, anotherUserRegistrationData.password);
 			equalsBuilder.append(this.displayName, anotherUserRegistrationData.displayName);
 			

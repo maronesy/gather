@@ -84,4 +84,18 @@ public class RegistrantRepositoryIntegrationTest {
 		assertTrue(foundUser.get(0).getDisplayName().equals("foobar"));
 	}
 	
+	@Test
+	public void testSearchRegistrantByEmail(){
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aDiffUser = new Registrant("diffuser@email.com","password","foobar",10L,3,10000);
+		Registrant fooBar = new Registrant("foobar@email.com","foobarPassword","other",10L,3,90000);
+		this.registrantRepo.save(aUser);
+		this.registrantRepo.save(aDiffUser);
+		this.registrantRepo.save(fooBar);
+		
+		Registrant foundUser = registrantRepo.findOneByEmail("foobar@email.com");
+		
+		assertTrue(foundUser.getEmail().equals("foobar@email.com"));
+	}
+	
 }

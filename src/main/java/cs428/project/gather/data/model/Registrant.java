@@ -12,13 +12,13 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Registrant extends Actor {
 	private @Id @Column(name = "ID") @GeneratedValue Long id;
-	private String password;
-	private @Column(unique = true) String displayName;
-	private @Column(unique = true) String email;
-	private long reliability;
-	private int defaultTimeWindow;
-	private int defaultZip;
-	private boolean isAdmin;
+	private @Column(nullable=false) String password;
+	private @Column(unique = true, nullable=false) String displayName;
+	private @Column(unique = true, nullable=false) String email;
+	private long reliability = 0;
+	private int defaultTimeWindow = 1;
+	private int defaultZip = 90210;
+	private boolean isAdmin = false;
 
 	@ManyToMany(mappedBy = "subscribers")
 	private Set<Event> subscribedEvents = new HashSet<Event>();
