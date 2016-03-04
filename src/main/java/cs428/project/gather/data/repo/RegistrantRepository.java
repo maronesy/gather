@@ -16,7 +16,5 @@ public interface RegistrantRepository  extends CrudRepository<Registrant, Long> 
 	 */
 	Registrant findOne(Long id);
 	
-	List<Registrant> findByUsername(String username);
-	
 	List<Registrant> findByDisplayName(String displayName);
 }
