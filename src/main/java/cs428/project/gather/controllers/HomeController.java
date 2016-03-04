@@ -1,4 +1,4 @@
-package cs428.project.gather;
+package cs428.project.gather.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
