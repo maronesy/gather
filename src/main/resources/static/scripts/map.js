@@ -278,7 +278,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
     
-	this.determineCoordByZipCode = function(zipcode) {
+	this.determineCoordByZipCode = function(zipCode) {
 		
 		console.log("The user denied the request for geolocation.");
     	var httpRequest = new XMLHttpRequest();
@@ -295,15 +295,33 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         var zipList = $.csv.toObjects(CSVContents);
         
         console.log(zipList);
+        
+        var uCoordinates = null
+        
+//        jQuery.grep(zipList, function( zip, i ) {
+//        	if (zip == zipCode) {
+//        		var i = zipList.index(zipCode)
+//        		uCoordinates = {
+//      				latitude: zipList[i].latitude,
+//    				longitude: zipList[i].longitude
+//    				};
+//        	} 
+//        });
+        
         for (i in zipList) {
-        	if(zipList[i].zip == zipcode){
-				var uCoordinates = {
+        	if(zipList[i].zip == zipCode){
+				uCoordinates = {
 				latitude: zipList[i].latitude,
 				longitude: zipList[i].longitude
 				}
         	}
         }
-        processUserCoordinates(uCoordinates);
+        if (uCoordinates == null) {
+        	return -1;
+        } else {
+        	processUserCoordinates(uCoordinates);
+        	return 0;
+        }
         //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
 }
