@@ -26,8 +26,31 @@ function locateMe() {
 
 function enterZip() {
 	$('#enterZip').on('click', function() {
-		var zipcode = $('#zipcode').val();
-		mapManager.determineCoordByZipCode(zipcode);
+		var zipcode = $('#zipCode').val();
+		var zipCodeErrorBox = $(this).attr('href');
+		
+		if (zipcode == "") {
+			$(zipCodeErrorBox).fadeIn(100);
+			$('#zipCodeErrorBox').html('Zip code field is empty');
+		} else if (zipcode.length != 5) {
+			$(zipCodeErrorBox).fadeIn(100);
+			$('#zipCodeErrorBox').html('Zip code must be five digits');
+		} else if (!($.isNumeric(zipcode))) {
+			$(zipCodeErrorBox).fadeIn(100);
+			$('#zipCodeErrorBox').html('Zip code must be five digits');
+		} else {
+			var returnValue = mapManager.determineCoordByZipCode(zipcode);
+			if (returnValue == -1) {
+				$(zipCodeErrorBox).fadeIn(100);
+				$('#zipCodeErrorBox').html('Zip code does not exist');
+			}
+		}
+	});
+}
+
+function removeZipCodeError() {
+	$('#zipCode').on('focus', function() {
+		$(zipCodeErrorBox).fadeOut(100);
 	});
 }
 
@@ -71,16 +94,67 @@ function registerBox() {
 
 }
 
+//function signIn() {
+//	$('#loginFormSubmit').on(
+//			'click',
+//			function() {
+//				var email = $("#signInEmail").val();
+//				var password = $("#signInPassword").val();
+//
+//				$.ajax({
+//						type : "POST",
+//						url : "api/registereds",
+//						contentType: "application/json",
+//						data : '{ \
+//							"firstName": "Tom", \
+//							"lastName": "jenkins", \
+//							"age": 30, \
+//							"location": "San Diego" \
+//						}',
+//						success : function(returnvalue) {
+//							if (returnvalue == "success") {
+//								alert("Sign In Successful")
+//							}
+//						}
+//					});
+//				});
+//}
+
+function signIn() {
+	$('#loginFormSubmit').on(
+			'click',
+			function() {
+				var email = $("#signInEmail").val();
+				var password = $("#signInPassword").val();
+
+				$.ajax({
+						accepts: "application/json",
+						type : "POST",
+						url : "sign-in",
+						contentType: "application/json; charset=UTF-8",
+						dataType: "json",
+						data : '{ \
+							"username" : "email", \
+							"password" : "password", \
+						}',
+						success : function(returnvalue) {
+							if (returnvalue == "success") {
+								alert("Sign In Successful")
+							}
+						}
+					});
+				});
+}
+
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
 			function() {
-				var fn = $("#InputFirstName").val();
-				var ln = $("#InputLastName").val();
-				var e = $("#InputEmail").val();
-				var p = $("#InputPassword1").val();
-				var cp = $("#InputPassword2").val();
-				if (ln == "" || fn == "" || p == "" || cp == "" || e == "") {
+				var e = $("#inputEmail").val();
+				var p = $("#inputPassword1").val();
+				var cp = $("#inputPassword2").val();
+				var dn = $("#inputDisplayName").val();
+				if (dn == "" || p == "" || cp == "" || e == "") {
 					$('#formFeedback').html('All the fields are required');
 				} else if (validate_email(e) == false) {
 					$('#formFeedback').html(
@@ -92,28 +166,33 @@ function signUp() {
 					$('#formFeedback').html(
 							'Password must be less than 20 characters');
 				} else if (p != cp) {
-					$('#formFeedback').html('Your passwords do not match');
+					$('#formFeedback').html('Passwords do not match');
+				} else if (dn.length < 5) {
+					$('#formFeedback').html('Display name must be more than 5 characters');
+				} else if (dn.length > 15) {
+					$('#formFeedback').html('Display name must be less than 5 characters');
+				} else {
+				 $('#loading').show();
+				 $.ajax({
+						type : "POST",
+						url : "includes/non_user/popup_registrationform",
+						data : '{ \
+							"email" : "e", \
+							"password" : "p", \
+							"displayName" : "dn" \
+						}',
+						success : function(returnvalue) {
+							if (returnvalue == 0) {
+								alert('Registration success.')
+							} else {
+								if (returnvalue == -1) {
+									$('#form_feedback').html('This email is in use.');
+								}
+							}
+						}
+					});
+					$('#loading').hide();
 				}
-				// else {
-				// $('#loading').show();
-				// $.ajax({
-				// type: "POST",
-				// url: "includes/non_user/popup_registrationform",
-				// data: {nickname:n, password:p, password_again:cp, code:cd},
-				// success: function(returnvalue) {
-				// if(returnvalue == "success") {
-				// setTimeout(function(){
-				// $('#signin-nickname').val(n);
-				// $('#signin-password').val(p);
-				// $('#signin').click();
-				// },2000);
-				// } else {
-				// $('#form_feedback').html(returnvalue);
-				// }
-				// }
-				// });
-				// $('#loading').hide();
-				// }
 			});
 }
 

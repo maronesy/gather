@@ -13,25 +13,31 @@ import cs428.project.gather.data.model.Location;
 import cs428.project.gather.data.model.LocationRepository;
 import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registered;
+import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.model.RegisteredRepository;
+import cs428.project.gather.data.model.RegistrantRepository;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 
-	private final RegisteredRepository registeredRepo;
+//	private final RegisteredRepository registeredRepo;
+	private final RegistrantRepository registrantRepo;
 	private final EventRepository eventRepo;
 	private final LocationRepository locationRepo;
 
 	@Autowired
-	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, LocationRepository locationRepo) {
-		this.registeredRepo = repository;
+	public DatabaseLoader(RegistrantRepository repository, EventRepository eventRepo, LocationRepository locationRepo) {
+		this.registrantRepo = repository;
 		this.eventRepo = eventRepo;
 		this.locationRepo = locationRepo;
 	}
 
 	@Override
 	public void run(String... strings) throws Exception {
-		this.registeredRepo.save(new Registered("Frodo", "Baggins", 24, "Los Angeles"));
+		
+		this.registrantRepo.save(new Registrant("frodobag", "qwer1234"));
+		this.registrantRepo.save(new Registrant("bagginfro", "qwer1234"));
+		this.registrantRepo.save(new Registrant("localoca", "qwer1234"));
 
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
