@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.BindingResult;
@@ -50,7 +50,8 @@ public class SignInController {
 		return signInData;
 	}
 
-	@RequestMapping(value = "/sign-in", method = RequestMethod.GET)
+	@RequestMapping(value = "/sign-in", method = RequestMethod.GET, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+	@ResponseBody
 	public String signIn(HttpServletRequest request) {
 		String viewName = null;
 
