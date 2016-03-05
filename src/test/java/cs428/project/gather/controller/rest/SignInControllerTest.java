@@ -87,6 +87,17 @@ public class SignInControllerTest {
 		//TODO Need to further confirm the session is not added (Login Failed)
 	}
 	
+	@Test
+	public void testSignInUserNotExist() throws JsonProcessingException {
+		Map<String, Object> apiResponse = authenticateUser("notexisted@email.com", "password");
+		String message = apiResponse.get("message").toString();
+		Integer status = (Integer) (apiResponse.get("status"));
+		assertEquals("Field invalid-email:The email address doesn't exist.  Please enter another email address. ", message);
+		assertEquals((Integer)(-5), status); //success
+
+		//TODO Need to further confirm the session is not added (Login Failed)
+	}
+	
 	private Map<String, Object> authenticateUser(String email, String password) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
