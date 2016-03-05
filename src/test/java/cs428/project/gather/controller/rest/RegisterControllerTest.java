@@ -135,7 +135,7 @@ public class RegisterControllerTest {
 	@Test
 	public void testRegisterInvalidEmailAddress() throws JsonProcessingException {
 
-		Map<String, Object> apiResponse = attemptAddUser("F00.Thi$IsN0TaEM@il", "QWER1234", "newUser");
+		Map<String, Object> apiResponse = attemptAddUser(".Thi$IsN0TaEM@il", "QWER1234", "newUser");
 		String message = apiResponse.get("message").toString();
 		assertEquals("Field invalid-email:Please enter a valid email address. ",
 				message);

@@ -1,12 +1,13 @@
 package cs428.project.gather.controllers;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.BindingResult;
@@ -16,22 +17,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.data.SignInData;
-import cs428.project.gather.data.model.Actor;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.ActorTypeHelper;
 import cs428.project.gather.utilities.RedirectPathHelper;
+import cs428.project.gather.validator.SignInDataValidator;
 
 import com.google.gson.Gson;
 
 @Controller("signInController")
 public class SignInController {
-	// @Autowired
-	// @Qualifier("signInDataValidator")
-	// private SignInDataValidator signInDataValidator;
-	//
+	 @Autowired
+	 @Qualifier("signInDataValidator")
+	 private SignInDataValidator signInDataValidator;
+	
 	@Autowired
 	RegistrantRepository registrantRepo;
 	
@@ -57,61 +59,70 @@ public class SignInController {
 
 	@RequestMapping(value = "/api/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public String signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+	public RESTResponseData signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
-		String redirectPath = null;
 
 		Gson gson = new Gson();
 		SignInData signInData = gson.fromJson(rawData, SignInData.class);
 
 		if (ActorTypeHelper.isAnonymousUser(request)) {
-			// signInDataValidator.validate(signInData, bindingResult);
+			signInDataValidator.validate(signInData, bindingResult);
 
 			if (bindingResult.hasErrors()) {
-				redirectPath = "sign-in";
+				return new RESTResponseData(bindingResult);
 			} else {
-				Date authenticationDateTime = new Date();
 
-				if (authenticate(signInData, authenticationDateTime)) {
+				if (authenticate(signInData)) {
 					String email = signInData.getEmail();
 
-					System.out.println("\n\n\n" + email + "\n\n\n");
-
+					System.out.println("\n" + email + " authenticated. \n");
 					
 					Registrant registrant = this.registrantRepo.findOneByEmail(email);
-					//TODO Do something if registrant = null (i.e. not found). Unless this sort of thing should be handled in the authenticate stub.
-
 					ActorStateUtility.storeActorInSession(request, registrant);
-
-					redirectPath = RedirectPathHelper.buildRedirectPath(request, "/");
+					
+					return new RESTResponseData(0,"success");
 				} else {
-					String errorCode = "invalid." + SignInData.PASSWORD_FIELD_NAME;
-					bindingResult.rejectValue(SignInData.PASSWORD_FIELD_NAME, errorCode,
-							"The password is invalid.  Please enter a valid password.");
-
-					redirectPath = "sign-in";
+					String message = "invalid field-" + SignInData.PASSWORD_FIELD_NAME;
+					bindingResult.reject("-6",
+							message+"The password is invalid.  Please enter a valid password.");
+					return new RESTResponseData(bindingResult);
+					
 				}
 			}
 		} else {
-			redirectPath = RedirectPathHelper.buildRedirectPath(request, "/invalid-request");
+			return new RESTResponseData(-1,"Incorrect User State. Only Anonymous User can sign in");
 		}
 
-		return redirectPath;
+		
+	}
+	
+	public boolean authenticate(SignInData signInData)
+	{
+		String email = signInData.getEmail();
+		String suppliedPassword = signInData.getPassword();
+		boolean passwordMatches = false;
+
+		if(email == null)
+		{
+			throw new IllegalArgumentException("The email cannot be null.");
+		}
+
+		if(suppliedPassword == null)
+		{
+			throw new IllegalArgumentException("The supplied password cannot be null.");
+		}
+
+		Registrant user = registrantRepo.findOneByEmail(email);
+
+
+		String storedPassword = user.getPassword();
+		if(StringUtils.equals(suppliedPassword, storedPassword))
+		{
+			passwordMatches = true;
+
+		}
+
+		return passwordMatches;
 	}
 
-	private boolean authenticate(SignInData signInData, Date authenticationDateTime) {
-		// boolean authenticated = false;
-		//
-		String email = signInData.getEmail();
-		String password = signInData.getPassword();
-		//
-		// if(registrantDataAdapter.authenticate(username, password,
-		// authenticationDateTime))
-		// {
-		// authenticated = true;
-		// }
-		//
-		// return authenticated;
-		return (!email.equals("") && !password.equals(""));
-	}
 }
