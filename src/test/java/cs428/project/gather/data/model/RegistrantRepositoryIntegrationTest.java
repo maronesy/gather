@@ -38,6 +38,11 @@ public class RegistrantRepositoryIntegrationTest {
 		//NOTE: Since Event currently owns the relationship, you must delete the events prior to deleting registrants
 		eventRepo.deleteAll();
 		registrantRepo.deleteAll();
+		
+		//Getting the count from the repo has some effect on flushing the tables. 
+		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
+		assertEquals(this.eventRepo.count(),0);
+		assertEquals(this.registrantRepo.count(),0);
 	}
 	
 	@Test
