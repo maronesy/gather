@@ -10,9 +10,9 @@ public class HomeController {
 		return "index";
 	}
 
-	@RequestMapping(value = "/register")
+	@RequestMapping(value = "/registerform")
 	public String register() {
-		return "register";
+		return "registerform";
 	}
 
 	@RequestMapping(value = "/registrants")

@@ -150,36 +150,39 @@ function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
 			function() {
-				var e = $("#inputEmail").val();
-				var p = $("#inputPassword1").val();
-				var cp = $("#inputPassword2").val();
-				var dn = $("#inputDisplayName").val();
-				if (dn == "" || p == "" || cp == "" || e == "") {
+				var email = $("#inputEmail").val();
+				var password = $("#inputPassword1").val();
+				var confirmPassword = $("#inputPassword2").val();
+				var displayName = $("#inputDisplayName").val();
+				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
 					$('#formFeedback').html('All the fields are required');
-				} else if (validate_email(e) == false) {
+				} else if (validate_email(email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
-				} else if (p.length < 7) {
+				} else if (password.length < 7) {
 					$('#formFeedback').html(
 							'Password must be more than 6 characters');
-				} else if (p.length > 21) {
+				} else if (password.length > 21) {
 					$('#formFeedback').html(
 							'Password must be less than 20 characters');
-				} else if (p != cp) {
+				} else if (password != confirmPassword) {
 					$('#formFeedback').html('Passwords do not match');
-				} else if (dn.length < 5) {
+				} else if (displayName.length < 5) {
 					$('#formFeedback').html('Display name must be more than 5 characters');
-				} else if (dn.length > 15) {
+				} else if (displayName.length > 15) {
 					$('#formFeedback').html('Display name must be less than 5 characters');
 				} else {
 				 $('#loading').show();
 				 $.ajax({
+					 	accepts: "application/json",
 						type : "POST",
-						url : "includes/non_user/popup_registrationform",
+						url : "register",
+						contentType: "application/json; charset=UTF-8",
+						dataType: "json",
 						data : '{ \
-							"email" : "e", \
-							"password" : "p", \
-							"displayName" : "dn" \
+							"email" : ' + email + ', \
+							"password" : ' + password + ', \
+							"displayName" : ' + displayName + ' \
 						}',
 						success : function(returnvalue) {
 							if (returnvalue == 0) {
