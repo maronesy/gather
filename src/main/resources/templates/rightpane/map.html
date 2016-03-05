@@ -29,18 +29,19 @@
 <body>
 
 <div class="container col-lg-5 col-md-4" th:fragment="map">
+    <div id="zipCodeErrorBox" class="zipcode-error" align="center"></div>
 	<div class="map-border">
 		<div class="row">
 			<div class="container col-lg-3 col-md-3 col-sm-3">
 				<div class="pull-left">
-					<button id="locateMe" type="button" class="btn btn-default">Locate Me</button>
+					<button id="locateMe" type="button" class="remove-outline btn btn-default">Locate Me</button>
 				</div>
 			</div>
 			<div class="container col-lg-9 col-md-9 col-sm-9">
 				<form class="form-inline">
 					<div class="pull-right form-group">
-		    			<input id="zipcode" type="text" style="width:85px;" class="form-control" placeholder="Zip Code"/>
-		    			<button id="enterZip" type="button" class="btn btn-default">Enter</button>
+		    			<input id="zipCode" type="text" style="width:85px;" class="form-control" placeholder="Zip Code"/>
+		    			<button id="enterZip" href="#zipCodeErrorBox" type="button" class="remove-outline btn btn-default">Enter</button>
 		  			</div>
 	  			</form>
   			</div>

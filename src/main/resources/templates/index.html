@@ -16,13 +16,22 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
 	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
 	crossorigin="anonymous" />
-	
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+	<!-- jQuery UI -->
+	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
 	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.js" type="text/javascript"></script>
 	<link href="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.css" rel="stylesheet"/>
 	
 	<link href="styles/map.css" rel="stylesheet"/>
-	<script src="scripts/sprintf.js" type="text/javascript"></script>
-	<script src="scripts/bounce-marker.js" type="text/javascript"></script>
+	<script src="mapaid/sprintf.js" type="text/javascript"></script>
+	<script src="mapaid/bounce-marker.js" type="text/javascript"></script>
 	<script src="scripts/map.js" type="text/javascript"></script>
 </head>
 
@@ -32,6 +41,7 @@
     <div th:replace="leftpane/eventlist :: eventlist"></div>
     <div th:replace="rightpane/map :: map"></div> 
 </div>
+	<div th:replace="registerform :: registerform"></div>
 </body>
 
 <!-- Required for displaying the map -->
@@ -43,18 +53,17 @@
 <script type="text/javascript">
 	mapManager.performAction();
 </script>
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r14/Stats.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.min.js"></script>
-<!-- jQuery UI -->
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-	crossorigin="anonymous"></script>
+<script>
+$(document).ready(function() {
+	tableInteractions();
+	locateMe();
+	enterZip();
+	registerBox();
+	signUp();
+	signIn();
+	removeZipCodeError();
+});
+</script>
 <script src="scripts/interactions.js" type="text/javascript"></script>
+
 </html>
