@@ -42,7 +42,7 @@ public class SignInController {
 		return signInData;
 	}
 
-	@RequestMapping(value = "/sign-in", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/sign-in", method = RequestMethod.GET)
 	public String signIn(HttpServletRequest request) {
 		String viewName = null;
 
@@ -55,7 +55,7 @@ public class SignInController {
 		return viewName;
 	}
 
-	@RequestMapping(value = "/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value = "/api/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public String signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
