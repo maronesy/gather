@@ -12,14 +12,13 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Registrant extends Actor {
 	private @Id @Column(name = "ID") @GeneratedValue Long id;
-	private @Column(unique = true) String username;
-	private String password;
-	private String displayName;
-	private @Column(unique = true) String email;
-	private long reliability;
-	private int defaultTimeWindow;
-	private int defaultZip;
-	private boolean isAdmin;
+	private @Column(nullable=false) String password;
+	private @Column(unique = true, nullable=false) String displayName;
+	private @Column(unique = true, nullable=false) String email;
+	private long reliability = 0;
+	private int defaultTimeWindow = 1;
+	private int defaultZip = 90210;
+	private boolean isAdmin = false;
 
 	@ManyToMany(mappedBy = "subscribers")
 	private Set<Event> subscribedEvents = new HashSet<Event>();
@@ -37,19 +36,14 @@ public class Registrant extends Actor {
 		super(ActorType.REGISTERED_USER);
 	}
 
-	public Registrant(String username, String password) {
+	public Registrant(String email, String password) {
 		super(ActorType.REGISTERED_USER);
-		this.username = username;
+		this.email = email;
 		this.password = password;
 	}
-
-	public Registrant(String review, int rating, Timestamp datetime) {
-		super(ActorType.REGISTERED_USER);
-	}
-
-	public Registrant(String username, String password, String displayName, String email, long reliability,
+	
+	public Registrant(String email, String password, String displayName, long reliability,
 			int defaultTimeWindow, int defaultZip) {
-		this.username = username;
 		this.password = password;
 		this.displayName = displayName;
 		this.email = email;
@@ -58,13 +52,13 @@ public class Registrant extends Actor {
 		this.defaultZip = defaultZip;
 		this.isAdmin = false;
 	}
-
-	public String getUsername() {
-		return username;
+	
+	public String getEmail() {
+		return email;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {

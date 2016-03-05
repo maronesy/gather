@@ -45,7 +45,7 @@ public class DatabaseLoader implements CommandLineRunner {
 //		Event result = this.eventRepo.save(testEvent);
 //		assert(result.getDescription().isEmpty()==false);
 		
-		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 		Registrant registrantResult = this.registrantRepo.save(aUser);
 		
 		Event testEvent = new Event("Test Event");
