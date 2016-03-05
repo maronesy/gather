@@ -5,8 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +30,7 @@ public class RegisterController {
 	@Autowired
 	private RegistrationDataValidator registrationDataValidator;
 	
-	@RequestMapping(value = "/register", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/register", method = RequestMethod.GET)
 	public String userRegistration(HttpServletRequest request) {
 		String viewName = null;
 
@@ -45,7 +43,7 @@ public class RegisterController {
 		return viewName;
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value = "/api/register", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public RESTResponseData signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
