@@ -43,31 +43,19 @@ public class RegistrantRepositoryIntegrationTest {
 	@Test
 	public void testSavesRegistrantCorrectly() {
 		
-		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 		Registrant result = this.registrantRepo.save(aUser);
 		
-		assertTrue(result.getUsername().equals("testuser"));	
+		assertTrue(result.getEmail().equals("testuser@email.com"));	
 		assertTrue(result.getPassword().equals("password"));	
 
 	}
 	
 	@Test
-	public void testSearchRegistrantByUsername() {
-	
-		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
-		this.registrantRepo.save(aUser);
-		
-		List<Registrant> foundUser = registrantRepo.findByUsername("testuser");
-		
-		assertEquals(1,foundUser.size());
-		assertTrue(foundUser.get(0).getUsername().equals("testuser"));
-	}
-	
-	@Test
 	public void testDuplicatedRegistrant() {
 	
-		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
-		Registrant aUser2 = new Registrant("testuser","diffPassword","otherDisplayName","different@email.com",10L,3,10000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aUser2 = new Registrant("testuser@email.com","otherPassword","otherDisplayName",10L,3,10000);
 		
 		this.registrantRepo.save(aUser);
 		
@@ -83,17 +71,31 @@ public class RegistrantRepositoryIntegrationTest {
 	@Test
 	public void testSearchRegistrantByDisplayName() {
 	
-		Registrant aUser = new Registrant("testuser","password","testDisplayName","testuser@email.com",10L,3,10000);
-		Registrant aDiffUser = new Registrant("diffUser","password","foobar","diffuser@email.com",10L,3,10000);
-		Registrant fooBar = new Registrant("foobar","foobarPassword","foobar","foobar@email.com",10L,3,90000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aDiffUser = new Registrant("diffuser@email.com","password","foobar",10L,3,10000);
+		Registrant fooBar = new Registrant("foobar@email.com","foobarPassword","other",10L,3,90000);
 		this.registrantRepo.save(aUser);
 		this.registrantRepo.save(aDiffUser);
 		this.registrantRepo.save(fooBar);
 		
 		List<Registrant> foundUser = registrantRepo.findByDisplayName("foobar");
 		
-		assertEquals(2,foundUser.size());
+		assertEquals(1,foundUser.size());
 		assertTrue(foundUser.get(0).getDisplayName().equals("foobar"));
+	}
+	
+	@Test
+	public void testSearchRegistrantByEmail(){
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aDiffUser = new Registrant("diffuser@email.com","password","foobar",10L,3,10000);
+		Registrant fooBar = new Registrant("foobar@email.com","foobarPassword","other",10L,3,90000);
+		this.registrantRepo.save(aUser);
+		this.registrantRepo.save(aDiffUser);
+		this.registrantRepo.save(fooBar);
+		
+		Registrant foundUser = registrantRepo.findOneByEmail("foobar@email.com");
+		
+		assertTrue(foundUser.getEmail().equals("foobar@email.com"));
 	}
 	
 }

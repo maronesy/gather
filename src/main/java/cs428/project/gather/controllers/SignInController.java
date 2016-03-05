@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import cs428.project.gather.data.SignInData;
 import cs428.project.gather.data.model.Actor;
 import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.ActorTypeHelper;
 import cs428.project.gather.utilities.RedirectPathHelper;
@@ -31,18 +32,9 @@ public class SignInController {
 	// @Qualifier("signInDataValidator")
 	// private SignInDataValidator signInDataValidator;
 	//
-	// @Autowired
-	// @Qualifier("registrantDataAdapter")
-	// private RegistrantDataAdapter registrantDataAdapter;
-	//
-	// @Autowired
-	// @Qualifier("registeredUserDataAdapter")
-	// private RegisteredUserDataAdapter registeredUserDataAdapter;
-	//
-	// @Autowired
-	// @Qualifier("vendorDataAdapter")
-	// private VendorDataAdapter vendorDataAdapter;
-	//
+	@Autowired
+	RegistrantRepository registrantRepo;
+	
 	@ModelAttribute("signInData")
 	public SignInData signInData() {
 		SignInData signInData = new SignInData();
@@ -81,38 +73,13 @@ public class SignInController {
 				Date authenticationDateTime = new Date();
 
 				if (authenticate(signInData, authenticationDateTime)) {
-					String username = signInData.getUsername();
+					String email = signInData.getEmail();
 
-					System.out.println("\n\n\n" + username + "\n\n\n");
+					System.out.println("\n\n\n" + email + "\n\n\n");
 
-					// RegistrantType registrantType =
-					// registrantDataAdapter.getRegistrantType(username);
-					// if(registrantType == null)
-					// {
-					// // This indicates a problem with the sign-in data
-					// validator or a data integrity problem.
-					// throw new IllegalStateException("The registrant type is
-					// not expected to be null.");
-					// }
-					//
-					Registrant registrant = new Registrant(username, signInData.getPassword());
-
-					//
-					// if(RegistrantType.REGISTERED_USER.equals(registrantType))
-					// {
-					// registrant =
-					// registeredUserDataAdapter.getRegisteredUser(username);
-					// }
-					// else if(RegistrantType.VENDOR.equals(registrantType))
-					// {
-					// registrant = vendorDataAdapter.getVendor(username);
-					// }
-					// else
-					// {
-					// // This is never expected.
-					// throw new IllegalStateException("An unrecognized
-					// registrant type was encountered.");
-					// }
+					
+					Registrant registrant = this.registrantRepo.findOneByEmail(email);
+					//TODO Do something if registrant = null (i.e. not found). Unless this sort of thing should be handled in the authenticate stub.
 
 					ActorStateUtility.storeActorInSession(request, registrant);
 
@@ -135,7 +102,7 @@ public class SignInController {
 	private boolean authenticate(SignInData signInData, Date authenticationDateTime) {
 		// boolean authenticated = false;
 		//
-		String username = signInData.getUsername();
+		String email = signInData.getEmail();
 		String password = signInData.getPassword();
 		//
 		// if(registrantDataAdapter.authenticate(username, password,
@@ -145,6 +112,6 @@ public class SignInController {
 		// }
 		//
 		// return authenticated;
-		return (!username.equals("") && !password.equals(""));
+		return (!email.equals("") && !password.equals(""));
 	}
 }
