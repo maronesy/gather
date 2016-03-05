@@ -66,6 +66,17 @@ public class SignInControllerTest {
 	}
 	
 	@Test
+	public void testSignInUserWorngPassowrd() throws JsonProcessingException {
+		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "wrongpassword");
+		String message = apiResponse.get("message").toString();
+		Integer status = (Integer) (apiResponse.get("status"));
+		assertEquals("invalid field-passwordThe password is invalid.  Please enter a valid password. ", message);
+		assertEquals((Integer)(-6), status); //success
+
+		//TODO Need to further confirm the session is updated correctly
+	}
+	
+	@Test
 	public void testSignInInvalidEmail() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser(".Thi$IsN0TaEM@il", "password");
 		String message = apiResponse.get("message").toString();

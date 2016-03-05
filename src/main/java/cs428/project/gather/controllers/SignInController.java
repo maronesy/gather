@@ -82,9 +82,9 @@ public class SignInController {
 					
 					return new RESTResponseData(0,"success");
 				} else {
-					String errorCode = "invalid." + SignInData.PASSWORD_FIELD_NAME;
-					bindingResult.rejectValue(SignInData.PASSWORD_FIELD_NAME, errorCode,
-							"The password is invalid.  Please enter a valid password.");
+					String message = "invalid field-" + SignInData.PASSWORD_FIELD_NAME;
+					bindingResult.reject("-6",
+							message+"The password is invalid.  Please enter a valid password.");
 					return new RESTResponseData(bindingResult);
 					
 				}
