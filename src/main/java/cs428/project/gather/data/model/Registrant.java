@@ -3,7 +3,6 @@ package cs428.project.gather.data.model;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,14 +12,13 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Registrant extends Actor {
 	private @Id @Column(name = "ID") @GeneratedValue Long id;
-	private String username;
-	private String password;
-	private String displayName;
-	private String email;
-	private long reliability;
-	private int defaultTimeWindow;
-	private int defaultZip;
-	private boolean isAdmin;
+	private @Column(nullable=false) String password;
+	private @Column(unique = true, nullable=false) String displayName;
+	private @Column(unique = true, nullable=false) String email;
+	private long reliability = 0;
+	private int defaultTimeWindow = 1;
+	private int defaultZip = 90210;
+	private boolean isAdmin = false;
 
 	@ManyToMany(mappedBy = "subscribers")
 	private Set<Event> subscribedEvents = new HashSet<Event>();
@@ -35,16 +33,83 @@ public class Registrant extends Actor {
 	private Set<Category> preferences = new HashSet<Category>();
 
 	public Registrant() {
-        super(ActorType.REGISTERED_USER);
+		super(ActorType.REGISTERED_USER);
 	}
 
-	public Registrant(String username, String password) {
-        super(ActorType.REGISTERED_USER);
-		this.username = username;
+	public Registrant(String email, String password) {
+		super(ActorType.REGISTERED_USER);
+		this.email = email;
+		this.password = password;
+	}
+	
+	public Registrant(String email, String password, String displayName, long reliability,
+			int defaultTimeWindow, int defaultZip) {
+		this.password = password;
+		this.displayName = displayName;
+		this.email = email;
+		this.reliability = reliability;
+		this.defaultTimeWindow = defaultTimeWindow;
+		this.defaultZip = defaultZip;
+		this.isAdmin = false;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	public Registrant(String review, int rating, Timestamp datetime) {
-        super(ActorType.REGISTERED_USER);
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public long getReliability() {
+		return reliability;
+	}
+
+	public void setReliability(long reliability) {
+		this.reliability = reliability;
+	}
+
+	public int getDefaultTimeWindow() {
+		return defaultTimeWindow;
+	}
+
+	public void setDefaultTimeWindow(int defaultTimeWindow) {
+		this.defaultTimeWindow = defaultTimeWindow;
+	}
+
+	public int getDefaultZip() {
+		return defaultZip;
+	}
+
+	public void setDefaultZip(int defaultZip) {
+		this.defaultZip = defaultZip;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public boolean joinEvent(Event event) {
+		return joinedEvents.add(event);
 	}
 }
