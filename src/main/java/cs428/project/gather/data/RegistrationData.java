@@ -39,9 +39,9 @@ public class RegistrationData {
 		return email;
 	}
 
-	public void setEmailAddress(String emailAddress)
+	public void setEmail(String email)
 	{
-		this.email = StringUtils.trimToNull(emailAddress);
+		this.email = StringUtils.trimToNull(email);
 	}
 
 	@Override
