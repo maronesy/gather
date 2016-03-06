@@ -10,6 +10,7 @@ public final class ActorStateUtility
 {
 	private static final String ACTOR_KEY_NAME = "actor";
 	private static final String AUTHENTICATED_KEY_NAME = "authenticated";
+	private static boolean signedIn = false;
 
 	private ActorStateUtility()
 	{
@@ -55,6 +56,7 @@ public final class ActorStateUtility
 			session = request.getSession();
 
 			session.setAttribute(ACTOR_KEY_NAME, actor);
+			signedIn = true;
 		}
 	}
 
