@@ -1,3 +1,11 @@
+var signedIn = false;
+//<?php
+//	if ($_SESSION['logged_in'] == 1) {
+//	    echo '<script type="text/javascript">var logged_in=true;</script>';
+//	} else {
+//	    echo '<script type="text/javascript">var logged_in=false;</script>';
+//	};
+//?>
 function tableInteractions() {
 	$('.star').on('click', function() {
 		$(this).toggleClass('star-checked');
@@ -32,18 +40,22 @@ function enterZip() {
 		if (zipcode == "") {
 			$(zipCodeErrorBox).fadeIn(100);
 			$('#zipCodeErrorBox').html('Zip code field is empty');
+			return false;
 		} else if (zipcode.length != 5) {
 			$(zipCodeErrorBox).fadeIn(100);
 			$('#zipCodeErrorBox').html('Zip code must be five digits');
+			return false;
 		} else if (!($.isNumeric(zipcode))) {
 			$(zipCodeErrorBox).fadeIn(100);
 			$('#zipCodeErrorBox').html('Zip code must be five digits');
+			return false;
 		} else {
 			var returnValue = mapManager.determineCoordByZipCode(zipcode);
 			if (returnValue == -1) {
 				$(zipCodeErrorBox).fadeIn(100);
 				$('#zipCodeErrorBox').html('Zip code does not exist');
 			}
+			return true;
 		}
 	});
 }
@@ -89,6 +101,7 @@ function registerBox() {
 		$('#mask , .register-popup').fadeOut(300, function() {
 			$('#mask').remove();
 		});
+		resetRegisterFields()
 		return false;
 	});
 
@@ -126,24 +139,33 @@ function signIn() {
 			function() {
 				var email = $("#signInEmail").val();
 				var password = $("#signInPassword").val();
-
 				$.ajax({
-						accepts: "application/json",
-						type : "POST",
-						url : "sign-in",
-						contentType: "application/json; charset=UTF-8",
-						dataType: "json",
-						data : '{ \
-							"username" : "email", \
-							"password" : "password", \
-						}',
-						success : function(returnvalue) {
-							if (returnvalue == "success") {
-								alert("Sign In Successful")
-							}
+				 	accepts: "application/json",
+					type : "POST",
+					url : "api/sign-in",
+					contentType: "application/json; charset=UTF-8",
+					dataType: "json",
+					data : '{ \
+						"email" : "' + email + '", \
+						"password" : "' + password + '" \
+					}',
+					success : function(returnvalue) {
+						if (returnvalue.status == 0) {
+							alert("Sign In Successful");
+							resetSignInFields()
+							signedIn = true
+							headerSelect()
+						} else {
+							//alert(returnvalue.status)
+							//alert(returnvalue.message)
+							alert("Sign In Unsuccessful")
+							resetSignInFields()
 						}
-					});
+						//return returnvalue;
+					}
 				});
+			});
+
 }
 
 function signUp() {
@@ -154,29 +176,25 @@ function signUp() {
 				var password = $("#inputPassword1").val();
 				var confirmPassword = $("#inputPassword2").val();
 				var displayName = $("#inputDisplayName").val();
+				var registerBox = $('#registerFormSubmit').attr('href');
 				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
 					$('#formFeedback').html('All the fields are required');
 				} else if (validate_email(email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
-				} else if (password.length < 7) {
+				} else if (validatePass(password) == false) {
 					$('#formFeedback').html(
-							'Password must be more than 6 characters');
-				} else if (password.length > 21) {
-					$('#formFeedback').html(
-							'Password must be less than 20 characters');
+							'Password must be between 6 and 21 characters');
 				} else if (password != confirmPassword) {
 					$('#formFeedback').html('Passwords do not match');
-				} else if (displayName.length < 5) {
-					$('#formFeedback').html('Display name must be more than 5 characters');
-				} else if (displayName.length > 15) {
-					$('#formFeedback').html('Display name must be less than 5 characters');
+				} else if (validateDisplayName(displayName) == false) {
+					$('#formFeedback').html('Display name must be between than 5 and 15 characters');
 				} else {
 				 $('#loading').show();
 				 $.ajax({
 					 	accepts: "application/json",
 						type : "POST",
-						url : "register",
+						url : "api/register",
 						contentType: "application/json; charset=UTF-8",
 						dataType: "json",
 						data : '{ \
@@ -185,10 +203,15 @@ function signUp() {
 							"displayName" : ' + displayName + ' \
 						}',
 						success : function(returnvalue) {
-							if (returnvalue == 0) {
+							if (returnvalue.status == 0) {
+								$(registerBox).fadeOut(100);
+								$('#mask , .register-popup').fadeOut(300, function() {
+									$('#mask').remove();
+								});
+								resetRegisterFields()
 								alert('Registration success.')
 							} else {
-								if (returnvalue == -1) {
+								if (returnvalue.status == -1) {
 									$('#form_feedback').html('This email is in use.');
 								}
 							}
@@ -208,4 +231,43 @@ function validate_email(email) {
 	} else {
 		return true;
 	}
+}
+
+function validatePass(password){
+	if (password.length < 7 || password.length > 21) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function validateDisplayName(displayName){
+	if (displayName.length < 5 || displayName.length > 15) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+
+function headerSelect() {
+	if (signedIn == true) {
+		$("#headerOut").hide();
+		$("#headerIn").show();
+	} else {
+		$("#headerIn").hide();
+		$("#headerOut").show();
+	}
+}
+
+function resetSignInFields() {
+	document.getElementById("signingin").reset();
+	//$("#signingin").reset();
+	return;
+}
+
+function resetRegisterFields() {
+	document.getElementById("registration").reset();
+	//$("#registration").reset();
+	return;
 }
