@@ -103,4 +103,12 @@ public class RegistrantRepositoryIntegrationTest {
 		assertTrue(foundUser.getEmail().equals("foobar@email.com"));
 	}
 	
+	@Test
+	public void testFindOne(){
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant result = this.registrantRepo.save(aUser);		
+		Registrant found = this.registrantRepo.findOne(result.getActorID());
+		assertEquals(found.getDisplayName(), "testDisplayName");	
+	}
+	
 }
