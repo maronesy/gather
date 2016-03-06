@@ -325,3 +325,32 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
 }
+
+function determineCoordByZipCode1(zipCode) {
+	
+	console.log("The user denied the request for geolocation.");
+	var httpRequest = new XMLHttpRequest();
+    httpRequest.open("GET", 'zipcode.csv', false);
+    httpRequest.send(null);
+    //alert( httpRequest.responseText );
+    CSVContents = httpRequest.responseText;
+    var zipList = $.csv.toObjects(CSVContents);
+    
+    console.log(zipList);
+    
+    var uCoordinates = null
+    
+    for (i in zipList) {
+    	if(zipList[i].zip == zipCode){
+			uCoordinates = {
+			latitude: zipList[i].latitude,
+			longitude: zipList[i].longitude
+			}
+    	}
+    }
+    if (uCoordinates == null) {
+    	return -1;
+    } else {
+    	return 0;
+    }
+}

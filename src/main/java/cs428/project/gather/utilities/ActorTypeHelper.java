@@ -92,7 +92,7 @@ public final class ActorTypeHelper
 		return isRegisteredUser;
 	}
 
-	public static boolean isVendor(HttpServletRequest request)
+	public static boolean isAdmin(HttpServletRequest request)
 	{
 		if(request == null)
 		{
@@ -101,12 +101,12 @@ public final class ActorTypeHelper
 
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 
-		boolean isVendor = isVendor(actor);
+		boolean isVendor = isAdmin(actor);
 
 		return isVendor;
 	}
 
-	public static boolean isVendor(Actor actor)
+	public static boolean isAdmin(Actor actor)
 	{
 		if(actor == null)
 		{
@@ -115,19 +115,19 @@ public final class ActorTypeHelper
 
 		ActorType actorType = actor.getActorType();
 
-		boolean isVendor = isVendor(actorType);
+		boolean isVendor = isAdmin(actorType);
 
 		return isVendor;
 	}
 
-	public static boolean isVendor(ActorType actorType)
+	public static boolean isAdmin(ActorType actorType)
 	{
 		if(actorType == null)
 		{
 			throw new IllegalArgumentException("The actor type cannot be null.");
 		}
 
-		boolean isVendor = ActorType.VENDOR.equals(actorType);
+		boolean isVendor = ActorType.ADMIN.equals(actorType);
 
 		return isVendor;
 	}

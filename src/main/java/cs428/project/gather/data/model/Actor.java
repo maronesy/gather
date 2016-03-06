@@ -1,11 +1,20 @@
 package cs428.project.gather.data.model;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import org.apache.commons.lang3.builder.*;
 
+@Entity
 public class Actor {
+	protected @Id @Column(name = "ID") @GeneratedValue long actorID;
+	
+	@Enumerated(EnumType.STRING)
 	protected final ActorType actorType;
-	protected String actorID;
 
 	public Actor(ActorType actorType) {
 		this.actorType = actorType;
@@ -19,12 +28,8 @@ public class Actor {
 		return actorType;
 	}
 
-	public String getActorID() {
+	public long getActorID() {
 		return actorID;
-	}
-
-	public void setActorID(String actorID) {
-		this.actorID = StringUtils.trimToNull(actorID);
 	}
 
 	@Override

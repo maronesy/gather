@@ -1,6 +1,5 @@
 package cs428.project.gather.data.model;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -11,14 +10,12 @@ import javax.persistence.ManyToMany;
 
 @Entity
 public class Registrant extends Actor {
-	private @Id @Column(name = "ID") @GeneratedValue Long id;
 	private @Column(nullable=false) String password;
 	private @Column(unique = true, nullable=false) String displayName;
 	private @Column(unique = true, nullable=false) String email;
 	private long reliability = 0;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = 90210;
-	private boolean isAdmin = false;
 
 	@ManyToMany(mappedBy = "subscribers")
 	private Set<Event> subscribedEvents = new HashSet<Event>();
@@ -44,13 +41,13 @@ public class Registrant extends Actor {
 	
 	public Registrant(String email, String password, String displayName, long reliability,
 			int defaultTimeWindow, int defaultZip) {
+		super(ActorType.REGISTERED_USER);
 		this.password = password;
 		this.displayName = displayName;
 		this.email = email;
 		this.reliability = reliability;
 		this.defaultTimeWindow = defaultTimeWindow;
 		this.defaultZip = defaultZip;
-		this.isAdmin = false;
 	}
 	
 	public String getEmail() {
@@ -99,14 +96,6 @@ public class Registrant extends Actor {
 
 	public void setDefaultZip(int defaultZip) {
 		this.defaultZip = defaultZip;
-	}
-
-	public boolean isAdmin() {
-		return isAdmin;
-	}
-
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
 	}
 
 	public boolean joinEvent(Event event) {
