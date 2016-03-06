@@ -156,12 +156,11 @@ function signIn() {
 							signedIn = true
 							headerSelect()
 						} else {
-							//alert(returnvalue.status)
-							//alert(returnvalue.message)
+							alert(returnvalue.status)
+							alert(returnvalue.message)
 							alert("Sign In Unsuccessful")
 							resetSignInFields()
 						}
-						//return returnvalue;
 					}
 				});
 			});
@@ -208,11 +207,16 @@ function signUp() {
 								$('#mask , .register-popup').fadeOut(300, function() {
 									$('#mask').remove();
 								});
-								resetRegisterFields()
-								alert('Registration success.')
+								resetRegisterFields();
+								signedIn = true
+								headerSelect();
+								alert('Registration success.');
 							} else {
-								if (returnvalue.status == -1) {
+								if (returnvalue.status != 0) {
+									alert(returnvalue.status)
+									alert(returnvalue.message)
 									$('#form_feedback').html('This email is in use.');
+									
 								}
 							}
 						}
