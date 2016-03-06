@@ -7,7 +7,7 @@ public enum ActorType
 {
 	ANONYMOUS_USER("anonymousUser"),
 	REGISTERED_USER("registeredUser"),
-	VENDOR("vendor");
+	ADMIN("admin");
 
 	private final String value;
 

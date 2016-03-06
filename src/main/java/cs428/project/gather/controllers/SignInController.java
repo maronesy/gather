@@ -48,6 +48,7 @@ public class SignInController {
 	public String signIn(HttpServletRequest request) {
 		String viewName = null;
 
+		//TODO: None of this means anything for our project. We don't have these views.
 		if (ActorTypeHelper.isAnonymousUser(request)) {
 			viewName = "sign-in";
 		} else {
