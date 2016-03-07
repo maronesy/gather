@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -63,6 +65,52 @@ public class RESTResponseData {
 		Date now = new Date();
 		this.timestamp = now.getTime();
 		this.message = message;
+	}
+	
+	public static ResponseEntity<RESTResponseData> responseBuilder(BindingResult error){
+		String message="";
+		int errorCode=-1;
+		for (Object object : error.getAllErrors()) {
+		    if(object instanceof FieldError) {
+		        FieldError fieldError = (FieldError) object;
+		        message+=fieldError.getDefaultMessage()+" ";
+		        errorCode=Integer.parseInt(fieldError.getCode());
+		    }
+
+		    if(object instanceof ObjectError) {
+		        ObjectError objectError = (ObjectError) object;
+		        message+=objectError.getDefaultMessage()+" ";
+		        errorCode=Integer.parseInt(objectError.getCode());
+		    }
+		    break;
+		}
+
+		HttpStatus httpStatus=convertErrorCodeToHttpStatus(errorCode);
+		return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
+	}
+
+	private static HttpStatus convertErrorCodeToHttpStatus(int errorCode) {
+		HttpStatus result = HttpStatus.BAD_REQUEST;
+		switch(errorCode){
+		case 0:
+			result = HttpStatus.OK;
+		case -1:
+			result = HttpStatus.UNPROCESSABLE_ENTITY;
+		case -2:
+			result = HttpStatus.LENGTH_REQUIRED;
+		case -3:
+			result = HttpStatus.BAD_REQUEST;
+		case -4:
+			result = HttpStatus.CONFLICT;
+		case -5:
+			result = HttpStatus.NOT_FOUND;
+		case -6:
+			result = HttpStatus.UNAUTHORIZED;
+		case -7:
+			result = HttpStatus.BAD_REQUEST;
+			
+		}
+		return result;
 	}
 
 	public int getSTATUS() {
