@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.utilities.SignOutHelper;
 
 
@@ -16,13 +17,13 @@ import cs428.project.gather.utilities.SignOutHelper;
 public class SignOutController
 {
 	@RequestMapping(value="/api/sign-out")
-	public ResponseEntity<String> signOut(HttpServletRequest request, HttpServletResponse response)
+	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response)
 	{
 		if(SignOutHelper.invalidateSession(request)
 				&& SignOutHelper.deleteSessionCookie(request, response)){
-			return new ResponseEntity<String>(HttpStatus.OK); 
+			return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK); 
 		};
 
-		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<RESTResponseData>(new RESTResponseData(-1,"failed"),HttpStatus.BAD_REQUEST);
 	}
 }
