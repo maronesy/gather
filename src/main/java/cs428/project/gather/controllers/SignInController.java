@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.BindingResult;
@@ -57,18 +59,16 @@ public class SignInController {
 
 	@RequestMapping(value = "/api/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public RESTResponseData signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
 
 		Gson gson = new Gson();
 		SignInData signInData = gson.fromJson(rawData, SignInData.class);
-		//String data = "{\"status\":-1,\"message\":\"failed\",\"timestamp\":1457324866389}";
-		//RESTResponseData test = gson.fromJson(data, RESTResponseData.class);
 		if (ActorTypeHelper.isAnonymousUser(request)) {
 			signInDataValidator.validate(signInData, bindingResult);
 
 			if (bindingResult.hasErrors()) {
-				return new RESTResponseData(bindingResult);
+				return RESTResponseData.responseBuilder(bindingResult);
 			} else {
 
 				if (authenticate(signInData)) {
@@ -79,17 +79,18 @@ public class SignInController {
 					Registrant registrant = this.registrantRepo.findOneByEmail(email);
 					ActorStateUtility.storeActorInSession(request, registrant);
 					
-					return new RESTResponseData(0,"success");
+					return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.ACCEPTED);
 				} else {
 					String message = "invalid field-" + SignInData.PASSWORD_FIELD_NAME;
 					bindingResult.reject("-6",
 							message+"The password is invalid.  Please enter a valid password.");
-					return new RESTResponseData(bindingResult);
+					return RESTResponseData.responseBuilder(bindingResult);
 					
 				}
 			}
 		} else {
-			return new RESTResponseData(-1,"Incorrect User State. Only Anonymous User can sign in");
+			bindingResult.reject("-7","Incorrect User State. Only Anonymous User can sign in");
+			return RESTResponseData.responseBuilder(bindingResult);
 		}
 
 		

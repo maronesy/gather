@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.RESTResponseData;
