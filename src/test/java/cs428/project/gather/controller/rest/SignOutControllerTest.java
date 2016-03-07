@@ -26,6 +26,8 @@ import cs428.project.gather.data.repo.RegistrantRepository;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
@@ -55,7 +57,7 @@ public class SignOutControllerTest {
 	//TODO Mock a session for logged in user to test the case of success
 	
 	@Test
-	public void testSignOutUserFail() throws JsonProcessingException {
+	public void testSignOutUserFail() throws IOException {
 		ResponseEntity<String> response = signOutUser();
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
@@ -63,9 +65,10 @@ public class SignOutControllerTest {
 		// Default String parse doesn't work
 		// Gson also doesn't work
 		String rawData = response.getBody();
-		Gson gson = new Gson();
-		RESTResponseData responseData = gson.fromJson(rawData, RESTResponseData.class);
-		assertTrue(responseData.getMessage().equals("fail"));
+		RESTResponseData responseData = OBJECT_MAPPER.readValue(rawData, RESTResponseData.class);
+//		Gson gson = new Gson();
+//		RESTResponseData responseData = gson.fromJson(rawData, RESTResponseData.class);
+		assertTrue(responseData.getMessage().equals("failed"));
 
 		//TODO Need to further confirm the session is updated correctly
 	}

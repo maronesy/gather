@@ -15,6 +15,9 @@ public class RESTResponseData {
 	private String message = "";
 	private Date timestamp;
 	
+	public RESTResponseData(){
+	}
+	
 	public RESTResponseData(int status){
 		this.status = status;
 		this.timestamp = new Date();
@@ -24,6 +27,12 @@ public class RESTResponseData {
 		this.status = status;
 		this.timestamp = new Date();
 		this.message = message;
+	}
+	
+	public RESTResponseData(int status, String message, Date timestamp){
+		this.status = status;
+		this.message = message;
+		this.timestamp = timestamp;
 	}
 	
 	public RESTResponseData(BindingResult error){
