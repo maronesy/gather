@@ -3,6 +3,8 @@ package cs428.project.gather.controllers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +47,7 @@ public class RegisterController {
 
 	@RequestMapping(value = "/api/register", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public RESTResponseData signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
 
 		Gson gson = new Gson();
@@ -55,7 +57,7 @@ public class RegisterController {
 			registrationDataValidator.validate(registrationData,bindingResult); 
 
 			if (bindingResult.hasErrors()) {
-				return new RESTResponseData(bindingResult);
+				return RESTResponseData.responseBuilder(bindingResult);
 			} else {
 				
 				Registrant newRegistrant = buildRegistrant(registrationData);
@@ -65,10 +67,11 @@ public class RegisterController {
 				ActorStateUtility.storeActorInSession(request, savedRegistrantResult);
 
 				
-				return new RESTResponseData(0, "success");
+				return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.CREATED);
 			}
 		} else {
-			return new RESTResponseData(-1,"Incorrect User State. Only Anonymous User can register");
+			bindingResult.reject("-7","Incorrect User State. Only Anonymous User can register");
+			return RESTResponseData.responseBuilder(bindingResult);
 		}
 		
 	}

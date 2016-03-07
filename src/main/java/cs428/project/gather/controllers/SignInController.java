@@ -79,7 +79,7 @@ public class SignInController {
 					Registrant registrant = this.registrantRepo.findOneByEmail(email);
 					ActorStateUtility.storeActorInSession(request, registrant);
 					
-					return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK);
+					return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.ACCEPTED);
 				} else {
 					String message = "invalid field-" + SignInData.PASSWORD_FIELD_NAME;
 					bindingResult.reject("-6",
