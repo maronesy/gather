@@ -16,16 +16,18 @@ public final class SignOutHelper
 	{
 	}
 
-	public static void invalidateSession(HttpServletRequest request)
+	public static boolean invalidateSession(HttpServletRequest request)
 	{
 		HttpSession session = request.getSession(false);
 		if(session != null)
 		{
 			session.invalidate();
+			return true;
 		}
+		return false;
 	}
 
-	public static void deleteSessionCookie(HttpServletRequest request, HttpServletResponse response)
+	public static boolean deleteSessionCookie(HttpServletRequest request, HttpServletResponse response)
 	{
 		ServletContext servletContext = request.getServletContext();
 		SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
@@ -49,6 +51,8 @@ public final class SignOutHelper
 			sessionCookie.setMaxAge(0);
 
 			response.addCookie(sessionCookie);
+			return true;
 		}
+		return false;
 	}
 }

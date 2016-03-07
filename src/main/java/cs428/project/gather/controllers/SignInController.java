@@ -1,8 +1,5 @@
 package cs428.project.gather.controllers;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +62,8 @@ public class SignInController {
 
 		Gson gson = new Gson();
 		SignInData signInData = gson.fromJson(rawData, SignInData.class);
-
+		//String data = "{\"status\":-1,\"message\":\"failed\",\"timestamp\":1457324866389}";
+		//RESTResponseData test = gson.fromJson(data, RESTResponseData.class);
 		if (ActorTypeHelper.isAnonymousUser(request)) {
 			signInDataValidator.validate(signInData, bindingResult);
 

@@ -13,17 +13,28 @@ public class RESTResponseData {
 
 	private int status = -1;
 	private String message = "";
-	private Date timestamp;
+	private long timestamp;
+	
+	public RESTResponseData(){
+	}
 	
 	public RESTResponseData(int status){
 		this.status = status;
-		this.timestamp = new Date();
+		Date now = new Date();
+		this.timestamp = now.getTime();
 	}
 	
 	public RESTResponseData(int status, String message){
 		this.status = status;
-		this.timestamp = new Date();
+		Date now = new Date();
+		this.timestamp = now.getTime();
 		this.message = message;
+	}
+	
+	public RESTResponseData(int status, String message, long timestamp){
+		this.status = status;
+		this.message = message;
+		this.timestamp = timestamp;
 	}
 	
 	public RESTResponseData(BindingResult error){
@@ -49,7 +60,8 @@ public class RESTResponseData {
 		}else{
 			this.status = errorCode;
 		}
-		this.timestamp = new Date();
+		Date now = new Date();
+		this.timestamp = now.getTime();
 		this.message = message;
 	}
 
@@ -101,11 +113,11 @@ public class RESTResponseData {
 		this.message = message;
 	}
 
-	public Date getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 
