@@ -58,26 +58,20 @@ public class SignOutControllerTest {
 	
 	@Test
 	public void testSignOutUserFail() throws IOException {
-		ResponseEntity<String> response = signOutUser();
+		ResponseEntity<RESTResponseData> response = signOutUser();
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
-		//TODO Somehow the JSON string is not able to get parsed properly
-		// Default String parse doesn't work
-		// Gson also doesn't work
-		String rawData = response.getBody();
-		RESTResponseData responseData = OBJECT_MAPPER.readValue(rawData, RESTResponseData.class);
-//		Gson gson = new Gson();
-//		RESTResponseData responseData = gson.fromJson(rawData, RESTResponseData.class);
+		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("failed"));
 
 		//TODO Need to further confirm the session is updated correctly
 	}
 	
-	private ResponseEntity<String> signOutUser() throws JsonProcessingException {
+	private ResponseEntity<RESTResponseData> signOutUser() throws JsonProcessingException {
 		
 		// Invoking the API
 		
-		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8888/api/sign-out", HttpMethod.GET, null, String.class);
+		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/api/sign-out", HttpMethod.GET, null, RESTResponseData.class);
 
 		assertNotNull(response);
 		
