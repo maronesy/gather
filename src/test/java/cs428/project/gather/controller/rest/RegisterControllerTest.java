@@ -103,20 +103,6 @@ public class RegisterControllerTest {
 		// Fetching the Registrant details directly from the DB to verify nothing added
 		assertEquals(1,this.registrantRepo.count());
 	}
-
-	@Test
-	public void testRegisterDuplicatedUserDisplayNameAndEmail() throws JsonProcessingException {
-
-		Map<String, Object> apiResponse = attemptAddUser("existed@email.com", "QWER1234", "existedName");
-		String message = apiResponse.get("message").toString();
-		assertEquals("Field invalid-displayName:The display name already exists.  Please enter another display name. Field invalid-email:The email address already exists.  Please enter another email address. ",
-				message);
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals((Integer)(-100), status); //multiple error messages
-
-		// Fetching the Registrant details directly from the DB to verify nothing added
-		assertEquals(1,this.registrantRepo.count());
-	}
 	
 	@Test
 	public void testRegisterDisplayNameTooLong() throws JsonProcessingException {

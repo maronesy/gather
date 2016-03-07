@@ -39,33 +39,33 @@ public class RESTResponseData {
 		this.timestamp = timestamp;
 	}
 	
-	public RESTResponseData(BindingResult error){
-		String message="";
-		int errorCode=-1;
-		int count=0;
-		for (Object object : error.getAllErrors()) {
-		    if(object instanceof FieldError) {
-		        FieldError fieldError = (FieldError) object;
-		        message+=fieldError.getDefaultMessage()+" ";
-		        errorCode=Integer.parseInt(fieldError.getCode());
-		    }
-
-		    if(object instanceof ObjectError) {
-		        ObjectError objectError = (ObjectError) object;
-		        message+=objectError.getDefaultMessage()+" ";
-		        errorCode=Integer.parseInt(objectError.getCode());
-		    }
-		    count++;
-		}
-		if(count>1){
-			this.status=-100;
-		}else{
-			this.status = errorCode;
-		}
-		Date now = new Date();
-		this.timestamp = now.getTime();
-		this.message = message;
-	}
+//	public RESTResponseData(BindingResult error){
+//		String message="";
+//		int errorCode=-1;
+//		int count=0;
+//		for (Object object : error.getAllErrors()) {
+//		    if(object instanceof FieldError) {
+//		        FieldError fieldError = (FieldError) object;
+//		        message+=fieldError.getDefaultMessage()+" ";
+//		        errorCode=Integer.parseInt(fieldError.getCode());
+//		    }
+//
+//		    if(object instanceof ObjectError) {
+//		        ObjectError objectError = (ObjectError) object;
+//		        message+=objectError.getDefaultMessage()+" ";
+//		        errorCode=Integer.parseInt(objectError.getCode());
+//		    }
+//		    count++;
+//		}
+//		if(count>1){
+//			this.status=-100;
+//		}else{
+//			this.status = errorCode;
+//		}
+//		Date now = new Date();
+//		this.timestamp = now.getTime();
+//		this.message = message;
+//	}
 	
 	public static ResponseEntity<RESTResponseData> responseBuilder(BindingResult error){
 		String message="";
