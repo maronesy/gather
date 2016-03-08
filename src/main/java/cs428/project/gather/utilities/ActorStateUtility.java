@@ -115,4 +115,10 @@ public final class ActorStateUtility
 			}
 		}
 	}
+	
+	public static boolean retrieveAuthenticatedStateInRequest(HttpServletRequest request)
+	{
+		return (boolean)request.getAttribute(AUTHENTICATED_KEY_NAME);
+	}
+	
 }

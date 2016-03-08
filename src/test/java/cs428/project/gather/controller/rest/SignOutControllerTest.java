@@ -61,7 +61,7 @@ public class SignOutControllerTest {
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
 		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("failed"));
+		assertTrue(responseData.getMessage().equals("User is not in authenticated state"));
 
 		//TODO Need to further confirm the session is updated correctly
 	}
