@@ -167,6 +167,34 @@ function signIn() {
 
 }
 
+function signOut() {
+	$('#signOutButton').on(
+			'click',
+			function() {
+				 $.ajax({
+					 	accepts: "application/json",
+						type : "GET",
+						url : "api/sign-out",
+						contentType: "application/json; charset=UTF-8",
+						success : function(returnvalue) {
+							if (returnvalue.status == 0) {
+								alert(returnvalue.status)
+								alert(returnvalue.message)
+							} else {
+								if (returnvalue.status != 0) {
+									alert(returnvalue.status)
+									alert(returnvalue.message)
+									signIn = false;
+									
+								}
+							}
+						}
+					});
+			});
+
+}
+
+
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
@@ -224,6 +252,27 @@ function signUp() {
 					$('#loading').hide();
 				}
 			});
+}
+
+function sessionCheck(){
+	 $.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "api/session",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				if (returnvalue.status == 5) {
+					signIn = true;
+				} else {
+					if (returnvalue.status != 5) {
+						alert(returnvalue.status)
+						alert(returnvalue.message)
+						signIn = false;
+						
+					}
+				}
+			}
+		});
 }
 
 function validate_email(email) {
