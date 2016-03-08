@@ -1,4 +1,4 @@
-var signedIn = false;
+var signedIn;
 //<?php
 //	if ($_SESSION['logged_in'] == 1) {
 //	    echo '<script type="text/javascript">var logged_in=true;</script>';
@@ -180,12 +180,12 @@ function signOut() {
 							if (returnvalue.status == 0) {
 								alert(returnvalue.status)
 								alert(returnvalue.message)
+								signedIn = false;
+								headerSelect()
 							} else {
 								if (returnvalue.status != 0) {
 									alert(returnvalue.status)
 									alert(returnvalue.message)
-									signIn = false;
-									
 								}
 							}
 						}
@@ -254,25 +254,43 @@ function signUp() {
 			});
 }
 
-function sessionCheck(){
-	 $.ajax({
-		 	accepts: "application/json",
-			type : "GET",
-			url : "api/session",
-			contentType: "application/json; charset=UTF-8",
-			success : function(returnvalue) {
-				if (returnvalue.status == 5) {
-					signIn = true;
-				} else {
-					if (returnvalue.status != 5) {
-						alert(returnvalue.status)
-						alert(returnvalue.message)
-						signIn = false;
-						
-					}
-				}
+function sessionCheck() {
+	$.ajax({
+	 	accepts: "application/json",
+		type : "GET",
+		url : "api/session",
+		contentType: "application/json; charset=UTF-8",
+		success : function(returnvalue) {
+			if (returnvalue.status == 5) {
+				signedIn = true;
+				headerSelect();
+				alert(returnvalue.status);
+				alert(returnvalue.message)
+			} 
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+		    alert(jqXHR.status);
+		    alert(textStatus);
+		    alert(errorThrown);
+			if (errorThrown == "Found") {
+				signedIn = true;
+				headerSelect();
+				alert(returnvalue.status);
+				alert(returnvalue.message)
+			} else {
+				signedIn = false;
+				headerSelect();
 			}
-		});
+
+		}
+	});
+}
+
+function onLoadSessionCheck() {
+	alert(signedIn);
+	$(window).unload(function() {
+		headerSelect();
+	}); 
 }
 
 function validate_email(email) {
@@ -307,7 +325,7 @@ function headerSelect() {
 	if (signedIn == true) {
 		$("#headerOut").hide();
 		$("#headerIn").show();
-	} else {
+	} else if (signedIn == false){
 		$("#headerIn").hide();
 		$("#headerOut").show();
 	}
