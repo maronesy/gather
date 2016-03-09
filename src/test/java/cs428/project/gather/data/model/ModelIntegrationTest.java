@@ -1,12 +1,9 @@
 package cs428.project.gather.data.model;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;

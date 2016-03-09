@@ -1,6 +1,7 @@
 package cs428.project.gather.controller.rest;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +34,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -68,7 +68,7 @@ public class SignOutControllerTest {
 		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie",cookies.stream().collect(Collectors.joining(";")));
+		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
 		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
 		
 		// Invoking the API
