@@ -1,11 +1,5 @@
 var signedIn = false;
-//<?php
-//	if ($_SESSION['logged_in'] == 1) {
-//	    echo '<script type="text/javascript">var logged_in=true;</script>';
-//	} else {
-//	    echo '<script type="text/javascript">var logged_in=false;</script>';
-//	};
-//?>
+
 function tableInteractions() {
 	$('.star').on('click', function() {
 		$(this).toggleClass('star-checked');
@@ -151,14 +145,14 @@ function signIn() {
 					}',
 					success : function(returnvalue) {
 						if (returnvalue.status == 0) {
-							alert("Sign In Successful");
+//							alert("Sign In Successful");
 							resetSignInFields()
 							signedIn = true
 							headerSelect()
 						} else {
-							alert(returnvalue.status)
-							alert(returnvalue.message)
-							alert("Sign In Unsuccessful")
+//							alert(returnvalue.status)
+//							alert(returnvalue.message)
+//							alert("Sign In Unsuccessful")
 							resetSignInFields()
 						}
 					}
@@ -166,6 +160,34 @@ function signIn() {
 			});
 
 }
+
+function signOut() {
+	$('#signOutButton').on(
+			'click',
+			function() {
+				 $.ajax({
+					 	accepts: "application/json",
+						type : "GET",
+						url : "api/sign-out",
+						contentType: "application/json; charset=UTF-8",
+						success : function(returnvalue) {
+							if (returnvalue.status == 0) {
+//								alert(returnvalue.status)
+//								alert(returnvalue.message)
+								signedIn = false;
+								headerSelect()
+							} else {
+								if (returnvalue.status != 0) {
+//									alert(returnvalue.status)
+//									alert(returnvalue.message)
+								}
+							}
+						}
+					});
+			});
+
+}
+
 
 function signUp() {
 	$('#registerFormSubmit').on(
@@ -210,11 +232,11 @@ function signUp() {
 								resetRegisterFields();
 								signedIn = true
 								headerSelect();
-								alert('Registration success.');
+//								alert('Registration success.');
 							} else {
 								if (returnvalue.status != 0) {
-									alert(returnvalue.status)
-									alert(returnvalue.message)
+//									alert(returnvalue.status)
+//									alert(returnvalue.message)
 									$('#form_feedback').html('This email is in use.');
 									
 								}
@@ -224,6 +246,43 @@ function signUp() {
 					$('#loading').hide();
 				}
 			});
+}
+
+function sessionCheck() {
+	$.ajax({
+	 	accepts: "application/json",
+		type : "GET",
+		url : "api/session",
+		contentType: "application/json; charset=UTF-8",
+		success : function(returnvalue) {
+			if (returnvalue.status == 5) {
+				signedIn = true;
+				headerSelect();
+//				alert(returnvalue.status);
+//				alert(returnvalue.message)
+			} 
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+//		    alert(jqXHR.status);
+//		    alert(textStatus);
+//		    alert(errorThrown);
+			if (errorThrown == "Found") {
+				signedIn = true;
+				headerSelect();
+			} else {
+				signedIn = false;
+				headerSelect();
+			}
+
+		}
+	});
+}
+
+function onLoadSessionCheck() {
+	//alert(signedIn);
+	$(window).unload(function() {
+		headerSelect();
+	}); 
 }
 
 function validate_email(email) {
@@ -258,7 +317,7 @@ function headerSelect() {
 	if (signedIn == true) {
 		$("#headerOut").hide();
 		$("#headerIn").show();
-	} else {
+	} else if (signedIn == false){
 		$("#headerIn").hide();
 		$("#headerOut").show();
 	}
@@ -275,3 +334,4 @@ function resetRegisterFields() {
 	//$("#registration").reset();
 	return;
 }
+
