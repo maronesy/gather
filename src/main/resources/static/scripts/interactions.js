@@ -233,6 +233,8 @@ function signUp() {
 								});
 								resetRegisterFields();
 								signedIn = true
+								gather.global.currentDisplayName = displayName;
+								updateGreeting();
 								headerSelect();
 //								alert('Registration success.');
 							} else {
