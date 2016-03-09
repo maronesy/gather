@@ -62,8 +62,12 @@ $(document).ready(function() {
 	registerBox();
 	signUp();
 	signIn();
+	signOut();
 	removeZipCodeError();
+	sessionCheck();
+	onLoadSessionCheck();
 	headerSelect();
+	document.getElementById("greetings").innerHTML = "Welcome Gather";
 });
 </script>
 <script src="scripts/interactions.js" type="text/javascript"></script>
