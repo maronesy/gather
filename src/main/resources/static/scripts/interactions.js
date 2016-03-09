@@ -148,6 +148,8 @@ function signIn() {
 //							alert("Sign In Successful");
 							resetSignInFields()
 							signedIn = true
+							gather.global.currentDisplayName = returnvalue.displayName;
+							updateGreeting();
 							headerSelect()
 						} else {
 //							alert(returnvalue.status)
@@ -268,6 +270,8 @@ function sessionCheck() {
 //		    alert(errorThrown);
 			if (errorThrown == "Found") {
 				signedIn = true;
+				gather.global.currentDisplayName = jqXHR.responseJSON.displayName;
+				updateGreeting();
 				headerSelect();
 			} else {
 				signedIn = false;
@@ -276,6 +280,10 @@ function sessionCheck() {
 
 		}
 	});
+}
+
+function updateGreeting(){
+	document.getElementById("greetings").innerHTML = "Welcome "+gather.global.currentDisplayName;
 }
 
 function onLoadSessionCheck() {

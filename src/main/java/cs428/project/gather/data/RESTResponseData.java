@@ -13,9 +13,9 @@ import org.springframework.validation.ObjectError;
 
 public class RESTResponseData {
 
-	private int status = -1;
-	private String message = "";
-	private long timestamp;
+	protected int status = -1;
+	protected String message = "";
+	protected long timestamp;
 	
 	public RESTResponseData(){
 	}
@@ -60,7 +60,7 @@ public class RESTResponseData {
 		HttpStatus httpStatus=convertErrorCodeToHttpStatus(errorCode);
 		return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
 	}
-
+	
 	private static HttpStatus convertErrorCodeToHttpStatus(int errorCode) {
 		HttpStatus result = HttpStatus.BAD_REQUEST;
 		switch(errorCode){

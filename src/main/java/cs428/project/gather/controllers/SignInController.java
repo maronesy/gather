@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import cs428.project.gather.data.RESTResponseData;
+import cs428.project.gather.data.RESTSignInResponseData;
 import cs428.project.gather.data.SignInData;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.RegistrantRepository;
@@ -79,7 +80,7 @@ public class SignInController {
 					Registrant registrant = this.registrantRepo.findOneByEmail(email);
 					ActorStateUtility.storeActorInSession(request, registrant);
 					
-					return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.ACCEPTED);
+					return new ResponseEntity<RESTResponseData>(new RESTSignInResponseData(0,"success",registrant.getDisplayName()),HttpStatus.ACCEPTED);
 				} else {
 					String message = "invalid field-" + SignInData.PASSWORD_FIELD_NAME;
 					bindingResult.reject("-6",

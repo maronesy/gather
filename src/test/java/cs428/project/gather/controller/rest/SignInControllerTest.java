@@ -57,8 +57,10 @@ public class SignInControllerTest {
 	public void testSignInUserSuccess() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "password");
 		String message = apiResponse.get("message").toString();
+		String displayName = apiResponse.get("displayName").toString();
 		Integer status = (Integer) (apiResponse.get("status"));
 		assertEquals("success", message);
+		assertEquals("existedName", displayName);
 		assertEquals((Integer)0, status); //success
 	}
 	
