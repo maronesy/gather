@@ -16,4 +16,11 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	Event findOne(Long id);
 	
 	List<Event> findByDescription(String description);
+	
+	//@Query("SELECT * FROM Event WHERE SQRT(
+//  POW(e.occurrences.location.latitude - ?1, 2) + 
+//  POW(e.occurrences.location.longitude - ?2, 2) 
+//  ) < ?3")
+	public List<Event> findEventsWithinKmRange(double latitude, double longitude, double radius_km);
+	
 }
