@@ -23,79 +23,80 @@ public class Event {
 	private @Id @Column(name="ID") @GeneratedValue Long id;
 
 	private String description;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
 	private Set<Occurrence> occurrences = new HashSet<Occurrence>();
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
 	private Set<Feedback> feedbacks = new HashSet<Feedback>();
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
 	private Set<ChangeLog> changeLog = new HashSet<ChangeLog>();
-	
+
 	@ManyToMany
 	private Set<Registrant> subscribers = new HashSet<Registrant>();
-	
+
 	@ManyToMany
 	private Set<Registrant> owners = new HashSet<Registrant>();
-	
+
 	@ManyToMany
 	private Set<Registrant> participants = new HashSet<Registrant>();
-	
+
 	@ManyToMany
 	private Set<Category> categories = new HashSet<Category>();
-	
-	protected Event() {}
+
+	public Event() {}
+
 	public Event(String description) {
 		Assert.hasText(description);
 		this.setDescription(description);
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void addOccurrence(Occurrence occurrence) {
 		Assert.notNull(occurrence);
 		this.occurrences.add(occurrence);
 	}
-	
+
 	public void addFeedback(Feedback feedback) {
 		Assert.notNull(feedback);
 		this.feedbacks.add(feedback);
 	}
-	
+
 	public void addChangeLog(ChangeLog changeLog){
 		Assert.notNull(changeLog);
 		this.changeLog.add(changeLog);
 	}
-	
+
 	public Set<Occurrence> getOccurrences() {
 		return Collections.unmodifiableSet(occurrences);
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	public Set<Feedback> getFeedbacks() {
 		return Collections.unmodifiableSet(feedbacks);
 	}
-	
+
 	public Set<ChangeLog> getChangeLog() {
 		return Collections.unmodifiableSet(changeLog);
 	}
-	
+
 	public Set<Registrant> getParticipants(){
 		return Collections.unmodifiableSet(participants);
 	}
-	
+
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
 	}

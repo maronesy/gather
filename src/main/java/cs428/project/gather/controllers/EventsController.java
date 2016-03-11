@@ -6,67 +6,41 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
 
-import cs428.project.gather.data.EventsData;
-import cs428.project.gather.data.EventsResponseData;
-import cs428.project.gather.data.RESTResponseData;
-import cs428.project.gather.data.RegistrationData;
-import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.Registrant;
-import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.RegistrantRepository;
-import cs428.project.gather.utilities.ActorStateUtility;
-import cs428.project.gather.utilities.ActorTypeHelper;
-import cs428.project.gather.utilities.RedirectPathHelper;
-import cs428.project.gather.validator.EventDataValidator;
-import cs428.project.gather.validator.RegistrationDataValidator;
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.utilities.*;
+import cs428.project.gather.validator.*;
 
 @Controller("eventController")
 public class EventsController {
+    @Autowired
+    EventRepository eventRepo;
 
-	@Autowired
-	EventRepository eventRepo;
+    @Autowired
+    private EventDataValidator eventsDataValidator;
 
-	@Autowired
-	private EventDataValidator eventsDataValidator;
-	
-	@RequestMapping(value = "/api/events", method = RequestMethod.GET)
-	public ResponseEntity<EventsResponseData> events(HttpServletRequest request, @RequestBody String rawData,
-			BindingResult bindingResult) {
+    @RequestMapping(value = "/api/events", method = RequestMethod.GET)
+    public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+        EventsData eventsData = (new Gson()).fromJson(rawData, EventsData.class);
 
-		Gson gson = new Gson();
-		EventsData eventsData = gson.fromJson(rawData, EventsData.class);
-		
-		
-		//List<Event> events = new ArrayList<Event>();
-		List<Event> events = eventRepo.findEventsWithinKmRange(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusKm());;
-		
-		int results_per_page = 20;
-		String maybe_page_num = request.getParameter("page");
+        List<Event> events = new ArrayList<Event>();
+        /*
+        // Generate dummy events
+        for (int i=0; i < 33; i++) {
+            events.add(  new Event("event #" + Integer.toString(i))  );
+        }
+        */
 
-		int page_num = (maybe_page_num == null) ? 1 : Integer.parseInt(maybe_page_num);
-		int total_num_results   = events.size();
-		int total_pages         = (total_num_results / results_per_page) + 1;
+        // List<Event> events = eventRepo.findEventsWithinKmRange(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusKm());;
 
-		String previous = (page_num <= 1) ? null : request.getRequestURL().toString() + "?page=" + (page_num-1);
-		String next = (page_num >= total_pages) ? null : request.getRequestURL().toString() + "?page=" + (page_num+1);
-
-		List<Event> results = events.subList((page_num-1)*results_per_page, page_num*results_per_page);
-		
-		
-		return new ResponseEntity<EventsResponseData>(new EventsResponseData(previous, next, results), HttpStatus.OK);
-
-	}
-
-
+        return new ResponseEntity<PaginatedResponseData<Event>>(PaginatedResponseData.create(request, events), HttpStatus.OK);
+    }
 }
