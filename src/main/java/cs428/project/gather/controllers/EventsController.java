@@ -41,6 +41,7 @@ public class EventsController {
 
         // List<Event> events = eventRepo.findEventsWithinKmRange(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusKm());;
 
-        return new ResponseEntity<PaginatedResponseData<Event>>(PaginatedResponseData.create(request, events), HttpStatus.OK);
+        // DEPRECATED return new ResponseEntity<PaginatedResponseData<Event>>(PaginatedResponseData.create(request, events), HttpStatus.OK);
+        return PaginatedResponseData.createResponse(request, events);
     }
 }
