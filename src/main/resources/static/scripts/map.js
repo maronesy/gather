@@ -14,8 +14,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var map = buildMap();
 
-	var foodLocationSearchRadiusInMiles = 2.0;
-	var foodLocationSearchRadiusInMeters = foodLocationSearchRadiusInMiles * 1609.34;
+	var eventSearchRadiusInMiles = 2.0;
+	var eventSearchRadiusInMeters = eventSearchRadiusInMiles * 1609.34;
 
 	var currentUserCoordinates = null;
 	var userMarker = null;
@@ -23,9 +23,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
 
-	var newFoodLocations = [];
+	var newEvents = [];
 
-	var establishedFoodLocations = [];
+	var establishedevents = [];
 
 	function buildMap() {
 		var mapOptions = {
@@ -165,7 +165,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				fillOpacity: 0.2
 			};
 
-			searchRadiusCircle = L.circle(markerPosition, foodLocationSearchRadiusInMeters, searchRadiusCircleOptions);
+			searchRadiusCircle = L.circle(markerPosition, eventSearchRadiusInMeters, searchRadiusCircleOptions);
 			searchRadiusCircle.addTo(map);
 		}
 		else {
@@ -277,7 +277,125 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$("#general-failure-modal").modal("show");
 	}
 	
+	$('#addEventBtn').on('click', function() {
+		addNewevent() 
+	});
+	
+	function addNewevent() {
+
+		if(currentUserCoordinates === null) {
+			displayGeolocationUnsupportedModal();
+		}
+		else {
+
+			var markerCoordinates = buildOffsetMarkerCoordinates(currentUserCoordinates);
+			var markerPosition = new L.LatLng(markerCoordinates.latitude, markerCoordinates.longitude);
+
+			var iconOptions = {
+				"marker-size": "large",
+				"marker-symbol": "restaurant",
+				"marker-color": "#419641"
+			};
+
+			var bounceOptions = {
+				duration: 500,
+				height: 100
+			};
+
+			var markerOptions = {
+				draggable: true,
+				icon: L.mapbox.marker.icon(iconOptions),
+				bounceOnAdd: true,
+				bounceOnAddOptions: bounceOptions
+			};
+
+			var popupOptions = {
+				minWidth: 400
+			};
+
+			var eventMarker = L.marker(markerPosition, markerOptions);
+
+			var neweventContent = getContentTemplateClone("#new-event-content-template");
+
+			var neweventDataID = generateElementID();
+			newEvents[neweventDataID] = {
+				eventMarker: eventMarker
+			}
+
+			$(neweventContent).find("button").each(function(index) {
+				$(this).attr("data-new-event-data-id", neweventDataID);
+			});
+
+			eventMarker.bindPopup(neweventContent[0], popupOptions);
+
+			eventMarker.on("dragend", function(event) {
+				eventMarker.openPopup();	
+	        });
+
+			eventMarker.addTo(map);
+
+			eventMarker.openPopup();
+		}
+	}
     
+	this.discardNewEvent = function(newEventDataID) {
+		var eventData = newEvents[newEventDataID];
+
+		if(typeof(eventData) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			var eventMarker = eventData.eventMarker;
+			map.removeLayer(eventMarker);
+
+			delete newEvents[newEventDataID];
+		}
+
+	}
+
+	this.editNewEvent = function(newEventDataID) {
+		var eventData = newEvents[newEventDataID];
+
+		if(typeof(eventData) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			displayEditNewEventModal(newEventDataID);
+		}
+	}
+	
+	function displayEditNewEventModal(newEventDataID) {
+		var modalForm = $("#edit-new-event-modal");
+		modalForm.data("newEventDataID", newEventDataID);
+
+		var eventData = newEvents[newEventDataID];
+		if(typeof(eventData.newEventFormData) === "undefined") {
+			eventData.newEventFormData = {};
+		}
+
+		modalForm.on("show.bs.modal", function(event) {
+			//alert("loard");
+			//loadNewEventFormData();
+		});
+
+		modalForm.on("hidden.bs.modal", function(event) {
+			//alert("store")
+			//storeNewEventFormData();
+		});
+
+		modalForm.modal("show");
+	}
+
+	$("body").on("submit", "#new-event-form", function(event) {
+		event.preventDefault();
+
+		alert("about to submit the event form!")
+		//storeNewFoodLocationFormData();
+
+		//submitNewFoodLocationForm();
+	});
+	
+	
 	this.determineCoordByZipCode = function(zipCode) {
 		
 		console.log("The user denied the request for geolocation.");
@@ -324,6 +442,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         }
         //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
+	
+	function displayGeolocationUnsupportedModal() {
+		$("#geolocation-unsupported-modal").modal("show");
+	}
+
+	function displayGeneralFailureModal() {
+		$("#general-failure-modal").modal("show");
+	}
 }
 
 function determineCoordByZipCode1(zipCode) {

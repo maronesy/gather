@@ -36,6 +36,9 @@
 				<div class="pull-left">
 					<button id="locateMe" type="button" class="remove-outline btn btn-default">Locate Me</button>
 				</div>
+				<div class="pull-left">
+					<button id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
+				</div>
 			</div>
 			<div class="container col-lg-9 col-md-9 col-sm-9">
 				<form class="form-inline">
@@ -65,8 +68,32 @@
 			</figure>
 		</div>
 	</div>
-	
-	<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+		<div class="modal fade" id="geolocation-unsupported-modal"
+			tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title">Geolocation Failure</h4>
+					</div>
+
+					<div class="modal-body">
+						<span>Grub Scout can't determine your location.
+							Unfortunately, geolocation is required to use Grub Scout.</span>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -84,7 +111,51 @@
 			</div>
 		</div>
 	</div>
-		
+
+	<div class="modal fade" id="edit-new-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form class="form-horizontal" id="new-event-form">
+						<div class="modal-header">
+							<h4 class="modal-title">Edit New Event</h4>
+						</div>
+
+						<div class="modal-body">
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Name</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventName" id="new-event-name" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Description</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventDescription" id="new-event-description"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Location</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventLocation" id="new-event-location"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Time</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventTime" id="new-event-time"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
 	<div class="content-template" id="simple-user-marker-content-template" aria-hidden="true">
 		<div>
 			<p><b>Your Current Location</b></p>
@@ -98,6 +169,21 @@
 			<p>%s</p>
 		</div>
 	</div>
+	
+	<div class="content-template" id="new-event-content-template" aria-hidden="true">
+		<div class="new-event-location-popup">
+				<p><b>New Event Location</b></p>
+				
+				<p>Drag the marker to a more precise location.</p>
+				<p>Once the marker is positioned accurately, click the Edit New Event Detail button to provide more information about this event.</p>
+
+				<div class="modal-footer">
+					<button class="btn btn-default" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
+					<button class="btn btn-success" onclick="mapManager.editNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit New Event Location</button>
+				</div>
+		</div>
+	</div>
+		
 </div>
 </body>
 
