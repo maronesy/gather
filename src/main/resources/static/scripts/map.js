@@ -426,7 +426,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 		
 		createNewEvent(newEventDataID, function(newEvent) {
-			alert(newEvent);
+			
 			mapManager.discardNewEvent(newEventDataID);
 
 			modalForm.modal("hide");
