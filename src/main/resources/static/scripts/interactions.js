@@ -1,5 +1,34 @@
 var signedIn = false;
 
+$( window ).resize(function() {
+	resizeMap();
+	});
+
+function resizeMap() {
+	var cw = $('#map-canvas').width()*.75;
+	$('#map-canvas').css({'height':cw+'px'});
+}
+
+function resizeLayout() {
+	$('#resizeLayout').on('click', function() {
+		if ($('#rightPane').hasClass("col-lg-7")) {
+			$('#resizeLayout').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
+			$('#rightPane').switchClass("col-lg-7", "col-lg-5", 1000);
+			setTimeout(
+					function(){
+						$('#leftPane').switchClass("col-lg-5", "col-lg-7", 1000);
+					}, 1000);
+		} else if ($('#rightPane').hasClass("col-lg-5")) {
+			$('#resizeLayout').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
+			$('#leftPane').switchClass("col-lg-7", "col-lg-5", 1000);
+			setTimeout(
+					function(){
+						$('#rightPane').switchClass("col-lg-5", "col-lg-7", 1000);
+					}, 1000);
+		}
+	});
+}
+
 function tableInteractions() {
 	$('.star').on('click', function() {
 		$(this).toggleClass('star-checked');
@@ -27,30 +56,42 @@ function locateMe() {
 }
 
 function enterZip() {
+//	$('#enterZip').mousedown(function() {
+//		$('#zipSearching').show();
+//	});
+//	
+//	$('#enterZip').keydown(function() {
+//		$('#zipSearching').show();
+//	});
+	
 	$('#enterZip').on('click', function() {
+		
 		var zipcode = $('#zipCode').val();
 		var zipCodeErrorBox = $(this).attr('href');
+		$('#zipSearching').show();
 		
-		if (zipcode == "") {
-			$(zipCodeErrorBox).fadeIn(100);
-			$('#zipCodeErrorBox').html('Zip code field is empty');
-			return false;
-		} else if (zipcode.length != 5) {
-			$(zipCodeErrorBox).fadeIn(100);
-			$('#zipCodeErrorBox').html('Zip code must be five digits');
-			return false;
-		} else if (!($.isNumeric(zipcode))) {
-			$(zipCodeErrorBox).fadeIn(100);
-			$('#zipCodeErrorBox').html('Zip code must be five digits');
-			return false;
-		} else {
-			var returnValue = mapManager.determineCoordByZipCode(zipcode);
-			if (returnValue == -1) {
-				$(zipCodeErrorBox).fadeIn(100);
-				$('#zipCodeErrorBox').html('Zip code does not exist');
-			}
-			return true;
-		}
+		setTimeout(
+			function(){
+				if (zipcode == "") {
+					$(zipCodeErrorBox).fadeIn(100);
+					$('#zipCodeErrorBox').html('Zip code field is empty');
+				} else if (zipcode.length != 5) {
+					$(zipCodeErrorBox).fadeIn(100);
+					$('#zipCodeErrorBox').html('Zip code must be five digits');
+				} else if (!($.isNumeric(zipcode))) {
+					$(zipCodeErrorBox).fadeIn(100);
+					$('#zipCodeErrorBox').html('Zip code must be five digits');
+				} else {
+					var returnValue = mapManager.determineCoordByZipCode(zipcode);
+					if (returnValue == -1) {
+						$(zipCodeErrorBox).fadeIn(100);
+						$('#zipCodeErrorBox').html('Zip code does not exist');
+					}				
+				}
+				$('#zipSearching').hide();
+			}, 100)
+
+		
 	});
 }
 
@@ -100,32 +141,6 @@ function registerBox() {
 	});
 
 }
-
-//function signIn() {
-//	$('#loginFormSubmit').on(
-//			'click',
-//			function() {
-//				var email = $("#signInEmail").val();
-//				var password = $("#signInPassword").val();
-//
-//				$.ajax({
-//						type : "POST",
-//						url : "api/registereds",
-//						contentType: "application/json",
-//						data : '{ \
-//							"firstName": "Tom", \
-//							"lastName": "jenkins", \
-//							"age": 30, \
-//							"location": "San Diego" \
-//						}',
-//						success : function(returnvalue) {
-//							if (returnvalue == "success") {
-//								alert("Sign In Successful")
-//							}
-//						}
-//					});
-//				});
-//}
 
 function signIn() {
 	$('#loginFormSubmit').on(
@@ -213,18 +228,23 @@ function signUp() {
 				} else if (validateDisplayName(displayName) == false) {
 					$('#formFeedback').html('Display name must be between than 5 and 15 characters');
 				} else {
-				 $('#loading').show();
 				 $.ajax({
 					 	accepts: "application/json",
 						type : "POST",
 						url : "api/register",
 						contentType: "application/json; charset=UTF-8",
 						dataType: "json",
+						beforeSend: function() {
+							$('#loading').show();
+						},
 						data : '{ \
 							"email" : ' + email + ', \
 							"password" : ' + password + ', \
 							"displayName" : ' + displayName + ' \
 						}',
+						complete: function() {
+							$('#loading').hide();
+						},
 						success : function(returnvalue) {
 							if (returnvalue.status == 0) {
 								$(registerBox).fadeOut(100);
@@ -247,7 +267,7 @@ function signUp() {
 							}
 						}
 					});
-					$('#loading').hide();
+					
 				}
 			});
 }
