@@ -142,7 +142,7 @@ public class EventRepositoryIntegrationTest {
 	}
 	
 	@Test
-	public void testFindEventByLocation(){
+	public void testFindByLocationWithin(){
 		Event testEvent = new Event("Test Event with Location");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		this.locationRepo.save(location);
@@ -164,7 +164,7 @@ public class EventRepositoryIntegrationTest {
 	
 	@Test
 	@Transactional
-	public void testFindByOccurrenceWithinTime(){
+	public void testFindByOccurrenceTimeWithin(){
 		//TODO: Fix this test, need to generate dates and not use static strings.
 		Event testEvent = new Event("Test Event");
 		
@@ -194,6 +194,31 @@ public class EventRepositoryIntegrationTest {
 		
 		foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 0);	
+	}
+	
+	@Test
+	@Transactional
+	public void testFindByLocationAndOccurrenceTimeWithin(){		
+		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
+		this.locationRepo.save(location);
+		
+		Event testEvent = new Event("Test Event with Location");
+		Timestamp timestamp = Timestamp.valueOf("2016-03-14 10:10:10.0");
+		Timestamp otherTimestamp = Timestamp.valueOf("2016-03-18 10:10:10.0");
+		Occurrence occur=new Occurrence("Test Occurrence",timestamp);
+		Occurrence otherOccur = new Occurrence("Other Occurrence", otherTimestamp);
+		testEvent.addOccurrence(occur);
+		testEvent.addOccurrence(otherOccur);
+		testEvent.setLocation(location);
+		Event result = this.eventRepo.save(testEvent);
+		
+		Timestamp upperBound = Timestamp.valueOf("2016-03-13 10:10:10.0");
+		List<Event> foundEvents = this.eventRepo.findByLocationAndOccurrenceTimeWithin(30, 35, -120, -115, upperBound);
+		assertEquals(foundEvents.size(), 0);
+		
+		upperBound = Timestamp.valueOf("2016-03-15 10:10:10.0");
+		foundEvents = this.eventRepo.findByLocationAndOccurrenceTimeWithin(30, 35, -120, -115, upperBound);
+		assertEquals(foundEvents.size(), 1);
 	}
 		
 }
