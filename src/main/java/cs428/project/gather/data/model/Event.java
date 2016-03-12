@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -25,8 +26,12 @@ public class Event {
 
 	private String description;
 	
-	@OneToOne
+	@ManyToOne
 	private Location location;
+	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "event_id")
+	private Set<Occurrence> occurrences = new HashSet<Occurrence>();
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
@@ -58,10 +63,14 @@ public class Event {
 		return id;
 	}
 	
-//	public void addOccurrence(Occurrence occurrence) {
-//		Assert.notNull(occurrence);
-//		this.occurrences.add(occurrence);
-//	}
+	public void setLocation(Location location){
+		this.location = location;
+	}
+	
+	public void addOccurrence(Occurrence occurrence) {
+		Assert.notNull(occurrence);
+		this.occurrences.add(occurrence);
+	}
 	
 	public void addFeedback(Feedback feedback) {
 		Assert.notNull(feedback);
@@ -73,9 +82,9 @@ public class Event {
 		this.changeLog.add(changeLog);
 	}
 	
-//	public Set<Occurrence> getOccurrences() {
-//		return Collections.unmodifiableSet(occurrences);
-//	}
+	public Set<Occurrence> getOccurrences() {
+		return Collections.unmodifiableSet(occurrences);
+	}
 	
 	public String getDescription() {
 		return description;
