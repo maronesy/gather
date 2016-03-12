@@ -149,7 +149,7 @@ public class EventRepositoryIntegrationTest {
 		testEvent.setLocation(location);
 		Event result = this.eventRepo.save(testEvent);
 		
-		List<Event> foundEvents = this.eventRepo.findByLocationLatitudeIsBetweenAndLocationLongitudeIsBetween(30, 35, -120, -115);
+		List<Event> foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 1);
 		assertTrue(foundEvents.get(0).getDescription().equals("Test Event with Location"));
 		
@@ -157,7 +157,7 @@ public class EventRepositoryIntegrationTest {
 		anotherEvent.setLocation(location);
 		result = this.eventRepo.save(anotherEvent);
 		
-		foundEvents = this.eventRepo.findByLocationLatitudeIsBetweenAndLocationLongitudeIsBetween(30, 35, -120, -115);
+		foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 2);
 		assertTrue(foundEvents.get(1).getDescription().equals("Event at same location"));
 	}
@@ -185,14 +185,14 @@ public class EventRepositoryIntegrationTest {
 		//Should return event created above
 		Timestamp upperBound = Timestamp.valueOf("2016-03-15 10:10:10.0");
 		
-		List<Event> foundEvents = this.eventRepo.findByOccurrenceWithinTime(upperBound);
+		List<Event> foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 1);
 		assertTrue(foundEvents.get(0).getDescription().equals("Test Event"));
 		
 		//Should return no events
 		upperBound = Timestamp.valueOf("2016-03-13 10:10:10.0");
 		
-		foundEvents = this.eventRepo.findByOccurrenceWithinTime(upperBound);
+		foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 0);	
 	}
 		
