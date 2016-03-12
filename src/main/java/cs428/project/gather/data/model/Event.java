@@ -1,7 +1,5 @@
 package cs428.project.gather.data.model;
 
-
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.springframework.util.Assert;
 
@@ -26,9 +25,8 @@ public class Event {
 
 	private String description;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "event_id")
-	private Set<Occurrence> occurrences = new HashSet<Occurrence>();
+	@OneToOne
+	private Location location;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
@@ -60,10 +58,10 @@ public class Event {
 		return id;
 	}
 	
-	public void addOccurrence(Occurrence occurrence) {
-		Assert.notNull(occurrence);
-		this.occurrences.add(occurrence);
-	}
+//	public void addOccurrence(Occurrence occurrence) {
+//		Assert.notNull(occurrence);
+//		this.occurrences.add(occurrence);
+//	}
 	
 	public void addFeedback(Feedback feedback) {
 		Assert.notNull(feedback);
@@ -75,9 +73,9 @@ public class Event {
 		this.changeLog.add(changeLog);
 	}
 	
-	public Set<Occurrence> getOccurrences() {
-		return Collections.unmodifiableSet(occurrences);
-	}
+//	public Set<Occurrence> getOccurrences() {
+//		return Collections.unmodifiableSet(occurrences);
+//	}
 	
 	public String getDescription() {
 		return description;
