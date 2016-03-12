@@ -22,5 +22,5 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	List<Event> findByLocationLatitudeIsBetweenAndLocationLongitudeIsBetween(double lowerLat, double uppLat, double lowerLon, double upperLon);
 	
 	@Query("SELECT e FROM Event e INNER JOIN e.occurrences o WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?1")
-	List<Event> findByOccurrenceTime(Timestamp upperBound);
+	List<Event> findByOccurrenceWithinTime(Timestamp upperBound);
 }

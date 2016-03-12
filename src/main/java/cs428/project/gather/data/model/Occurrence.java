@@ -22,11 +22,6 @@ public class Occurrence {
 		this.description = description;
 		this.datetime = datetime;
 	}
-	
-	public Occurrence(String description, Timestamp datetime, Location location){
-		this.description = description;
-		this.datetime = datetime;
-	}
 
 	public String getDescription() {
 		return description;

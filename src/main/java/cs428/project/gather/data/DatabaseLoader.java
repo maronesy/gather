@@ -51,7 +51,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		this.locationRepo.save(location);
-		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
+		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
 //		testEvent.addOccurrence(occur);
 		Event eventResult = this.eventRepo.save(testEvent);
 		

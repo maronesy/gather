@@ -5,10 +5,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.validation.constraints.AssertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +102,7 @@ public class EventRepositoryIntegrationTest {
 		Event testEvent = new Event("Test Event");
 		Timestamp feedbackTime = new Timestamp(Calendar.getInstance().getTime().getTime());
 		Feedback feedback = new Feedback("What a great event!",5,feedbackTime);
-		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime, null);
+		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime);
 		testEvent.addOccurrence(occur);
 		testEvent.addFeedback(feedback);
 		Event result = this.eventRepo.save(testEvent);
@@ -119,7 +125,7 @@ public class EventRepositoryIntegrationTest {
 		Event testEvent = new Event("Test Event");
 		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
 		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
-		Occurrence occur=new Occurrence("Test Occurrence",changeTime, null);
+		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
 		testEvent.addOccurrence(occur);
 		testEvent.addChangeLog(change);
 		Event result = this.eventRepo.save(testEvent);
@@ -154,6 +160,40 @@ public class EventRepositoryIntegrationTest {
 		foundEvents = this.eventRepo.findByLocationLatitudeIsBetweenAndLocationLongitudeIsBetween(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 2);
 		assertTrue(foundEvents.get(1).getDescription().equals("Event at same location"));
+	}
+	
+	@Test
+	@Transactional
+	public void testFindByOccurrenceWithinTime(){
+		//TODO: Fix this test, need to generate dates and not use static strings.
+		Event testEvent = new Event("Test Event");
+		
+		Timestamp timestamp = Timestamp.valueOf("2016-03-14 10:10:10.0");
+		
+		Occurrence occur=new Occurrence("Test Occurrence",timestamp);
+		testEvent.addOccurrence(occur);
+		Event result = this.eventRepo.save(testEvent);
+		
+		Event foundEvent = this.eventRepo.findOne(result.getId());
+		Set<Occurrence> occurrences = foundEvent.getOccurrences();
+		assertEquals(occurrences.size(),1);
+	
+		Iterator<Occurrence> occurIt = occurrences.iterator();
+		Occurrence testOccur = occurIt.next();
+		assertEquals(testOccur.getDescription(),"Test Occurrence");
+
+		//Should return event created above
+		Timestamp upperBound = Timestamp.valueOf("2016-03-15 10:10:10.0");
+		
+		List<Event> foundEvents = this.eventRepo.findByOccurrenceWithinTime(upperBound);
+		assertEquals(foundEvents.size(), 1);
+		assertTrue(foundEvents.get(0).getDescription().equals("Test Event"));
+		
+		//Should return no events
+		upperBound = Timestamp.valueOf("2016-03-13 10:10:10.0");
+		
+		foundEvents = this.eventRepo.findByOccurrenceWithinTime(upperBound);
+		assertEquals(foundEvents.size(), 0);	
 	}
 		
 }
