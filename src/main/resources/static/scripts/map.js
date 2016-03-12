@@ -25,7 +25,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var newEvents = [];
 
-	var establishedevents = [];
+	var establishedEvents = [];
 
 	function buildMap() {
 		var mapOptions = {
@@ -278,10 +278,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	$('#addEventBtn').on('click', function() {
-		addNewevent() 
+		addNewEvent() 
 	});
 	
-	function addNewevent() {
+	function addNewEvent() {
 
 		if(currentUserCoordinates === null) {
 			displayGeolocationUnsupportedModal();
@@ -315,18 +315,18 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			var eventMarker = L.marker(markerPosition, markerOptions);
 
-			var neweventContent = getContentTemplateClone("#new-event-content-template");
+			var newEventContent = getContentTemplateClone("#new-event-content-template");
 
-			var neweventDataID = generateElementID();
-			newEvents[neweventDataID] = {
+			var newEventDataID = generateElementID();
+			newEvents[newEventDataID] = {
 				eventMarker: eventMarker
 			}
 
-			$(neweventContent).find("button").each(function(index) {
-				$(this).attr("data-new-event-data-id", neweventDataID);
+			$(newEventContent).find("button").each(function(index) {
+				$(this).attr("data-new-event-data-id", newEventDataID);
 			});
 
-			eventMarker.bindPopup(neweventContent[0], popupOptions);
+			eventMarker.bindPopup(newEventContent[0], popupOptions);
 
 			eventMarker.on("dragend", function(event) {
 				eventMarker.openPopup();	
@@ -374,7 +374,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 
 		modalForm.on("show.bs.modal", function(event) {
-			//alert("loard");
+			//alert("lord");
 			//loadNewEventFormData();
 		});
 
@@ -386,15 +386,160 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		modalForm.modal("show");
 	}
 
+	function loadNewEventFormData() {
+		var modalForm = $("#edit-new-event-modal");
+		var newEventDataID = modalForm.data("newEventDataID");
+
+		var eventData = newEvents[newEventDataID];
+
+		$("#new-event-name").val(eventData.newEventFormData.eventName);
+		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
+		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
+		$("#new-event-time").val(eventData.newEventFormData.eventTime);
+	}
+
+	function storeNewEventFormData() {
+		var modalForm = $("#edit-new-event-modal");
+		var newEventDataID = modalForm.data("newEventDataID");
+
+		var eventData = newEvents[newEventDataID];
+
+		if(eventData !== undefined) {
+			eventData.newEventFormData.eventName = $("#new-event-name").val();
+			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
+			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
+			eventData.newEventFormData.eventTime = $("#new-event-time").val();
+		}
+	}
+	
 	$("body").on("submit", "#new-event-form", function(event) {
 		event.preventDefault();
 
-		alert("about to submit the event form!")
-		//storeNewFoodLocationFormData();
+		//alert("about to submit the event form!")
+		storeNewEventFormData();
 
-		//submitNewFoodLocationForm();
+		submitNewEventForm();
 	});
 	
+	function submitNewEventForm() {
+		var modalForm = $("#edit-new-event-modal");
+		var newEventDataID = modalForm.data("newEventDataID");
+		
+		createNewEvent(newEventDataID, function(newEvent) {
+			alert(newEvent);
+			mapManager.discardNewEvent(newEventDataID);
+
+			modalForm.modal("hide");
+
+			establishedEvents[newEvent.eventID] = newEvent;
+
+			placeEstablishedEventMarker(newEvent, true);
+
+			//TODO event card not implemented, we currently have event list only
+			//addEventCard(newEvent, true);
+			//updateEventCountTitle();
+			
+		}, function() {
+			modalForm.modal("hide");
+			displayGeneralFailureModal();
+		});
+	}
+/**
+ * REST call to create the event
+ */
+	function createNewEvent(newEventDataID, successCallback, failureCallback) {
+		var eventData = newEvents[newEventDataID];
+
+		var eventMarker = eventData.eventMarker;
+		var markerPosition = eventMarker.getLatLng();
+		var markerCoordinates = {
+			latitude: markerPosition.lat,
+			longitude: markerPosition.lng
+		};
+
+		var requestObject = {
+			eventName: eventData.newEventFormData.eventName,
+			eventCoordinates: markerCoordinates,
+			eventDescription: eventData.newEventFormData.eventDescription,
+			eventCategory: eventData.newEventFormData.eventCategory,
+			eventTime: eventData.newEventFormData.eventTime,
+			callerCoordinates: currentUserCoordinates
+		};
+
+		var requestData = JSON.stringify(requestObject);
+		
+		var requestOptions = {
+			type: "POST",
+			url: "api/new-event/add",
+			contentType: "application/json; charset=UTF-8",
+			data: requestData,
+			dataType: "json",
+			timeout: 10000,
+			success: function(result) {
+				if(typeof(successCallback) === "function") {
+					successCallback(result);
+				}
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
+
+	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
+		
+		var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
+
+		//var hotnessColor = determineHotnessColor(anEvent);
+
+		var iconOptions = {
+			"marker-size": "large",
+			"marker-symbol": "restaurant",
+			//"marker-color": hotnessColor
+		};
+
+		var bounceOptions = {
+			duration: 500,
+			height: 100
+		};
+
+		var markerOptions = {
+			icon: L.mapbox.marker.icon(iconOptions),
+		};
+
+		var markerOptions = {
+			draggable: false,
+			icon: L.mapbox.marker.icon(iconOptions),
+			bounceOnAdd: bounceOnAdd,
+			bounceOnAddOptions: bounceOptions
+		};
+
+		var popupOptions = {
+			minWidth: 600
+		};
+
+		var eventMarker = L.marker(markerPosition, markerOptions);
+		eventMarker.addTo(map);
+
+		anEvent.eventMarker = eventMarker;
+		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
+
+		$(establishedEventContent).find("button").each(function(index) {
+			$(this).attr("data-event-id", anEvent.locationID);
+		});
+
+		var establishedEventHTML = establishedEventContent[0].outerHTML;
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.eventName, anEvent.eventCategory, anEvent.eventDescription, anEvent.eventTime, anEvent.distanceFromCaller);
+
+		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+	}
+
 	
 	this.determineCoordByZipCode = function(zipCode) {
 		

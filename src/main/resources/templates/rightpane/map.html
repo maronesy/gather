@@ -122,7 +122,7 @@
 
 						<div class="modal-body">
 							<div class="form-group">
-								<label class="col-xs-4 control-label">Name</label>
+								<label class="col-xs-4 control-label">Event Name</label>
 								<div class="col-xs-8">
 									<input type="text" class="form-control" name="eventName" id="new-event-name" />
 								</div>
@@ -134,9 +134,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-xs-4 control-label">Location</label>
+								<label class="col-xs-4 control-label">Category</label>
 								<div class="col-xs-8">
-									<input type="text" class="form-control" name="eventLocation" id="new-event-location"/>
+									<input type="text" class="form-control" name="eventLocation" id="new-event-category"/>
 								</div>
 							</div>
 							<div class="form-group">
@@ -152,6 +152,27 @@
 							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
 						</div>
 					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-template" id="established-event-content-template" aria-hidden="true">
+			<div class="established-food-location-popup">
+				<p><b>%s</b></p>
+			
+				<ul>
+					<li>Event category:  %s</li>
+					<li>Event description:  %s</li>
+					<li>Event Time:  %s</li>
+					<li>Distance from current location:  %.2f miles</li>
+				</ul>
+
+				<p><b>Have you been to this event?</b><br></br>
+				Check in to rank this location and leave feedback.</p>
+
+				<div class="modal-footer">
+					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button>
+					<button class="btn btn-primary" onclick="mapManager.checkInFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-ok"></span> Check In</button>
 				</div>
 			</div>
 		</div>
