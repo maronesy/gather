@@ -17,6 +17,7 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	 */
 	Event findOne(Long id);
 	
+	List<Event> findByName(String name);
 	List<Event> findByDescription(String description);
 	
 	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")

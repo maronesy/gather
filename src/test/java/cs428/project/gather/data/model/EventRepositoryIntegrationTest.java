@@ -62,7 +62,7 @@ public class EventRepositoryIntegrationTest {
 		testEvent.addOccurrence(occur);
 		Event result = this.eventRepo.save(testEvent);
 		
-		assertTrue(result.getDescription().equals("Test Event"));		
+		assertTrue(result.getName().equals("Test Event"));		
 	}
 	
 	@Test
@@ -72,10 +72,10 @@ public class EventRepositoryIntegrationTest {
 		testEvent.addOccurrence(occur);
 		this.eventRepo.save(testEvent);
 			
-		List<Event> foundEvents = eventRepo.findByDescription("Super Cool Test Event");
+		List<Event> foundEvents = eventRepo.findByName("Super Cool Test Event");
 		
 		assertEquals(foundEvents.size(), 1);
-		assertTrue(foundEvents.get(0).getDescription().equals("Super Cool Test Event"));
+		assertTrue(foundEvents.get(0).getName().equals("Super Cool Test Event"));
 	}
 	
 	@Test
@@ -154,7 +154,7 @@ public class EventRepositoryIntegrationTest {
 		
 		List<Event> foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 1);
-		assertTrue(foundEvents.get(0).getDescription().equals("Test Event with Location"));
+		assertTrue(foundEvents.get(0).getName().equals("Test Event with Location"));
 		
 		Event anotherEvent = new Event("Event at same location");
 		anotherEvent.setLocation(location);
@@ -162,9 +162,6 @@ public class EventRepositoryIntegrationTest {
 		
 		foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 2);
-		
-		assertTrue(foundEvents.get(0).getDescription().equals("Test Event with Location"));
-		assertTrue(foundEvents.get(1).getDescription().equals("Event at same location"));
 	}
 	
 	@Test
@@ -196,7 +193,7 @@ public class EventRepositoryIntegrationTest {
 		
 		List<Event> foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 1);
-		assertTrue(foundEvents.get(0).getDescription().equals("Test Event"));
+		assertTrue(foundEvents.get(0).getName().equals("Test Event"));
 		
 		//Set upper bound for events in the next 4 hrs, should return no events
 		dt = DateTime.now().plusHours(4);

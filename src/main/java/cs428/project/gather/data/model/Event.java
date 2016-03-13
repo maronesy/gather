@@ -24,6 +24,7 @@ import lombok.Data;
 public class Event {
 	private @Id @Column(name="ID") @GeneratedValue Long id;
 
+	private String name;
 	private String description;
 	
 	@ManyToOne
@@ -54,9 +55,9 @@ public class Event {
 	private Set<Category> categories = new HashSet<Category>();
 	
 	protected Event() {}
-	public Event(String description) {
-		Assert.hasText(description);
-		this.setDescription(description);
+	
+	public Event(String name) {
+		setName(name);
 	}
 	
 	public Long getId() {
@@ -91,8 +92,19 @@ public class Event {
 	}
 	
 	public void setDescription(String description) {
+		Assert.hasText(name);
 		this.description = description;
 	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public void setName(String name){
+		Assert.hasText(name);
+		this.name = name;
+	}
+	
 	public Set<Feedback> getFeedbacks() {
 		return Collections.unmodifiableSet(feedbacks);
 	}
