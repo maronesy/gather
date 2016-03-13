@@ -38,11 +38,28 @@ public class PaginatedResponseData<T> {
     */
 
     public static <T> ResponseEntity<PaginatedResponseData<T>> createResponse(HttpServletRequest request, List<T> results) {
-        int results_per_page    = 20;
         int total_num_results   = results.size();
-        int total_pages         = (total_num_results / results_per_page) + 1;
+        int results_per_page    = 20;
         int page_num            = 1;
 
+        // GET PAGE SIZE
+        String maybe_page_size = request.getParameter("size");
+        if (maybe_page_size != null) {
+            try {
+                results_per_page = Integer.parseInt(maybe_page_size);
+            } catch (Exception e) {
+                return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData("Invalid page size '" + maybe_page_size + "'"), HttpStatus.BAD_REQUEST);
+            }
+
+        }
+        if (results_per_page <= 0) {
+            return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData("Invalid page size '" + Integer.toString(results_per_page) + "': must be greater than 0."), HttpStatus.BAD_REQUEST);
+        }
+
+        // CALCULATE TOTAL PAGES
+        int total_pages = ((total_num_results-1) / results_per_page) + 1;
+
+        // GET PAGE NUMBER
         String maybe_page_num = request.getParameter("page");
         if (maybe_page_num != null) {
             try {
@@ -50,19 +67,22 @@ public class PaginatedResponseData<T> {
             } catch (Exception e) {
                 return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData("Invalid page number '" + maybe_page_num + "'"), HttpStatus.BAD_REQUEST);
             }
-        }
 
+        }
         if (page_num < 1) {
             return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData("Invalid page '" + Integer.toString(page_num) + "': That page number is less than 1."), HttpStatus.BAD_REQUEST);
+
         } else if (page_num > total_pages) {
             return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData("Invalid page '" + Integer.toString(page_num) + "': That page contains no results."), HttpStatus.BAD_REQUEST);
         }
 
-        String previous = (page_num <= 1) ? null : request.getRequestURL().toString() + "?page=" + (page_num-1);
-        String next     = (page_num >= total_pages) ? null : request.getRequestURL().toString() + "?page=" + (page_num+1);
+        // CALCULATE OTHER FIELDS
+        String previous = (page_num <= 1) ? null : (request.getRequestURL().toString() + "?page=" + (page_num-1) + (maybe_page_size == null ? "" : "&size=" + maybe_page_size));
+        String next     = (page_num >= total_pages) ? null : (request.getRequestURL().toString() + "?page=" + (page_num+1) +  (maybe_page_size == null ? "" : "&size=" + maybe_page_size));
+        int start       = (page_num-1)*results_per_page;
+        int end         = (page_num*results_per_page > results.size()) ? results.size() : page_num*results_per_page;
 
-        int start   = (page_num-1)*results_per_page;
-        int end     = (page_num*results_per_page > results.size()) ? results.size() : page_num*results_per_page;
+        // RETURN PAGINATED RESULTS
         return new ResponseEntity<PaginatedResponseData<T>>(new PaginatedResponseData(results.size(), previous, next, results.subList(start, end)), HttpStatus.OK);
     }
 

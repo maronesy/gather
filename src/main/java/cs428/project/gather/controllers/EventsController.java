@@ -22,10 +22,10 @@ import cs428.project.gather.validator.*;
 
 @Controller("eventController")
 public class EventsController {
-	
+
 	private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
 	private static final double ONE_MILE_IN_DEGREES_LONGITUDE = 0.014457;
-	
+
     @Autowired
     EventRepository eventRepo;
 
@@ -35,14 +35,14 @@ public class EventsController {
     @RequestMapping(value = "/api/getevents", method = RequestMethod.GET)
     public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
-        
-//        List<Event> events = new ArrayList<Event>();
-//       
-//        Generate dummy events
-//        for (int i=0; i < 21; i++) {
-//            events.add(  new Event("event #" + Integer.toString(i))  );
-//        }
-        
+
+/*
+        List<Event> events = new ArrayList<Event>();
+        // Generate dummy events
+        for (int i=0; i < 21; i++) {
+            events.add(  new Event("event #" + Integer.toString(i))  );
+        }
+
 		// // Calculate the upper and lower latitude bounds.
 		double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
 		Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);
@@ -52,17 +52,17 @@ public class EventsController {
 		double longitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LONGITUDE * eventsData.getRadiusMi();
 		Double longitudeLowerBound = new Double(eventsData.getLongitude() - longitudeRadiusAdjustment);
 		Double longitudeUpperBound = new Double(eventsData.getLongitude()  + longitudeRadiusAdjustment);
-        
+
 		//TODO: fix time stamp when new changes are ready
 		Timestamp timeWindow = Timestamp.valueOf("2016-04-13 10:10:10.0");
 		//DateTime dt = new DateTime().now().plusHours(hoursFromData);
-		
-        List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
-   
-        // DEPRECATED return new ResponseEntity<PaginatedResponseData<Event>>(PaginatedResponseData.create(request, events), HttpStatus.OK);
+*/
+
+        // List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
+        List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
         return PaginatedResponseData.createResponse(request, events);
     }
-    
+
 //    @RequestMapping(value = "/api/add", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 //	@ResponseBody
 //	public ResponseEntity<RESTResponseData> createEvent(HttpServletRequest request, @RequestBody String rawData,
@@ -72,12 +72,12 @@ public class EventsController {
 //		EventsQueryData eventData = gson.fromJson(rawData, EventsQueryData.class);
 //
 //		if (!ActorTypeHelper.isAnonymousUser(request)) {
-//			eventsDataValidator.validate(eventData,bindingResult); 
+//			eventsDataValidator.validate(eventData,bindingResult);
 //
 //			if (bindingResult.hasErrors()) {
 //				return RESTResponseData.responseBuilder(bindingResult);
 //			} else {
-//				
+//
 //				Event newEvent = buildEvent(eventData);
 //
 //				Event savedEventResult = this.eventRepo.save(newEvent);
@@ -88,14 +88,14 @@ public class EventsController {
 //			bindingResult.reject("-7","Incorrect User State. Only Registered User can register");
 //			return RESTResponseData.responseBuilder(bindingResult);
 //		}
-//		
+//
 //	}
 //
 //	private Event buildEvent(EventsQueryData eventData) {
 //		Event newEvent = new Event();
 //		newEvent.setDescription(eventData.getDescription());
-//		
+//
 //		return newEvent;
 //	}
-		
+
 }
