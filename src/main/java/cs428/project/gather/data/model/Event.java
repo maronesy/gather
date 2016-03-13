@@ -108,4 +108,7 @@ public class Event {
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
 	}
+	public Location getLocation() {
+		return this.location;
+	}
 }

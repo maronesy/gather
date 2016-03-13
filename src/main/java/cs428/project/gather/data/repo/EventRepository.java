@@ -19,12 +19,12 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	
 	List<Event> findByDescription(String description);
 	
-	@Query("SELECT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
 	List<Event> findByLocationWithin(double lowerLat, double uppLat, double lowerLon, double upperLon);
 	
-	@Query("SELECT e FROM Event e INNER JOIN e.occurrences o WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?1")
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?1")
 	List<Event> findByOccurrenceTimeWithin(Timestamp upperBound);
 	
-	@Query("SELECT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
 	List<Event> findByLocationAndOccurrenceTimeWithin(double lowerLat, double uppLat, double lowerLon, double upperLon, Timestamp upperTime);
 }
