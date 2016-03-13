@@ -1,9 +1,5 @@
 var signedIn = false;
 
-$( window ).resize(function() {
-	resizeMap();
-	});
-
 function resizeMap() {
 	var cw = $('#map-canvas').width()*.75;
 	$('#map-canvas').css({'height':cw+'px'});
