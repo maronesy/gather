@@ -597,6 +597,45 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 }
 
+function getNearByEvents() {
+	$.ajax({
+	 	accepts: "application/json",
+		type : "GET",
+		url : "rest/events",
+		contentType: "application/json; charset=UTF-8",
+		latitude: "34.098",
+		longitude: "-118.2498",
+		radiusMi: "20",
+		timeWindow: "3",
+		success : function(returnvalue) {
+			if (returnvalue.status == 5) {
+				signedIn = true;
+				headerSelect();
+//				alert(returnvalue.status);
+//				alert(returnvalue.message)
+			} 
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+//		    alert(jqXHR.status);
+//		    alert(textStatus);
+//		    alert(errorThrown);
+			if (errorThrown == "Found") {
+				signedIn = true;
+				gather.global.nearEvents = jqXHR.responseJSON;
+				for(nearEvent in gather.global.nearEvents){
+					placeEstablishedEventMarker(nearEvent, true);
+				}		
+				updateGreeting();
+				headerSelect();
+			} else {
+				signedIn = false;
+				headerSelect();
+			}
+
+		}
+	});
+}
+
 function determineCoordByZipCode1(zipCode) {
 	
 	console.log("The user denied the request for geolocation.");
