@@ -59,9 +59,19 @@ public class Event {
 		Assert.hasText(description);
 		this.setDescription(description);
 	}
-
+	
+	// Setters and Getters
+	
 	public Long getId() {
 		return id;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public void setLocation(Location location){
@@ -86,14 +96,7 @@ public class Event {
 	public Set<Occurrence> getOccurrences() {
 		return Collections.unmodifiableSet(occurrences);
 	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
+	
 	public Set<Feedback> getFeedbacks() {
 		return Collections.unmodifiableSet(feedbacks);
 	}

@@ -61,5 +61,21 @@ public class DatabaseLoader implements CommandLineRunner {
 		//We can make either function do the opposite add if we wish, to simplify usage elsewhere
 //		aUser.joinEvent(testEvent);
 		this.eventRepo.save(testEvent);
+		
+		Event newEvent = new Event("Test1");
+		Location newLoc = new Location(34.0498, -118.2498);
+		this.locationRepo.save(newLoc);
+		newEvent.setLocation(newLoc);
+		Occurrence newOccur = new Occurrence("First", Timestamp.valueOf("2016-03-13 10:10:10.0"));
+		newEvent.addOccurrence(newOccur);
+		this.eventRepo.save(newEvent);
+		
+		Event newEvent2 = new Event("Test2");
+		Location newLoc2 = new Location(34.1, -118.25);
+		this.locationRepo.save(newLoc2);
+		newEvent2.setLocation(newLoc2);
+		Occurrence newOccur2 = new Occurrence("Second", Timestamp.valueOf("2016-03-15 10:10:10.0"));
+		newEvent2.addOccurrence(newOccur2);	
+		this.eventRepo.save(newEvent2);
 	}
 }

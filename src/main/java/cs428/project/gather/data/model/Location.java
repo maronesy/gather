@@ -25,6 +25,11 @@ public class Location {
 		this.setDescription(description);
 	}
 	
+	public Location(double latitude, double longitude){
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+	
 	public Location(String description, String streetAddr, String city, String state, String zipCode, double latitude, double longitude){
 		this.description = description;
 		this.streetAddr = streetAddr;
@@ -48,10 +53,10 @@ public class Location {
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
-	public double getLongtitude() {
+	public double getLongitude() {
 		return longitude;
 	}
-	public void setLongtitude(double longtitude) {
+	public void setLongitude(double longtitude) {
 		this.longitude = longtitude;
 	}
 	public String getStreetAddr() {
