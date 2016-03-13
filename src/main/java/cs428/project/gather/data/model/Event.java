@@ -24,6 +24,7 @@ import lombok.Data;
 public class Event {
 	private @Id @Column(name="ID") @GeneratedValue Long id;
 
+	private String name;
 	private String description;
 	
 	@ManyToOne
@@ -52,26 +53,17 @@ public class Event {
 
 	@ManyToMany
 	private Set<Category> categories = new HashSet<Category>();
-
-	public Event() {}
-
-	public Event(String description) {
-		Assert.hasText(description);
-		this.setDescription(description);
+	
+	protected Event() {}
+	
+	public Event(String name) {
+		setName(name);
 	}
 	
 	// Setters and Getters
 	
 	public Long getId() {
 		return id;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 	
 	public void setLocation(Location location){
@@ -97,6 +89,25 @@ public class Event {
 		return Collections.unmodifiableSet(occurrences);
 	}
 	
+
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		Assert.hasText(description);
+		this.description = description;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public void setName(String name){
+		Assert.hasText(name);
+		this.name = name;
+	}
+
 	public Set<Feedback> getFeedbacks() {
 		return Collections.unmodifiableSet(feedbacks);
 	}
@@ -111,5 +122,8 @@ public class Event {
 
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
+	}
+	public Location getLocation() {
+		return this.location;
 	}
 }

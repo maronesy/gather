@@ -28,33 +28,43 @@
 
 <body>
 
-<div class="container col-lg-5 col-md-4" th:fragment="map">
-    <div id="zipCodeErrorBox" class="zipcode-error" align="center"></div>
+<div id="rightPane" class="container col-lg-7 col-md-7" th:fragment="map">
+    <div style="margin-right: -15px;">
 	<div class="map-border">
 		<div class="row">
-			<div class="container col-lg-3 col-md-3 col-sm-3">
+			<div class="container col-lg-5 col-md-5 col-sm-5">
 				<div class="pull-left">
 					<button id="locateMe" type="button" class="remove-outline btn btn-default">Locate Me</button>
+				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->	
+				</div>
+				<div class="pull-left">
+					<button id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
 				</div>
 			</div>
-			<div class="container col-lg-9 col-md-9 col-sm-9">
-				<form class="form-inline">
+			
+			<div class="container col-lg-7 col-md-7 col-sm-7">
+				
+				<form action="javascript:void(0);"  class="form-inline">
 					<div class="pull-right form-group">
 		    			<input id="zipCode" type="text" style="width:85px;" class="form-control" placeholder="Zip Code"/>
-		    			<button id="enterZip" href="#zipCodeErrorBox" type="button" class="remove-outline btn btn-default">Enter</button>
+		    		    <input id="enterZip" href="#zipCodeErrorBox" value="Go" type="submit" class="remove-outline btn btn-default"/>	
 		  			</div>
+		  			
+		  			<a class="pull-right" id="zipSearching" style=" display: none; margin: 6px;">searching...</a>
 	  			</form>
   			</div>
 		</div>
 		<div id="map-canvas">
+		<div id="zipCodeErrorBox" class="zipcode-error" align="center"></div>
 		<div class="leaflet-left leaflet-bottom">
-			<div class="leaflet-bar leaflet-control" style="padding: 5px 5px 1px 5px;">
-				<span style="z-index: 1; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-full"></span>
+			<div class="map-size-control leaflet-bar leaflet-control" style="padding: 5px 5px 5px 5px;">
+				<a id="resizeLayout" href="#" class="map-glyphicon glyphicon glyphicon-resize-small"></a>
 			</div>
 		</div>
 			
 		</div>
 	    
+	</div>
 	</div>
 
     <div id="map-legend-container">
@@ -65,8 +75,32 @@
 			</figure>
 		</div>
 	</div>
-	
-	<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+		<div class="modal fade" id="geolocation-unsupported-modal"
+			tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title">Geolocation Failure</h4>
+					</div>
+
+					<div class="modal-body">
+						<span>Grub Scout can't determine your location.
+							Unfortunately, geolocation is required to use Grub Scout.</span>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -84,7 +118,72 @@
 			</div>
 		</div>
 	</div>
-		
+
+	<div class="modal fade" id="edit-new-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form class="form-horizontal" id="new-event-form">
+						<div class="modal-header">
+							<h4 class="modal-title">Edit New Event</h4>
+						</div>
+
+						<div class="modal-body">
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Event Name</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventName" id="new-event-name" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Description</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventDescription" id="new-event-description"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Category</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventLocation" id="new-event-category"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-4 control-label">Time</label>
+								<div class="col-xs-8">
+									<input type="text" class="form-control" name="eventTime" id="new-event-time"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-template" id="established-event-content-template" aria-hidden="true">
+			<div class="established-food-location-popup">
+				<p><b>%s</b></p>
+			
+				<ul>
+					<li>Event category:  %s</li>
+					<li>Event description:  %s</li>
+					<li>Event Time:  %s</li>
+					<li>Distance from current location:  %.2f miles</li>
+				</ul>
+
+				<p><b>Have you been to this event?</b><br></br>
+				Check in to rank this location and leave feedback.</p>
+
+				<div class="modal-footer">
+					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button>
+					<button class="btn btn-primary" onclick="mapManager.checkInFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-ok"></span> Check In</button>
+				</div>
+			</div>
+		</div>
+
 	<div class="content-template" id="simple-user-marker-content-template" aria-hidden="true">
 		<div>
 			<p><b>Your Current Location</b></p>
@@ -98,6 +197,21 @@
 			<p>%s</p>
 		</div>
 	</div>
+	
+	<div class="content-template" id="new-event-content-template" aria-hidden="true">
+		<div class="new-event-location-popup">
+				<p><b>New Event Location</b></p>
+				
+				<p>Drag the marker to a more precise location.</p>
+				<p>Once the marker is positioned accurately, click the Edit New Event Detail button to provide more information about this event.</p>
+
+				<div class="modal-footer">
+					<button class="btn btn-default" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
+					<button class="btn btn-success" onclick="mapManager.editNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit New Event Location</button>
+				</div>
+		</div>
+	</div>
+		
 </div>
 </body>
 
