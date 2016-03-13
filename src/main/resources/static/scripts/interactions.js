@@ -1,3 +1,19 @@
+$(document).ready(function() {
+	resizeLayout();
+	resizeMap();
+	tableInteractions();
+	locateMe();
+	enterZip();
+	registerBox();
+	signUp();
+	signIn();
+	signOut();
+	removeZipCodeError();
+	sessionCheck();
+	onLoadSessionCheck();
+	headerSelect();
+}); 
+
 var signedIn = false;
 
 function resizeMap() {
@@ -61,16 +77,7 @@ function locateMe() {
 }
 
 function enterZip() {
-//	$('#enterZip').mousedown(function() {
-//		$('#zipSearching').show();
-//	});
-//	
-//	$('#enterZip').keydown(function() {
-//		$('#zipSearching').show();
-//	});
-	
 	$('#enterZip').on('click', function() {
-		
 		var zipcode = $('#zipCode').val();
 		var zipCodeErrorBox = $(this).attr('href');
 		$('#zipSearching').show();
@@ -94,9 +101,7 @@ function enterZip() {
 					}				
 				}
 				$('#zipSearching').hide();
-			}, 100)
-
-		
+			}, 100);
 	});
 }
 
@@ -211,6 +216,7 @@ function signOut() {
 }
 
 
+
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
@@ -222,7 +228,7 @@ function signUp() {
 				var registerBox = $('#registerFormSubmit').attr('href');
 				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
 					$('#formFeedback').html('All the fields are required');
-				} else if (validate_email(email) == false) {
+				} else if (validateEmail(email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
 				} else if (validatePass(password) == false) {
@@ -320,7 +326,7 @@ function onLoadSessionCheck() {
 	}); 
 }
 
-function validate_email(email) {
+function validateEmail(email) {
 	var x = email;
 	var atpos = x.indexOf("@");
 	var dotpos = x.lastIndexOf(".");
