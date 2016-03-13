@@ -59,7 +59,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Location newLoc = new Location(34.0498, -118.2498);
 		this.locationRepo.save(newLoc);
 		newEvent.setLocation(newLoc);
-		Occurrence newOccur = new Occurrence("First", Timestamp.valueOf("2016-03-13 10:10:10.0"));
+		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
 		this.eventRepo.save(newEvent);
 		
@@ -67,9 +67,9 @@ public class DatabaseLoader implements CommandLineRunner {
 		Location newLoc2 = new Location(34.1, -118.25);
 		this.locationRepo.save(newLoc2);
 		newEvent2.setLocation(newLoc2);
-		Occurrence newOccur2 = new Occurrence("Second", Timestamp.valueOf("2016-03-15 10:10:10.0"));
+		Occurrence newOccur2 = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		newEvent2.addOccurrence(newOccur2);	
-		Occurrence newOccur3 = new Occurrence("Second2", Timestamp.valueOf("2016-03-16 10:10:10.0"));
+		Occurrence newOccur3 = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEvent2.addOccurrence(newOccur3);	
 		this.eventRepo.save(newEvent2);
 	}
