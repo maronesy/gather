@@ -147,7 +147,7 @@ public class RegisterControllerTest {
 
 		// Invoking the API
 		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/api/register", httpEntity,
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/registrants", httpEntity,
 				Map.class, Collections.EMPTY_MAP);
 
 		assertNotNull(apiResponse);

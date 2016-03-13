@@ -97,7 +97,7 @@ public class SessionControllerTest {
 
 		// Invoking the API
 		
-		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/api/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
+		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
 
 		assertNotNull(response);
 		
@@ -119,15 +119,10 @@ public class SessionControllerTest {
 				requestHeaders);
 
 		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/api/sign-in", HttpMethod.POST, httpEntity,
+		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
 				Map.class, Collections.EMPTY_MAP);
 		
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/api/sign-in", httpEntity,
-				Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(apiResponse);
+		assertNotNull(result);
 		// Asserting the response of the API.
 		//return apiResponse;
 		return result;

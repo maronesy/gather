@@ -114,7 +114,7 @@ public class SignInControllerTest {
 
 		// Invoking the API
 		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/api/sign-in", httpEntity,
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/registrants/signin", httpEntity,
 				Map.class, Collections.EMPTY_MAP);
 
 		assertNotNull(apiResponse);

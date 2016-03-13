@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.utilities.ActorStateUtility;
@@ -17,7 +18,7 @@ import cs428.project.gather.utilities.SignOutHelper;
 @Controller("signOutController")
 public class SignOutController
 {
-	@RequestMapping(value="/api/sign-out")
+	@RequestMapping(value="/rest/registrants/signout", method = RequestMethod.POST)
 	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response)
 	{
 		boolean isAuthed = ActorStateUtility.retrieveAuthenticatedStateInRequest(request);
