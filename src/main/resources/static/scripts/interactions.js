@@ -13,19 +13,28 @@ function resizeLayout() {
 	$('#resizeLayout').on('click', function() {
 		if ($('#rightPane').hasClass("col-lg-7")) {
 			$('#resizeLayout').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
-			$('#rightPane').switchClass("col-lg-7", "col-lg-5", 1000);
+			$('#rightPane').switchClass("col-lg-7", "col-lg-5");
 			setTimeout(
 					function(){
-						$('#leftPane').switchClass("col-lg-5", "col-lg-7", 1000);
-					}, 1000);
+						$('#leftPane').switchClass("col-lg-5", "col-lg-7");
+					}, 200);
+			setInterval(
+					function(){
+						resizeMap();
+					}, 10);
 		} else if ($('#rightPane').hasClass("col-lg-5")) {
 			$('#resizeLayout').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
-			$('#leftPane').switchClass("col-lg-7", "col-lg-5", 1000);
+			$('#leftPane').switchClass("col-lg-7", "col-lg-5");
 			setTimeout(
 					function(){
-						$('#rightPane').switchClass("col-lg-5", "col-lg-7", 1000);
-					}, 1000);
+						$('#rightPane').switchClass("col-lg-5", "col-lg-7");
+					}, 200);
+			setInterval(
+					function(){
+						resizeMap();
+					}, 10);
 		}
+		clearInterval(1000);
 	});
 }
 
