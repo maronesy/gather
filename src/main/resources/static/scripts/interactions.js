@@ -16,10 +16,6 @@ $(document).ready(function() {
 
 var signedIn = false;
 
-$( window ).resize(function() {
-	resizeMap();
-	});
-
 function resizeMap() {
 	var cw = $('#map-canvas').width()*.75;
 	$('#map-canvas').css({'height':cw+'px'});
@@ -165,7 +161,7 @@ function signIn() {
 				$.ajax({
 				 	accepts: "application/json",
 					type : "POST",
-					url : "api/sign-in",
+					url : "rest/registrants/signin",
 					contentType: "application/json; charset=UTF-8",
 					dataType: "json",
 					data : '{ \
@@ -198,8 +194,8 @@ function signOut() {
 			function() {
 				 $.ajax({
 					 	accepts: "application/json",
-						type : "GET",
-						url : "api/sign-out",
+						type : "POST",
+						url : "rest/registrants/signout",
 						contentType: "application/json; charset=UTF-8",
 						success : function(returnvalue) {
 							if (returnvalue.status == 0) {
@@ -246,7 +242,7 @@ function signUp() {
 				 $.ajax({
 					 	accepts: "application/json",
 						type : "POST",
-						url : "api/register",
+						url : "/rest/registrants",
 						contentType: "application/json; charset=UTF-8",
 						dataType: "json",
 						beforeSend: function() {
@@ -291,7 +287,7 @@ function sessionCheck() {
 	$.ajax({
 	 	accepts: "application/json",
 		type : "GET",
-		url : "api/session",
+		url : "rest/session",
 		contentType: "application/json; charset=UTF-8",
 		success : function(returnvalue) {
 			if (returnvalue.status == 5) {

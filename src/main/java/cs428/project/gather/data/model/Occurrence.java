@@ -16,20 +16,11 @@ public class Occurrence {
 	private String description;
 	private Timestamp datetime;
 
-	@ManyToOne
-	private Location location;
-
 	private Occurrence() {}
 
 	public Occurrence(String description, Timestamp datetime) {
 		this.description = description;
 		this.datetime = datetime;
-	}
-	
-	public Occurrence(String description, Timestamp datetime, Location location){
-		this.description = description;
-		this.datetime = datetime;
-		this.location = location;
 	}
 
 	public String getDescription() {
@@ -50,12 +41,4 @@ public class Occurrence {
 		this.datetime = datetime;
 	}
 
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		Assert.notNull(location);
-		this.location = location;
-	}
 }

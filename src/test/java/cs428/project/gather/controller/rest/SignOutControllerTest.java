@@ -97,7 +97,7 @@ public class SignOutControllerTest {
 
 		// Invoking the API
 		
-		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/api/sign-out", HttpMethod.GET, requestEntity, RESTResponseData.class);
+		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/registrants/signout", HttpMethod.POST, requestEntity, RESTResponseData.class);
 
 		assertNotNull(response);
 		
@@ -119,17 +119,12 @@ public class SignOutControllerTest {
 				requestHeaders);
 
 		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/api/sign-in", HttpMethod.POST, httpEntity,
+		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
 				Map.class, Collections.EMPTY_MAP);
 		
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/api/sign-in", httpEntity,
-				Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(apiResponse);
+		assertNotNull(result);
 		// Asserting the response of the API.
-		//return apiResponse;
+
 		return result;
 
 	}

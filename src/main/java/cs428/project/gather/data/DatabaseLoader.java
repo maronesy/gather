@@ -3,6 +3,7 @@ package cs428.project.gather.data;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -36,14 +37,6 @@ public class DatabaseLoader implements CommandLineRunner {
 	@Override
 	public void run(String... strings) throws Exception {
 		this.registeredRepo.save(new Registered("Frodo", "Baggins", 24, "Los Angeles"));
-
-//		Event testEvent = new Event("Test Event");
-//		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-//		this.locationRepo.save(location);
-//		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
-//		testEvent.addOccurrence(occur);
-//		Event result = this.eventRepo.save(testEvent);
-//		assert(result.getDescription().isEmpty()==false);
 		
 		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 		Registrant registrantResult = this.registrantRepo.save(aUser);
@@ -51,7 +44,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		this.locationRepo.save(location);
-		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()), location);
+		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		Event eventResult = this.eventRepo.save(testEvent);
 		
@@ -59,7 +52,25 @@ public class DatabaseLoader implements CommandLineRunner {
 		testEvent.addParticipant(aUser);
 		//It is recommended you also add the Event to the Registrant, so that the in memory state of the objects is consistent with the DB
 		//We can make either function do the opposite add if we wish, to simplify usage elsewhere
-//		aUser.joinEvent(testEvent);
+		aUser.joinEvent(testEvent);
 		this.eventRepo.save(testEvent);
+		
+		Event newEvent = new Event("Test1");
+		Location newLoc = new Location(34.0498, -118.2498);
+		this.locationRepo.save(newLoc);
+		newEvent.setLocation(newLoc);
+		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
+		newEvent.addOccurrence(newOccur);
+		this.eventRepo.save(newEvent);
+		
+		Event newEvent2 = new Event("Test2");
+		Location newLoc2 = new Location(34.1, -118.25);
+		this.locationRepo.save(newLoc2);
+		newEvent2.setLocation(newLoc2);
+		Occurrence newOccur2 = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
+		newEvent2.addOccurrence(newOccur2);	
+		Occurrence newOccur3 = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
+		newEvent2.addOccurrence(newOccur3);	
+		this.eventRepo.save(newEvent2);
 	}
 }
