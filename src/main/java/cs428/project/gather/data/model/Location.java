@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 public class Location {
 	private @Id @GeneratedValue Long id;
 	private double latitude;
-	private double longtitude;
+	private double longitude;
 	private String streetAddr;
 	private String city;
 	private String state;
@@ -32,7 +32,7 @@ public class Location {
 		this.state = state;
 		this.zipCode = zipCode;
 		this.latitude = latitude;
-		this.longtitude = longitude;
+		this.longitude = longitude;
 	}
 	
 	public String getDescription() {
@@ -49,10 +49,10 @@ public class Location {
 		this.latitude = latitude;
 	}
 	public double getLongtitude() {
-		return longtitude;
+		return longitude;
 	}
 	public void setLongtitude(double longtitude) {
-		this.longtitude = longtitude;
+		this.longitude = longtitude;
 	}
 	public String getStreetAddr() {
 		return streetAddr;

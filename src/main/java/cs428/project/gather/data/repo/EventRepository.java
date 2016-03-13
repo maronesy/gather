@@ -1,7 +1,9 @@
 package cs428.project.gather.data.repo;
 
+import java.sql.Timestamp;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import cs428.project.gather.data.model.Event;
@@ -15,5 +17,15 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	 */
 	Event findOne(Long id);
 	
+	List<Event> findByName(String name);
 	List<Event> findByDescription(String description);
+	
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
+	List<Event> findByLocationWithin(double lowerLat, double uppLat, double lowerLon, double upperLon);
+	
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?1")
+	List<Event> findByOccurrenceTimeWithin(Timestamp upperBound);
+	
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
+	List<Event> findByLocationAndOccurrenceTimeWithin(double lowerLat, double uppLat, double lowerLon, double upperLon, Timestamp upperTime);
 }

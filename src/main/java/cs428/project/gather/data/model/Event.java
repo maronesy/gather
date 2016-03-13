@@ -1,7 +1,5 @@
 package cs428.project.gather.data.model;
 
-
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.springframework.util.Assert;
 
@@ -24,7 +24,11 @@ import lombok.Data;
 public class Event {
 	private @Id @Column(name="ID") @GeneratedValue Long id;
 
+	private String name;
 	private String description;
+	
+	@ManyToOne
+	private Location location;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
@@ -51,13 +55,17 @@ public class Event {
 	private Set<Category> categories = new HashSet<Category>();
 	
 	protected Event() {}
-	public Event(String description) {
-		Assert.hasText(description);
-		this.setDescription(description);
+	
+	public Event(String name) {
+		setName(name);
 	}
 	
 	public Long getId() {
 		return id;
+	}
+	
+	public void setLocation(Location location){
+		this.location = location;
 	}
 	
 	public void addOccurrence(Occurrence occurrence) {
@@ -84,8 +92,19 @@ public class Event {
 	}
 	
 	public void setDescription(String description) {
+		Assert.hasText(description);
 		this.description = description;
 	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public void setName(String name){
+		Assert.hasText(name);
+		this.name = name;
+	}
+	
 	public Set<Feedback> getFeedbacks() {
 		return Collections.unmodifiableSet(feedbacks);
 	}
@@ -100,5 +119,8 @@ public class Event {
 	
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
+	}
+	public Location getLocation() {
+		return this.location;
 	}
 }
