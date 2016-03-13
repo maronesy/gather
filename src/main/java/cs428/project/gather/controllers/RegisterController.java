@@ -20,7 +20,6 @@ import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.ActorTypeHelper;
-import cs428.project.gather.utilities.RedirectPathHelper;
 import cs428.project.gather.validator.RegistrationDataValidator;
 
 @Controller("registerController")
@@ -31,21 +30,8 @@ public class RegisterController {
 
 	@Autowired
 	private RegistrationDataValidator registrationDataValidator;
-	
-	@RequestMapping(value = "/api/register", method = RequestMethod.GET)
-	public String userRegistration(HttpServletRequest request) {
-		String viewName = null;
 
-		if (ActorTypeHelper.isAnonymousUser(request)) {
-			viewName = "register";
-		} else {
-			viewName = RedirectPathHelper.buildRedirectPath(request, "/");
-		}
-
-		return viewName;
-	}
-
-	@RequestMapping(value = "/api/register", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value = "/rest/registrants", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {

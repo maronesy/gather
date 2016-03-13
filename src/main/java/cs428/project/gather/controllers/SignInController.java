@@ -23,7 +23,6 @@ import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.ActorTypeHelper;
-import cs428.project.gather.utilities.RedirectPathHelper;
 import cs428.project.gather.validator.SignInDataValidator;
 
 import com.google.gson.Gson;
@@ -44,21 +43,7 @@ public class SignInController {
 		return signInData;
 	}
 
-	@RequestMapping(value = "/api/sign-in", method = RequestMethod.GET)
-	public String signIn(HttpServletRequest request) {
-		String viewName = null;
-
-		//TODO: None of this means anything for our project. We don't have these views.
-		if (ActorTypeHelper.isAnonymousUser(request)) {
-			viewName = "sign-in";
-		} else {
-			viewName = RedirectPathHelper.buildRedirectPath(request, "/invalid-request");
-		}
-		
-		return viewName;
-	}
-
-	@RequestMapping(value = "/api/sign-in", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value = "/rest/registrants/signin", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {

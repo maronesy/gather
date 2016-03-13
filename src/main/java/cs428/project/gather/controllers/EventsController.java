@@ -32,7 +32,7 @@ public class EventsController {
     @Autowired
     private EventDataValidator eventsDataValidator;
 
-    @RequestMapping(value = "/api/getevents", method = RequestMethod.GET)
+    @RequestMapping(value = "/rest/events", method = RequestMethod.GET)
     public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
