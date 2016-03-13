@@ -22,7 +22,7 @@ public class SessionController
 	@Autowired
 	private RegistrantRepository registrantDataAdapter;
 	
-	@RequestMapping(value="/api/session")
+	@RequestMapping(value="/rest/session")
 	public ResponseEntity<RESTSessionResponseData> getSession(HttpServletRequest request, HttpServletResponse response)
 	{
 		if(ActorStateUtility.retrieveAuthenticatedStateInRequest(request)){
