@@ -36,12 +36,11 @@ public class EventsController {
     public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
-/*
-        List<Event> events = new ArrayList<Event>();
-        // Generate dummy events
-        for (int i=0; i < 21; i++) {
-            events.add(  new Event("event #" + Integer.toString(i))  );
-        }
+//        List<Event> events = new ArrayList<Event>();
+//        // Generate dummy events
+//        for (int i=0; i < 21; i++) {
+//            events.add(  new Event("event #" + Integer.toString(i))  );
+//        }
 
 		// // Calculate the upper and lower latitude bounds.
 		double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
@@ -56,10 +55,10 @@ public class EventsController {
 		//TODO: fix time stamp when new changes are ready
 		Timestamp timeWindow = Timestamp.valueOf("2016-04-13 10:10:10.0");
 		//DateTime dt = new DateTime().now().plusHours(hoursFromData);
-*/
 
-        // List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
-        List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
+
+         List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
+        //List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
         return PaginatedResponseData.createResponse(request, events);
     }
 

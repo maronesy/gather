@@ -76,6 +76,8 @@ public class DatabaseLoader implements CommandLineRunner {
 		newEvent2.setLocation(newLoc2);
 		Occurrence newOccur2 = new Occurrence("Second", Timestamp.valueOf("2016-03-15 10:10:10.0"));
 		newEvent2.addOccurrence(newOccur2);	
+		Occurrence newOccur3 = new Occurrence("Second2", Timestamp.valueOf("2016-03-16 10:10:10.0"));
+		newEvent2.addOccurrence(newOccur3);	
 		this.eventRepo.save(newEvent2);
 	}
 }
