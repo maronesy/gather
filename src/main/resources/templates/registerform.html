@@ -6,7 +6,7 @@
 <body>
 <div id="registerBox" class="register-popup" align="center" th:fragment="registerform">
 	<a href="#" class="close-button"><img style="width:32px;height:32px;" src="images/close_pop.png" class="btn_close" title="Close Window" alt="Close" /></a>
-	<form id = "registration">
+	<form action="javascript:void(0);" id="registration">
 		<div class="form-group">
 		  	<label for="InputEmail">Email Address</label>
 		  	<input type="email" class="form-control" id="inputEmail" placeholder="Email"/>
@@ -24,7 +24,7 @@
 		  	<input type="text" class="form-control" id="inputDisplayName" placeholder="Display Name"/>
 		</div>
 		<span style="color:red"><div class="form-group" id="formFeedback"></div></span>
-	  <button type="button" id="registerFormSubmit" href="#registerBox" class="btn btn-default">Submit</button>
+	  <input type="submit" id="registerFormSubmit" href="#registerBox" value="Submit" class="btn btn-default"/>
 	  <a id="loading" style="display: none"><img src="images/ajaxLoader.gif" style="width:43px;height:11px;"/></a>
 	</form>
 </div>
