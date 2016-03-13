@@ -53,6 +53,72 @@ describe("front end email password tests", function () {
     
 });
 
+describe("zip code button click test", function() {
+	beforeEach(function () {
+			loadFixtures('rightpane/map.html');
+		});
+	  
+	  it("empty zip code", function() {
+	    runs(function() {
+	    	$("#enterZip").trigger('click');
+	    });
+
+	    waitsFor(function() {
+	    	return ($('#zipCodeErrorBox').html() == 'Zip code field is empty')
+	    }, "no response after clicking #enterZip", 2000);
+
+	    runs(function() {
+	    	expect($('#zipCodeErrorBox').html()).toBe('Zip code field is empty')
+	    });
+	  });
+	  
+	  it("non-five-digit zip code", function() {
+		    runs(function() {
+		    	$("#zipCode").val('1034');
+		    	$("#enterZip").trigger('click');
+		    });
+
+		    waitsFor(function() {
+		    	return ($('#zipCodeErrorBox').html() == 'Zip code must be five digits')
+		    }, "no response after clicking #enterZip", 2000);
+
+		    runs(function() {
+		    	expect($('#zipCodeErrorBox').html()).toBe('Zip code must be five digits')
+		    });
+		  });
+	  
+	  it("non-digit zip code", function() {
+		    runs(function() {
+		    	$("#zipCode").val('asdff');
+		    	$("#enterZip").trigger('click');
+		    });
+
+		    waitsFor(function() {
+		    	return ($('#zipCodeErrorBox').html() == 'Zip code must be five digits')
+		    }, "no response after clicking #enterZip", 2000);
+
+		    runs(function() {
+		    	expect($('#zipCodeErrorBox').html()).toBe('Zip code must be five digits')
+		    });
+		  });
+	  
+//	  it("non-existing zip code", function() {
+//		    runs(function() {
+//		    	$("#zipCode").val('13025');
+//		    	$("#enterZip").trigger('click');
+//		    });
+//
+//		    waitsFor(function() {
+//		    	return ($('#zipCodeErrorBox').html() == 'Zip code does not exist')
+//		    }, "no response after clicking #enterZip", 10000);
+//
+//		    runs(function() {
+//		    	var htmlValue = $('#zipCodeErrorBox').html();
+//		    	expect(htmlValue).toBe('Zip code does not exist')
+//		    });
+//		  });
+	});
+
 describe("register form tests", function () {
 	beforeEach(function () {
 		//jasmine-jquery.js defines Fixtures root to be 

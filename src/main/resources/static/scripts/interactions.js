@@ -14,10 +14,6 @@ $(document).ready(function() {
 	headerSelect();
 }); 
 
-$(".theme-picker").click(function () {
-    $('head').append('<link rel="stylesheet" href="" type="text/css" media="screen" id="theme_switcher"/>');
-});
-
 var signedIn = false;
 
 $( window ).resize(function() {
@@ -86,7 +82,6 @@ function locateMe() {
 
 function enterZip() {
 	$('#enterZip').on('click', function() {
-		
 		var zipcode = $('#zipCode').val();
 		var zipCodeErrorBox = $(this).attr('href');
 		$('#zipSearching').show();
