@@ -92,7 +92,7 @@ public class Event {
 	}
 	
 	public void setDescription(String description) {
-		Assert.hasText(name);
+		Assert.hasText(description);
 		this.description = description;
 	}
 	
