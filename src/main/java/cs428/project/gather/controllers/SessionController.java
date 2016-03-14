@@ -28,9 +28,9 @@ public class SessionController
 		if(ActorStateUtility.retrieveAuthenticatedStateInRequest(request)){
 			Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 			String displayName = this.registrantDataAdapter.findOne(actor.getActorID()).getDisplayName();
-			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(5,"Session Found",displayName),HttpStatus.FOUND);
+			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(5,"Session Found",displayName),HttpStatus.OK);
 		}else{
-			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(-5,"Session Not Found"),HttpStatus.NOT_FOUND);
+			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(-5,"Session Not Found"),HttpStatus.OK);
 		}
 	}
 }

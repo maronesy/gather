@@ -74,7 +74,7 @@ public class SessionControllerTest {
 		// Invoking the API
 		
 		ResponseEntity<RESTResponseData> response = checkSesseion(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.FOUND));
+		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
 
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
@@ -86,7 +86,7 @@ public class SessionControllerTest {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<RESTResponseData> response = checkSesseion(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.NOT_FOUND));
+		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
 
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Not Found"));
