@@ -14,8 +14,6 @@ $(document).ready(function() {
 	headerSelect();
 }); 
 
-var signedIn = false;
-
 function resizeMap() {
 	var cw = $('#map-canvas').width()*.75;
 	$('#map-canvas').css({'height':cw+'px'});
@@ -172,7 +170,7 @@ function signIn() {
 						if (returnvalue.status == 0) {
 //							alert("Sign In Successful");
 							resetSignInFields()
-							signedIn = true
+							gather.global.session.signedIn = true
 							gather.global.currentDisplayName = returnvalue.displayName;
 							updateGreeting();
 							headerSelect()
@@ -201,7 +199,7 @@ function signOut() {
 							if (returnvalue.status == 0) {
 //								alert(returnvalue.status)
 //								alert(returnvalue.message)
-								signedIn = false;
+								gather.global.session.signedIn = false;
 								headerSelect()
 							} else {
 								if (returnvalue.status != 0) {
@@ -263,7 +261,7 @@ function signUp() {
 									$('#mask').remove();
 								});
 								resetRegisterFields();
-								signedIn = true
+								gather.global.session.signedIn = true
 								gather.global.currentDisplayName = displayName;
 								updateGreeting();
 								headerSelect();
@@ -289,28 +287,21 @@ function sessionCheck() {
 		type : "GET",
 		url : "rest/session",
 		contentType: "application/json; charset=UTF-8",
-		success : function(returnvalue) {
+		success : function(returnvalue, status, jqXHR) {
 			if (returnvalue.status == 5) {
-				signedIn = true;
-				headerSelect();
-//				alert(returnvalue.status);
-//				alert(returnvalue.message)
-			} 
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-//		    alert(jqXHR.status);
-//		    alert(textStatus);
-//		    alert(errorThrown);
-			if (errorThrown == "Found") {
-				signedIn = true;
+				gather.global.session.signedIn = true;
 				gather.global.currentDisplayName = jqXHR.responseJSON.displayName;
 				updateGreeting();
 				headerSelect();
-			} else {
-				signedIn = false;
+			}else {
+				gather.global.session.signedIn = false;
 				headerSelect();
-			}
-
+			} 
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+		    alert(jqXHR.status);
+		    alert(textStatus);
+		    alert(errorThrown);
 		}
 	});
 }
@@ -355,10 +346,10 @@ function validateDisplayName(displayName){
 
 
 function headerSelect() {
-	if (signedIn == true) {
+	if (gather.global.session.signedIn == true) {
 		$("#headerOut").hide();
 		$("#headerIn").show();
-	} else if (signedIn == false){
+	} else if (gather.global.session.signedIn == false){
 		$("#headerIn").hide();
 		$("#headerOut").show();
 	}
