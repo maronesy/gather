@@ -109,30 +109,32 @@ function removeZipCodeError() {
 	});
 }
 
-function registerBox() {
-	$('#registerButton').on('click', function() {
+var handleRegisterBtnClick = function() {
 
-		// Getting the variable's value from a link
-		var registerBox = $(this).attr('href');
+	// Getting the variable's value from a link
+	var registerBox = $(this).attr('href');
+	alert('#registerBox')
+	// Fade in the Popup
+	$(registerBox).fadeIn(300);
 
-		// Fade in the Popup
-		$(registerBox).fadeIn(300);
+	// Set the center alignment padding + border see css style
+	var popMargTop = ($(registerBox).height() + 24) / 2;
+	var popMargLeft = ($(registerBox).width() + 24) / 2;
 
-		// Set the center alignment padding + border see css style
-		var popMargTop = ($(registerBox).height() + 24) / 2;
-		var popMargLeft = ($(registerBox).width() + 24) / 2;
-
-		$(registerBox).css({
-			'margin-top' : -popMargTop,
-			'margin-left' : -popMargLeft
-		});
-
-		// Add the mask to body
-		$('body').append('<div id="mask"></div>');
-		$('#mask').fadeIn(300);
-
-		return false;
+	$(registerBox).css({
+		'margin-top' : -popMargTop,
+		'margin-left' : -popMargLeft
 	});
+
+	// Add the mask to body
+	$('body').append('<div id="mask"></div>');
+	$('#mask').fadeIn(300);
+
+	return false;
+}
+
+function registerBox() {
+	$('#registerButton').on('click', handleRegisterBtnClick);
 
 	// When clicking on the button close or the mask layer the popup closed
 	$('a.close-button, #mask').on('click', function() {

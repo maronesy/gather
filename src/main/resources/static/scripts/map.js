@@ -278,7 +278,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	$('#addEventBtn').on('click', function() {
-		addNewEvent() 
+		if(gather.global.session.signedIn){
+			addNewEvent()
+		}else{
+			$("#anonymous-user-add-event-failure-modal").modal("show");
+		}
 	});
 	
 	function addNewEvent() {
