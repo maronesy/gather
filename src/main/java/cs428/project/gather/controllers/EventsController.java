@@ -28,13 +28,13 @@ public class EventsController {
 
     @Autowired
     EventRepository eventRepo;
-    
+
     @Autowired
     RegistrantRepository regRepo;
 
     @Autowired
     private EventsQueryDataValidator eventsQueryDataValidator;
-    
+
     @Autowired
     private NewEventDataValidator newEventDataValidator;
 
@@ -67,24 +67,24 @@ public class EventsController {
         //List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
         return PaginatedResponseData.createResponse(request, events);
     }
-    
+
     @RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<RESTResponseData> addEvent(HttpServletRequest request, @RequestBody String rawData,
+	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
 
 		Gson gson = new Gson();
 		//TODO: Wrap this in TryCatch, report exception to frontend.
 		NewEventData newEventData  = gson.fromJson(rawData, NewEventData.class);
-		
+
 		if (ActorTypeHelper.isRegisteredUser(request)) {
 			newEventDataValidator.validate(newEventData,bindingResult);
 			System.out.println("Validated: " + rawData);
-			
+
 			if (bindingResult.hasErrors()) {
-				return RESTResponseData.responseBuilder(bindingResult);
+                return RESTResourceResponseData.<Event>badResponse(bindingResult);
 			} else {
-				
+
 				Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 				Registrant owner = this.regRepo.findOne(actor.getActorID());
 				Event newEvent = buildEvent(newEventData, owner);
@@ -94,39 +94,39 @@ public class EventsController {
 				Coordinates callerLoc=newEventData.getCallerCoodinates();
 				Coordinates eventLoc=newEventData.getEventCoodinates();
 				double distanceFromCaller = GeodeticHelper.getDistanceBetweenCoordinates(callerLoc, eventLoc);
-				
+
 				System.out.println("DistanceFromCaller: " + distanceFromCaller);
-				
-				return new ResponseEntity<RESTResponseData>(new RESTAddEventResponseData(0, "", savedEventResult, distanceFromCaller),HttpStatus.CREATED);
+
+				return new ResponseEntity<RESTResourceResponseData<Event>>(new RESTResourceResponseData(0, savedEventResult), HttpStatus.CREATED);
 			}
 		} else {
 			System.out.println("An anonymous user tried to add an event.");
 			bindingResult.reject("-7","Incorrect User State. Only registered users can add events.");
-			return RESTResponseData.responseBuilder(bindingResult);
+            return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 	}
-    
+
 	private Event buildEvent(NewEventData newEventData, Registrant owner) {
 		Event newEvent = new Event(newEventData.getEventName());
 		newEvent.setDescription(newEventData.getEventDescription());
 		newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
-		
+
 		if(!newEvent.addParticipant(owner)){
 			//TODO: Error, unable to add participant
 		}
-		
+
 		if(!newEvent.addOwner(owner)){
 			//TODO: Error, unable to add owner
 		}
-		
+
 		Occurrence occurrence = new Occurrence("",new Timestamp(newEventData.getEventTime()));
 		if(!newEvent.addOccurrence(occurrence)){
 			//TODO: Error, unable to add occurrence
 		}
-		
+
 		//TODO: Figure out categories, set up ENUM?
 //		Category category = new Category();
-		
+
 		return newEvent;
 	}
 }

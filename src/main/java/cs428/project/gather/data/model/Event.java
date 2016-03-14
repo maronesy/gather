@@ -28,7 +28,7 @@ public class Event {
 
 	private String name;
 	private String description;
-	
+
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Location location;
 
@@ -55,23 +55,23 @@ public class Event {
 
 	@ManyToOne
 	private Category category;
-	
-	protected Event() {}
-	
+
+	public Event() {}
+
 	public Event(String name) {
 		setName(name);
 	}
-	
+
 	// Setters and Getters
-	
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setLocation(Location location){
 		this.location = location;
 	}
-	
+
 	public boolean addOccurrence(Occurrence occurrence) {
 		Assert.notNull(occurrence);
 		return this.occurrences.add(occurrence);
@@ -90,21 +90,21 @@ public class Event {
 	public List<Occurrence> getOccurrences() {
 		return Collections.unmodifiableList(occurrences);
 	}
-	
+
 
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		Assert.hasText(description);
 		this.description = description;
 	}
-	
+
 	public String getName(){
 		return name;
 	}
-	
+
 	public void setName(String name){
 		Assert.hasText(name);
 		this.name = name;
@@ -125,16 +125,16 @@ public class Event {
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
 	}
-	
+
 	public boolean addOwner(Registrant anOwner){
 		return owners.add(anOwner);
 	}
 	public Location getLocation() {
 		return this.location;
 	}
-	
+
 	public Category getCategory(){
 		return this.category;
-		
+
 	}
 }
