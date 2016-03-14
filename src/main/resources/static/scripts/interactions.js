@@ -1,4 +1,18 @@
-var signedIn = false;
+$(document).ready(function() {
+	resizeLayout();
+	resizeMap();
+	tableInteractions();
+	locateMe();
+	enterZip();
+	registerBox();
+	signUp();
+	signIn();
+	signOut();
+	removeZipCodeError();
+	sessionCheck();
+	onLoadSessionCheck();
+	headerSelect();
+}); 
 
 function resizeMap() {
 	var cw = $('#map-canvas').width()*.75;
@@ -61,16 +75,7 @@ function locateMe() {
 }
 
 function enterZip() {
-//	$('#enterZip').mousedown(function() {
-//		$('#zipSearching').show();
-//	});
-//	
-//	$('#enterZip').keydown(function() {
-//		$('#zipSearching').show();
-//	});
-	
 	$('#enterZip').on('click', function() {
-		
 		var zipcode = $('#zipCode').val();
 		var zipCodeErrorBox = $(this).attr('href');
 		$('#zipSearching').show();
@@ -94,9 +99,7 @@ function enterZip() {
 					}				
 				}
 				$('#zipSearching').hide();
-			}, 100)
-
-		
+			}, 100);
 	});
 }
 
@@ -167,7 +170,7 @@ function signIn() {
 						if (returnvalue.status == 0) {
 //							alert("Sign In Successful");
 							resetSignInFields()
-							signedIn = true
+							gather.global.session.signedIn = true
 							gather.global.currentDisplayName = returnvalue.displayName;
 							updateGreeting();
 							headerSelect()
@@ -196,7 +199,7 @@ function signOut() {
 							if (returnvalue.status == 0) {
 //								alert(returnvalue.status)
 //								alert(returnvalue.message)
-								signedIn = false;
+								gather.global.session.signedIn = false;
 								headerSelect()
 							} else {
 								if (returnvalue.status != 0) {
@@ -211,6 +214,7 @@ function signOut() {
 }
 
 
+
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
@@ -222,7 +226,7 @@ function signUp() {
 				var registerBox = $('#registerFormSubmit').attr('href');
 				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
 					$('#formFeedback').html('All the fields are required');
-				} else if (validate_email(email) == false) {
+				} else if (validateEmail(email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
 				} else if (validatePass(password) == false) {
@@ -257,7 +261,7 @@ function signUp() {
 									$('#mask').remove();
 								});
 								resetRegisterFields();
-								signedIn = true
+								gather.global.session.signedIn = true
 								gather.global.currentDisplayName = displayName;
 								updateGreeting();
 								headerSelect();
@@ -283,28 +287,21 @@ function sessionCheck() {
 		type : "GET",
 		url : "rest/session",
 		contentType: "application/json; charset=UTF-8",
-		success : function(returnvalue) {
+		success : function(returnvalue, status, jqXHR) {
 			if (returnvalue.status == 5) {
-				signedIn = true;
-				headerSelect();
-//				alert(returnvalue.status);
-//				alert(returnvalue.message)
-			} 
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-//		    alert(jqXHR.status);
-//		    alert(textStatus);
-//		    alert(errorThrown);
-			if (errorThrown == "Found") {
-				signedIn = true;
+				gather.global.session.signedIn = true;
 				gather.global.currentDisplayName = jqXHR.responseJSON.displayName;
 				updateGreeting();
 				headerSelect();
-			} else {
-				signedIn = false;
+			}else {
+				gather.global.session.signedIn = false;
 				headerSelect();
-			}
-
+			} 
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+		    alert(jqXHR.status);
+		    alert(textStatus);
+		    alert(errorThrown);
 		}
 	});
 }
@@ -323,7 +320,7 @@ function onLoadSessionCheck() {
 	}); 
 }
 
-function validate_email(email) {
+function validateEmail(email) {
 	var x = email;
 	var atpos = x.indexOf("@");
 	var dotpos = x.lastIndexOf(".");
@@ -352,10 +349,10 @@ function validateDisplayName(displayName){
 
 
 function headerSelect() {
-	if (signedIn == true) {
+	if (gather.global.session.signedIn == true) {
 		$("#headerOut").hide();
 		$("#headerIn").show();
-	} else if (signedIn == false){
+	} else if (gather.global.session.signedIn == false){
 		$("#headerIn").hide();
 		$("#headerOut").show();
 	}
