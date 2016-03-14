@@ -33,21 +33,21 @@ public class ModelIntegrationTest {
 	@Autowired
 	EventRepository eventRepo;
 	
-	@Autowired
-	LocationRepository locationRepo;
+//	@Autowired
+//	LocationRepository locationRepo;
 	
 	@Before
 	public void setUp() {
 		//NOTE: Since Event currently owns the relationship, you must delete the events prior to deleting registrants
 		eventRepo.deleteAll();
 		registrantRepo.deleteAll();
-		locationRepo.deleteAll();
+//		locationRepo.deleteAll();
 		
 		//Getting the count from the repo has some effect on flushing the tables. 
 		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
 		assertEquals(this.eventRepo.count(),0);
 		assertEquals(this.registrantRepo.count(),0);
-		assertEquals(this.locationRepo.count(),0);
+//		assertEquals(this.locationRepo.count(),0);
 	}
 	
 	@Test
@@ -59,7 +59,7 @@ public class ModelIntegrationTest {
 		
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
 //		testEvent.addOccurrence(occur);
 		Event eventResult = this.eventRepo.save(testEvent);

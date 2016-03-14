@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Category {
@@ -15,11 +16,11 @@ public class Category {
 	private String description;
 	
 
-	@ManyToMany(mappedBy="categories")
+	@OneToMany(mappedBy="category")
 	private Set<Event> events = new HashSet<Event>();
 	
 	@ManyToMany(mappedBy="preferences")
-	private Set<Registrant> preferedUsers = new HashSet<Registrant>();
+	private Set<Registrant> userPreferences = new HashSet<Registrant>();
 
 	private Category() {}
 

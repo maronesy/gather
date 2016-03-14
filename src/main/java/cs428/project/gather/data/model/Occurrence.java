@@ -14,13 +14,13 @@ import org.springframework.util.Assert;
 public class Occurrence {
 	private @Id @GeneratedValue Long id;
 	private String description;
-	private Timestamp datetime;
+	private Timestamp timestamp;
 
 	private Occurrence() {}
 
 	public Occurrence(String description, Timestamp datetime) {
 		this.description = description;
-		this.datetime = datetime;
+		this.timestamp = datetime;
 	}
 
 	public String getDescription() {
@@ -32,13 +32,13 @@ public class Occurrence {
 		this.description = description;
 	}
 
-	public Timestamp getDatetime() {
-		return datetime;
+	public Timestamp getTimestamp() {
+		return timestamp;
 	}
 
-	public void setDatetime(Timestamp datetime) {
-		Assert.notNull(datetime);
-		this.datetime = datetime;
+	public void setTimestamp(Timestamp timestamp) {
+		Assert.notNull(timestamp);
+		this.timestamp = timestamp;
 	}
 
 }

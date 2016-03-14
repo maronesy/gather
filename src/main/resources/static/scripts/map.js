@@ -470,7 +470,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		
 		var requestOptions = {
 			type: "POST",
-			url: "api/new-event/add",
+			url: "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			data: requestData,
 			dataType: "json",

@@ -28,12 +28,18 @@ public class EventsController {
 
     @Autowired
     EventRepository eventRepo;
+    
+    @Autowired
+    RegistrantRepository regRepo;
 
     @Autowired
-    private EventDataValidator eventsDataValidator;
+    private EventsQueryDataValidator eventsQueryDataValidator;
+    
+    @Autowired
+    private NewEventDataValidator newEventDataValidator;
 
     @RequestMapping(value = "/rest/events", method = RequestMethod.GET)
-    public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+    public ResponseEntity<PaginatedResponseData<Event>> getNearbyEvents(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
 //        List<Event> events = new ArrayList<Event>();
@@ -61,40 +67,66 @@ public class EventsController {
         //List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
         return PaginatedResponseData.createResponse(request, events);
     }
+    
+    @RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResponseData> addEvent(HttpServletRequest request, @RequestBody String rawData,
+			BindingResult bindingResult) {
 
-//    @RequestMapping(value = "/api/add", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-//	@ResponseBody
-//	public ResponseEntity<RESTResponseData> createEvent(HttpServletRequest request, @RequestBody String rawData,
-//			BindingResult bindingResult) {
-//
-//		Gson gson = new Gson();
-//		EventsQueryData eventData = gson.fromJson(rawData, EventsQueryData.class);
-//
-//		if (!ActorTypeHelper.isAnonymousUser(request)) {
-//			eventsDataValidator.validate(eventData,bindingResult);
-//
-//			if (bindingResult.hasErrors()) {
-//				return RESTResponseData.responseBuilder(bindingResult);
-//			} else {
-//
-//				Event newEvent = buildEvent(eventData);
-//
-//				Event savedEventResult = this.eventRepo.save(newEvent);
-//
-//				return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.CREATED);
-//			}
-//		} else {
-//			bindingResult.reject("-7","Incorrect User State. Only Registered User can register");
-//			return RESTResponseData.responseBuilder(bindingResult);
-//		}
-//
-//	}
-//
-//	private Event buildEvent(EventsQueryData eventData) {
-//		Event newEvent = new Event();
-//		newEvent.setDescription(eventData.getDescription());
-//
-//		return newEvent;
-//	}
+		Gson gson = new Gson();
+		//TODO: Wrap this in TryCatch, report exception to frontend.
+		NewEventData newEventData  = gson.fromJson(rawData, NewEventData.class);
+		
+		if (ActorTypeHelper.isRegisteredUser(request)) {
+			newEventDataValidator.validate(newEventData,bindingResult);
+			System.out.println("Validated: " + rawData);
+			
+			if (bindingResult.hasErrors()) {
+				return RESTResponseData.responseBuilder(bindingResult);
+			} else {
+				
+				Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+				Registrant owner = this.regRepo.findOne(actor.getActorID());
+				Event newEvent = buildEvent(newEventData, owner);
 
+				Event savedEventResult = this.eventRepo.save(newEvent);
+
+				Coordinates callerLoc=newEventData.getCallerCoodinates();
+				Coordinates eventLoc=newEventData.getEventCoodinates();
+				double distanceFromCaller = GeodeticHelper.getDistanceBetweenCoordinates(callerLoc, eventLoc);
+				
+				System.out.println("DistanceFromCaller: " + distanceFromCaller);
+				
+				return new ResponseEntity<RESTResponseData>(new RESTAddEventResponseData(0, "", savedEventResult, distanceFromCaller),HttpStatus.CREATED);
+			}
+		} else {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7","Incorrect User State. Only registered users can add events.");
+			return RESTResponseData.responseBuilder(bindingResult);
+		}
+	}
+    
+	private Event buildEvent(NewEventData newEventData, Registrant owner) {
+		Event newEvent = new Event(newEventData.getEventName());
+		newEvent.setDescription(newEventData.getEventDescription());
+		newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
+		
+		if(!newEvent.addParticipant(owner)){
+			//TODO: Error, unable to add participant
+		}
+		
+		if(!newEvent.addOwner(owner)){
+			//TODO: Error, unable to add owner
+		}
+		
+		Occurrence occurrence = new Occurrence("",new Timestamp(newEventData.getEventTime()));
+		if(!newEvent.addOccurrence(occurrence)){
+			//TODO: Error, unable to add occurrence
+		}
+		
+		//TODO: Figure out categories, set up ENUM?
+//		Category category = new Category();
+		
+		return newEvent;
+	}
 }

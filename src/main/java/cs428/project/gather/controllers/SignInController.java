@@ -45,7 +45,7 @@ public class SignInController {
 
 	@RequestMapping(value = "/rest/registrants/signin", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+	public ResponseEntity<RESTResponseData> signIn(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
 
 		Gson gson = new Gson();
