@@ -72,7 +72,8 @@ public class EventsController {
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
-
+    	System.out.println("rawData: " + rawData);
+    	
 		Gson gson = new Gson();
 		//TODO: Wrap this in TryCatch, report exception to frontend.
 		NewEventData newEventData  = gson.fromJson(rawData, NewEventData.class);
@@ -125,7 +126,8 @@ public class EventsController {
 		}
 
 		//TODO: Figure out categories, set up ENUM?
-//		Category category = new Category();
+		//Category category = new Category(newEventData.getEventCategory(),"");
+		newEvent.setCategory(newEventData.getEventCategory());
 
 		return newEvent;
 	}

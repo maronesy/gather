@@ -53,8 +53,9 @@ public class Event {
 	@ManyToMany
 	private Set<Registrant> participants = new HashSet<Registrant>();
 
-	@ManyToOne
-	private Category category;
+	//@ManyToOne
+	//private Category category;
+	private String category;
 
 	public Event() {}
 
@@ -133,8 +134,13 @@ public class Event {
 		return this.location;
 	}
 
-	public Category getCategory(){
+	public String getCategory(){
 		return this.category;
+
+	}
+	
+	public void setCategory(String category){
+		this.category=category;
 
 	}
 }

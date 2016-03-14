@@ -425,13 +425,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var modalForm = $("#edit-new-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
 		
-		createNewEvent(newEventDataID, function(newEvent) {
-			
+		createNewEvent(newEventDataID, function(newEventResponse) {
+			newEvent = newEventResponse.result;
 			mapManager.discardNewEvent(newEventDataID);
 
 			modalForm.modal("hide");
 
-			establishedEvents[newEvent.eventID] = newEvent;
+			establishedEvents[newEvent.id] = newEvent;
 
 			placeEstablishedEventMarker(newEvent, true);
 
@@ -493,9 +493,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
-		
-		var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
+		console.log(JSON.stringify(anEvent))
+		//var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
 
+		var eCoordinates = {
+			latitude: anEvent.location.latitude,
+			longitude: anEvent.location.longitude
+		}
+		var markerPosition = new L.LatLng(eCoordinates.latitude, eCoordinates.longitude);
 		//var hotnessColor = determineHotnessColor(anEvent);
 
 		var iconOptions = {
@@ -534,12 +539,27 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			$(this).attr("data-event-id", anEvent.locationID);
 		});
 
-		var establishedEventHTML = establishedEventContent[0].outerHTML;
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.eventName, anEvent.eventCategory, anEvent.eventDescription, anEvent.eventTime, anEvent.distanceFromCaller);
+		//TODO: distance from caller should be calculated based on anEvent object
+		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
+		var establishedEventHTML = establishedEventContent[0].outerHTML; 
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category, anEvent.description, anEvent.occurrences[0].timestamp, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
 
+	function distance(lat1, lon1, lat2, lon2, unit) {
+		var radlat1 = Math.PI * lat1/180
+		var radlat2 = Math.PI * lat2/180
+		var theta = lon1-lon2
+		var radtheta = Math.PI * theta/180
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		dist = Math.acos(dist)
+		dist = dist * 180/Math.PI
+		dist = dist * 60 * 1.1515
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist
+	}
 	
 	this.determineCoordByZipCode = function(zipCode) {
 		
