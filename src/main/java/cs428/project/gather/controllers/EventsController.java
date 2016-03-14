@@ -32,7 +32,7 @@ public class EventsController {
     @Autowired
     private EventDataValidator eventsDataValidator;
 
-    @RequestMapping(value = "/rest/events", method = RequestMethod.GET)
+    @RequestMapping(value = "/rest/events", method = RequestMethod.POST)
     public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
@@ -41,7 +41,9 @@ public class EventsController {
 //        for (int i=0; i < 21; i++) {
 //            events.add(  new Event("event #" + Integer.toString(i))  );
 //        }
-
+        
+        System.out.println(rawData);
+        
 		// // Calculate the upper and lower latitude bounds.
 		double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
 		Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);

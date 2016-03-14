@@ -19,6 +19,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var currentUserCoordinates = null;
 	var userMarker = null;
+	var eventMarker = null;
 	var searchRadiusCircle = null;
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
@@ -130,6 +131,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
 
 				placeUserMarker(userCoordinates);
+				getNearByEvents(userCoordinates);
 
 				currentUserCoordinates = userCoordinates;
 			}
@@ -491,7 +493,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-
+	
 	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
 		
 		var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
@@ -540,6 +542,125 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
 
+	function getNearByEvents(userCoordinates) {
+		var radiusMi = 40;
+		var hour = 24;
+//		alert('{ \
+//				"latitude" : ' + userCoordinates.latitude + ', \
+//				"longitude" : ' + userCoordinates.longitude + ', \
+//				"radiusMi" : ' + radiusMi + ', \
+//				"hour" : ' + hour + ' \
+//			}')
+		$.ajax({
+		 	accepts: "application/json",
+			type : "POST",
+			url : "rest/events?page=1&size=3",
+			contentType: "application/json; charset=UTF-8",
+			dataType: "json",
+			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + radiusMi + ', "hour": ' + hour + ' }',
+//			date : '{ \
+//				"latitude" : ' + userCoordinates.latitude + ', \
+//				"longitude" : ' + userCoordinates.longitude + ', \
+//				"radiusMi" : ' + radiusMi + ', \
+//				"hour" : ' + hour + ' \
+//			}',
+			success : function(returnvalue) {
+				signedIn = true;
+				gather.global.nearEvents = returnvalue.results;
+//				alert(gather.global.nearEvents.length);
+				for(i = 0; i < gather.global.nearEvents.length; i++){
+//					alert(gather.global.nearEvents[i].location.latitude);
+//					alert(gather.global.nearEvents[i].location.longitude);
+					var eCoordinates = {
+							latitude: gather.global.nearEvents[i].location.latitude,
+							longitude: gather.global.nearEvents[i].location.longitude
+							}
+					placeEstablishedEventMarker2(gather.global.nearEvents[i], true);
+				}
+				
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+//			    alert(jqXHR.status);
+//			    alert(textStatus);
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+	function placeEstablishedEventMarker2(nearEvent, bounceOnAdd) {
+		
+		var eCoordinates = {
+				latitude: nearEvent.location.latitude,
+				longitude: nearEvent.location.longitude
+				}
+//		alert(nearEvent.location.latitude)
+//		alert(nearEvent.location.longitude)
+		
+		var markerPosition = new L.LatLng(eCoordinates.latitude, eCoordinates.longitude);
+
+		//var hotnessColor = determineHotnessColor(anEvent);
+
+		var iconOptions = {
+				"marker-size": "large",
+				"marker-symbol": "star",
+				"marker-color": "#CCCCCC"
+		};
+
+		var bounceOptions = {
+			duration: 500,
+			height: 100
+		};
+
+		var markerOptions = {
+			icon: L.mapbox.marker.icon(iconOptions),
+		};
+
+		var markerOptions = {
+			draggable: false,
+			icon: L.mapbox.marker.icon(iconOptions),
+			bounceOnAdd: bounceOnAdd,
+			bounceOnAddOptions: bounceOptions
+		};
+
+		var popupOptions = {
+			minWidth: 600
+		};
+
+		var eventMarker = L.marker(markerPosition, markerOptions);
+		eventMarker.addTo(map);
+
+		nearEvent.eventMarker = eventMarker;
+		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
+
+		$(establishedEventContent).find("button").each(function(index) {
+			$(this).attr("data-event-id", nearEvent.locationID);
+		});
+
+		var establishedEventHTML = establishedEventContent[0].outerHTML;
+		var name = nearEvent.name;
+		var description = nearEvent.description;
+//		alert(name + description)
+		establishedEventHTML = sprintf(establishedEventHTML, name, "soccer", description, 2, 3);
+
+		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+	}
+	
+	function setUserMarkerPopup(userCoordinates) {
+		var simpleUserMarkerHTML = $("#simple-user-marker-content-template").html();
+		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, userCoordinates.latitude, userCoordinates.longitude);
+
+		userMarker.bindPopup(simpleUserMarkerHTML);
+	}
 	
 	this.determineCoordByZipCode = function(zipCode) {
 		
@@ -597,44 +718,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 }
 
-function getNearByEvents() {
-	$.ajax({
-	 	accepts: "application/json",
-		type : "GET",
-		url : "rest/events",
-		contentType: "application/json; charset=UTF-8",
-		latitude: "34.098",
-		longitude: "-118.2498",
-		radiusMi: "20",
-		timeWindow: "3",
-		success : function(returnvalue) {
-			if (returnvalue.status == 5) {
-				signedIn = true;
-				headerSelect();
-//				alert(returnvalue.status);
-//				alert(returnvalue.message)
-			} 
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-//		    alert(jqXHR.status);
-//		    alert(textStatus);
-//		    alert(errorThrown);
-			if (errorThrown == "Found") {
-				signedIn = true;
-				gather.global.nearEvents = jqXHR.responseJSON;
-				for(nearEvent in gather.global.nearEvents){
-					placeEstablishedEventMarker(nearEvent, true);
-				}		
-				updateGreeting();
-				headerSelect();
-			} else {
-				signedIn = false;
-				headerSelect();
-			}
 
-		}
-	});
-}
 
 function determineCoordByZipCode1(zipCode) {
 	
