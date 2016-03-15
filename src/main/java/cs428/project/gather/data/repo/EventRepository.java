@@ -24,10 +24,10 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
 	List<Event> findByLocationWithin(double lowerLat, double uppLat, double lowerLon, double upperLon);
 	
-	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?1")
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o WHERE o.timestamp > CURRENT_TIMESTAMP AND o.timestamp < ?1")
 	List<Event> findByOccurrenceTimeWithin(Timestamp upperBound);
 	
-	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.datetime > CURRENT_TIMESTAMP AND o.datetime < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
+	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.timestamp > CURRENT_TIMESTAMP AND o.timestamp < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
 	List<Event> findByLocationAndOccurrenceTimeWithin(double lowerLat, double uppLat, double lowerLon, double upperLon, Timestamp upperTime);
 
     @Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE SQRT(POWER((l.latitude - ?1)/(0.014554*1.60934), 2.0) + POWER((l.longitude - ?2)/(0.014457*1.60934), 2.0)) < ?3")

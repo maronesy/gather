@@ -6,6 +6,8 @@ import javax.persistence.Id;
 
 import org.springframework.util.Assert;
 
+import cs428.project.gather.data.Coordinates;
+
 @Entity
 public class Location {
 	private @Id @GeneratedValue Long id;
@@ -23,6 +25,11 @@ public class Location {
 	public Location(String description) {
 		Assert.hasText(description);
 		this.setDescription(description);
+	}
+	
+	public Location(Coordinates coords){
+		this.latitude = coords.getLatitude();
+		this.longitude = coords.getLongitude();
 	}
 	
 	public Location(double latitude, double longitude){
@@ -82,5 +89,12 @@ public class Location {
 	}
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
+	}
+	
+	public Coordinates getCoordinates(){
+		Coordinates coords = new Coordinates();
+		coords.setLatitude(latitude);
+		coords.setLongitude(longitude);
+		return coords;
 	}
 }

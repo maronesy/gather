@@ -280,7 +280,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	$('#addEventBtn').on('click', function() {
-		addNewEvent() 
+		if(gather.global.session.signedIn){
+			addNewEvent()
+		}else{
+			$("#anonymous-user-add-event-failure-modal").modal("show");
+			$('#failureModalRegister').on('click', function() {
+				$('#registerButton').trigger('click');
+			});
+		}
 	});
 	
 	function addNewEvent() {
@@ -427,13 +434,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var modalForm = $("#edit-new-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
 		
-		createNewEvent(newEventDataID, function(newEvent) {
-			
+		createNewEvent(newEventDataID, function(newEventResponse) {
+			newEvent = newEventResponse.result;
 			mapManager.discardNewEvent(newEventDataID);
 
 			modalForm.modal("hide");
 
-			establishedEvents[newEvent.eventID] = newEvent;
+			establishedEvents[newEvent.id] = newEvent;
 
 			placeEstablishedEventMarker(newEvent, true);
 
@@ -472,7 +479,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		
 		var requestOptions = {
 			type: "POST",
-			url: "api/new-event/add",
+			url: "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			data: requestData,
 			dataType: "json",
@@ -495,14 +502,19 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
-		
-		var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
+		console.log(JSON.stringify(anEvent))
+		//var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
 
+		var eCoordinates = {
+			latitude: anEvent.location.latitude,
+			longitude: anEvent.location.longitude
+		}
+		var markerPosition = new L.LatLng(eCoordinates.latitude, eCoordinates.longitude);
 		//var hotnessColor = determineHotnessColor(anEvent);
 
 		var iconOptions = {
 			"marker-size": "large",
-			"marker-symbol": "restaurant",
+			"marker-symbol": "star",
 			//"marker-color": hotnessColor
 		};
 
@@ -536,8 +548,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			$(this).attr("data-event-id", anEvent.locationID);
 		});
 
-		var establishedEventHTML = establishedEventContent[0].outerHTML;
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.eventName, anEvent.eventCategory, anEvent.eventDescription, anEvent.eventTime, anEvent.distanceFromCaller);
+		//TODO: distance from caller should be calculated based on anEvent object
+		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
+		var establishedEventHTML = establishedEventContent[0].outerHTML; 
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category, anEvent.description, anEvent.occurrences[0].timestamp, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
@@ -545,29 +559,19 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function getNearByEvents(userCoordinates) {
 		var radiusMi = 40;
 		var hour = 24;
-//		alert('{ \
-//				"latitude" : ' + userCoordinates.latitude + ', \
-//				"longitude" : ' + userCoordinates.longitude + ', \
-//				"radiusMi" : ' + radiusMi + ', \
-//				"hour" : ' + hour + ' \
-//			}')
+
 		$.ajax({
 		 	accepts: "application/json",
-			type : "POST",
-			url : "rest/events?page=1&size=3",
+			type : "PUT",
+			url : "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
 			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + radiusMi + ', "hour": ' + hour + ' }',
-//			date : '{ \
-//				"latitude" : ' + userCoordinates.latitude + ', \
-//				"longitude" : ' + userCoordinates.longitude + ', \
-//				"radiusMi" : ' + radiusMi + ', \
-//				"hour" : ' + hour + ' \
-//			}',
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
-//				alert(gather.global.nearEvents.length);
+				alert(gather.global.nearEvents.length);
+				console.log(JSON.stringify(gather.global.nearEvents))
 				for(i = 0; i < gather.global.nearEvents.length; i++){
 //					alert(gather.global.nearEvents[i].location.latitude);
 //					alert(gather.global.nearEvents[i].location.longitude);
@@ -575,7 +579,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 							latitude: gather.global.nearEvents[i].location.latitude,
 							longitude: gather.global.nearEvents[i].location.longitude
 							}
-					placeEstablishedEventMarker2(gather.global.nearEvents[i], true);
+					placeEstablishedEventMarker(gather.global.nearEvents[i], true);
 				}
 				
 			},
@@ -597,70 +601,20 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 	
-	function placeEstablishedEventMarker2(nearEvent, bounceOnAdd) {
-		
-		var eCoordinates = {
-				latitude: nearEvent.location.latitude,
-				longitude: nearEvent.location.longitude
-				}
-//		alert(nearEvent.location.latitude)
-//		alert(nearEvent.location.longitude)
-		
-		var markerPosition = new L.LatLng(eCoordinates.latitude, eCoordinates.longitude);
-
-		//var hotnessColor = determineHotnessColor(anEvent);
-
-		var iconOptions = {
-				"marker-size": "large",
-				"marker-symbol": "star",
-				"marker-color": "#CCCCCC"
-		};
-
-		var bounceOptions = {
-			duration: 500,
-			height: 100
-		};
-
-		var markerOptions = {
-			icon: L.mapbox.marker.icon(iconOptions),
-		};
-
-		var markerOptions = {
-			draggable: false,
-			icon: L.mapbox.marker.icon(iconOptions),
-			bounceOnAdd: bounceOnAdd,
-			bounceOnAddOptions: bounceOptions
-		};
-
-		var popupOptions = {
-			minWidth: 600
-		};
-
-		var eventMarker = L.marker(markerPosition, markerOptions);
-		eventMarker.addTo(map);
-
-		nearEvent.eventMarker = eventMarker;
-		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
-
-		$(establishedEventContent).find("button").each(function(index) {
-			$(this).attr("data-event-id", nearEvent.locationID);
-		});
-
-		var establishedEventHTML = establishedEventContent[0].outerHTML;
-		var name = nearEvent.name;
-		var description = nearEvent.description;
-//		alert(name + description)
-		establishedEventHTML = sprintf(establishedEventHTML, name, "soccer", description, 2, 3);
-
-		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+	function distance(lat1, lon1, lat2, lon2, unit) {
+		var radlat1 = Math.PI * lat1/180
+		var radlat2 = Math.PI * lat2/180
+		var theta = lon1-lon2
+		var radtheta = Math.PI * theta/180
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		dist = Math.acos(dist)
+		dist = dist * 180/Math.PI
+		dist = dist * 60 * 1.1515
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist
 	}
-	
-	function setUserMarkerPopup(userCoordinates) {
-		var simpleUserMarkerHTML = $("#simple-user-marker-content-template").html();
-		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, userCoordinates.latitude, userCoordinates.longitude);
 
-		userMarker.bindPopup(simpleUserMarkerHTML);
-	}
 	
 	this.determineCoordByZipCode = function(zipCode) {
 		

@@ -11,7 +11,7 @@ public class NewEventData {
 	private Coordinates eventCoordinates;
 	private String eventDescription;
 	private String eventCategory;
-	private String eventTime;
+	private long eventTime;
 	private Coordinates callerCoordinates;
 
 	
@@ -87,11 +87,11 @@ public class NewEventData {
 		this.eventCategory = eventCategory;
 	}
 
-	public String getEventTime() {
+	public long getEventTime() {
 		return eventTime;
 	}
 
-	public void setEventTime(String eventTime) {
+	public void setEventTime(long eventTime) {
 		this.eventTime = eventTime;
 	}
 

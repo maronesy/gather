@@ -1,7 +1,9 @@
 package cs428.project.gather.data.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,13 +28,13 @@ public class Event {
 
 	private String name;
 	private String description;
-	
-	@ManyToOne
+
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Location location;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
-	private Set<Occurrence> occurrences = new HashSet<Occurrence>();
+	private List<Occurrence> occurrences = new ArrayList<Occurrence>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "event_id")
@@ -51,58 +53,59 @@ public class Event {
 	@ManyToMany
 	private Set<Registrant> participants = new HashSet<Registrant>();
 
-	@ManyToMany
-	private Set<Category> categories = new HashSet<Category>();
-	
-	protected Event() {}
-	
+	//@ManyToOne
+	//private Category category;
+	private String category;
+
+	public Event() {}
+
 	public Event(String name) {
 		setName(name);
 	}
-	
+
 	// Setters and Getters
-	
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setLocation(Location location){
 		this.location = location;
 	}
-	
-	public void addOccurrence(Occurrence occurrence) {
+
+	public boolean addOccurrence(Occurrence occurrence) {
 		Assert.notNull(occurrence);
-		this.occurrences.add(occurrence);
+		return this.occurrences.add(occurrence);
 	}
 
-	public void addFeedback(Feedback feedback) {
+	public boolean addFeedback(Feedback feedback) {
 		Assert.notNull(feedback);
-		this.feedbacks.add(feedback);
+		return this.feedbacks.add(feedback);
 	}
 
-	public void addChangeLog(ChangeLog changeLog){
+	public boolean addChangeLog(ChangeLog changeLog){
 		Assert.notNull(changeLog);
-		this.changeLog.add(changeLog);
+		return this.changeLog.add(changeLog);
 	}
 
-	public Set<Occurrence> getOccurrences() {
-		return Collections.unmodifiableSet(occurrences);
+	public List<Occurrence> getOccurrences() {
+		return Collections.unmodifiableList(occurrences);
 	}
-	
+
 
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		Assert.hasText(description);
 		this.description = description;
 	}
-	
+
 	public String getName(){
 		return name;
 	}
-	
+
 	public void setName(String name){
 		Assert.hasText(name);
 		this.name = name;
@@ -123,7 +126,21 @@ public class Event {
 	public boolean addParticipant(Registrant aUser){
 		return participants.add(aUser);
 	}
+
+	public boolean addOwner(Registrant anOwner){
+		return owners.add(anOwner);
+	}
 	public Location getLocation() {
 		return this.location;
+	}
+
+	public String getCategory(){
+		return this.category;
+
+	}
+	
+	public void setCategory(String category){
+		this.category=category;
+
 	}
 }
