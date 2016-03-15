@@ -72,7 +72,6 @@ public class EventsController {
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
-    	System.out.println("rawData: " + rawData);
     	
 		Gson gson = new Gson();
 		//TODO: Wrap this in TryCatch, report exception to frontend.
