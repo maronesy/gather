@@ -282,7 +282,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			addNewEvent()
 		}else{
 			$("#anonymous-user-add-event-failure-modal").modal("show");
-			$('#failureModalClose').on('click', function() {
+			$('#failureModalRegister').on('click', function() {
 				$('#registerButton').trigger('click');
 			});
 		}
