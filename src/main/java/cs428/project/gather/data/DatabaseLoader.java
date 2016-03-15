@@ -56,16 +56,16 @@ public class DatabaseLoader implements CommandLineRunner {
 		this.eventRepo.save(testEvent);
 		
 		Event newEvent = new Event("Test1");
-		Location newLoc = new Location(34.0498, -118.2498);
-//		this.locationRepo.save(newLoc);
+		Location newLoc = new Location(32.770, -117.04);
+
 		newEvent.setLocation(newLoc);
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
 		this.eventRepo.save(newEvent);
 		
 		Event newEvent2 = new Event("Test2");
-		Location newLoc2 = new Location(34.1, -118.25);
-//		this.locationRepo.save(newLoc2);
+		Location newLoc2 = new Location(32.780, -117.03);
+
 		newEvent2.setLocation(newLoc2);
 		Occurrence newOccur2 = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		newEvent2.addOccurrence(newOccur2);	

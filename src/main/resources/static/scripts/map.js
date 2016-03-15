@@ -19,6 +19,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var currentUserCoordinates = null;
 	var userMarker = null;
+	var eventMarker = null;
 	var searchRadiusCircle = null;
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
@@ -130,6 +131,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
 
 				placeUserMarker(userCoordinates);
+				getNearByEvents(userCoordinates);
 
 				currentUserCoordinates = userCoordinates;
 			}
@@ -498,7 +500,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-
+	
 	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
 		console.log(JSON.stringify(anEvent))
 		//var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
@@ -512,7 +514,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var iconOptions = {
 			"marker-size": "large",
-			"marker-symbol": "restaurant",
+			"marker-symbol": "star",
 			//"marker-color": hotnessColor
 		};
 
@@ -554,6 +556,51 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
 
+	function getNearByEvents(userCoordinates) {
+		var radiusMi = 40;
+		var hour = 24;
+
+		$.ajax({
+		 	accepts: "application/json",
+			type : "PUT",
+			url : "rest/events",
+			contentType: "application/json; charset=UTF-8",
+			dataType: "json",
+			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + radiusMi + ', "hour": ' + hour + ' }',
+			success : function(returnvalue) {
+				signedIn = true;
+				gather.global.nearEvents = returnvalue.results;
+				alert(gather.global.nearEvents.length);
+				console.log(JSON.stringify(gather.global.nearEvents))
+				for(i = 0; i < gather.global.nearEvents.length; i++){
+//					alert(gather.global.nearEvents[i].location.latitude);
+//					alert(gather.global.nearEvents[i].location.longitude);
+					var eCoordinates = {
+							latitude: gather.global.nearEvents[i].location.latitude,
+							longitude: gather.global.nearEvents[i].location.longitude
+							}
+					placeEstablishedEventMarker(gather.global.nearEvents[i], true);
+				}
+				
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+//			    alert(jqXHR.status);
+//			    alert(textStatus);
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
 	function distance(lat1, lon1, lat2, lon2, unit) {
 		var radlat1 = Math.PI * lat1/180
 		var radlat2 = Math.PI * lat2/180
@@ -567,6 +614,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		if (unit=="N") { dist = dist * 0.8684 }
 		return dist
 	}
+
 	
 	this.determineCoordByZipCode = function(zipCode) {
 		
@@ -623,6 +671,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$("#general-failure-modal").modal("show");
 	}
 }
+
+
 
 function determineCoordByZipCode1(zipCode) {
 	

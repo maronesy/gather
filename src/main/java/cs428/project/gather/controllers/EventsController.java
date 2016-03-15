@@ -38,8 +38,9 @@ public class EventsController {
     @Autowired
     private NewEventDataValidator newEventDataValidator;
 
-    @RequestMapping(value = "/rest/events", method = RequestMethod.GET)
-    public ResponseEntity<PaginatedResponseData<Event>> getNearbyEvents(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+    @RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
+    public ResponseEntity<PaginatedResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+    	System.out.println("rawData: " + rawData);
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
 //        List<Event> events = new ArrayList<Event>();
@@ -47,7 +48,7 @@ public class EventsController {
 //        for (int i=0; i < 21; i++) {
 //            events.add(  new Event("event #" + Integer.toString(i))  );
 //        }
-
+        
 		// // Calculate the upper and lower latitude bounds.
 		double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
 		Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);

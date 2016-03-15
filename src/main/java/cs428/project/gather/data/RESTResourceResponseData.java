@@ -2,7 +2,6 @@ package cs428.project.gather.data;
 
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
-import java.sql.Timestamp;
 
 public class RESTResourceResponseData<T> extends RESTResponseData {
 	private T result;
