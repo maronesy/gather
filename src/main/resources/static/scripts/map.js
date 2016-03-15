@@ -430,6 +430,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		submitNewEventForm();
 	});
 	
+	jQuery('#new-event-time').datetimepicker();
+	
 	function submitNewEventForm() {
 		var modalForm = $("#edit-new-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
@@ -465,13 +467,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			latitude: markerPosition.lat,
 			longitude: markerPosition.lng
 		};
-
+		
+		var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
 		var requestObject = {
 			eventName: eventData.newEventFormData.eventName,
 			eventCoordinates: markerCoordinates,
 			eventDescription: eventData.newEventFormData.eventDescription,
 			eventCategory: eventData.newEventFormData.eventCategory,
-			eventTime: eventData.newEventFormData.eventTime,
+			eventTime: utc,
 			callerCoordinates: currentUserCoordinates
 		};
 
