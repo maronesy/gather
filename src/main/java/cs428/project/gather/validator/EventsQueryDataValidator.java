@@ -2,7 +2,6 @@ package cs428.project.gather.validator;
 
 
 import cs428.project.gather.data.EventsQueryData;
-import cs428.project.gather.data.RegistrationData;
 import cs428.project.gather.data.repo.EventRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 @Component
-public class EventDataValidator extends AbstractValidator
+public class EventsQueryDataValidator extends AbstractValidator
 {
 	@Autowired
 	private EventRepository eventDataAdapter;

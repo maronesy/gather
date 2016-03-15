@@ -23,14 +23,14 @@ public class DatabaseLoader implements CommandLineRunner {
 
 	private final RegisteredRepository registeredRepo;
 	private final EventRepository eventRepo;
-	private final LocationRepository locationRepo;
+//	private final LocationRepository locationRepo;
 	private final RegistrantRepository registrantRepo;
 
 	@Autowired
 	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, LocationRepository locationRepo, RegistrantRepository registrantRepo) {
 		this.registeredRepo = repository;
 		this.eventRepo = eventRepo;
-		this.locationRepo = locationRepo;
+//		this.locationRepo = locationRepo;
 		this.registrantRepo = registrantRepo;
 	}
 
@@ -43,7 +43,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		Event eventResult = this.eventRepo.save(testEvent);
@@ -57,7 +57,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		
 		Event newEvent = new Event("Test1");
 		Location newLoc = new Location(34.0498, -118.2498);
-		this.locationRepo.save(newLoc);
+//		this.locationRepo.save(newLoc);
 		newEvent.setLocation(newLoc);
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
@@ -65,7 +65,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		
 		Event newEvent2 = new Event("Test2");
 		Location newLoc2 = new Location(34.1, -118.25);
-		this.locationRepo.save(newLoc2);
+//		this.locationRepo.save(newLoc2);
 		newEvent2.setLocation(newLoc2);
 		Occurrence newOccur2 = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		newEvent2.addOccurrence(newOccur2);	

@@ -40,18 +40,18 @@ public class EventRepositoryIntegrationTest {
 	@Autowired
 	EventRepository eventRepo;
 	
-	@Autowired
-	LocationRepository locationRepo;
+//	@Autowired
+//	LocationRepository locationRepo;
 
 	@Before
 	public void setUp() {
 		eventRepo.deleteAll();
-		locationRepo.deleteAll();
+//		locationRepo.deleteAll();
 		
 		//Getting the count from the repo has some effect on flushing the tables. 
 		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
 		assertEquals(this.eventRepo.count(),0);
-		assertEquals(this.locationRepo.count(),0);
+//		assertEquals(this.locationRepo.count(),0);
 	}
 	
 	@Test
@@ -83,14 +83,14 @@ public class EventRepositoryIntegrationTest {
 	public void testSaveLoadEventWithLocation(){
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		testEvent.setLocation(location);
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<Occurrence> occurrences = foundEvent.getOccurrences();
+		List<Occurrence> occurrences = foundEvent.getOccurrences();
 		assertEquals(occurrences.size(),1);
 		
 		Iterator<Occurrence> occurIt = occurrences.iterator();
@@ -148,7 +148,7 @@ public class EventRepositoryIntegrationTest {
 	public void testFindByLocationWithin(){
 		Event testEvent = new Event("Test Event with Location");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		testEvent.setLocation(location);
 		Event result = this.eventRepo.save(testEvent);
 		
@@ -156,8 +156,9 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(foundEvents.size(), 1);
 		assertTrue(foundEvents.get(0).getName().equals("Test Event with Location"));
 		
-		Event anotherEvent = new Event("Event at same location");
-		anotherEvent.setLocation(location);
+		Event anotherEvent = new Event("Event at similar location");
+		Location similarLocation = new Location("Test Location2", "6543 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
+		anotherEvent.setLocation(similarLocation);
 		result = this.eventRepo.save(anotherEvent);
 		
 		foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
@@ -178,7 +179,7 @@ public class EventRepositoryIntegrationTest {
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<Occurrence> occurrences = foundEvent.getOccurrences();
+		List<Occurrence> occurrences = foundEvent.getOccurrences();
 		assertEquals(occurrences.size(),1);
 	
 		Iterator<Occurrence> occurIt = occurrences.iterator();
@@ -207,7 +208,7 @@ public class EventRepositoryIntegrationTest {
 	@Transactional
 	public void testFindByLocationAndOccurrenceTimeWithin(){		
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-		this.locationRepo.save(location);
+//		this.locationRepo.save(location);
 		
 		Event testEvent = new Event("Test Event with Location");
 		//Create occurrences 2 and 5 days in the future

@@ -33,7 +33,7 @@ public class RegisterController {
 
 	@RequestMapping(value = "/rest/registrants", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<RESTResponseData> signInProcessor(HttpServletRequest request, @RequestBody String rawData,
+	public ResponseEntity<RESTResponseData> register(HttpServletRequest request, @RequestBody String rawData,
 			BindingResult bindingResult) {
 
 		Gson gson = new Gson();
