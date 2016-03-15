@@ -570,7 +570,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
-				alert(gather.global.nearEvents.length);
+
 				console.log(JSON.stringify(gather.global.nearEvents))
 				for(i = 0; i < gather.global.nearEvents.length; i++){
 //					alert(gather.global.nearEvents[i].location.latitude);
