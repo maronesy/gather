@@ -31,6 +31,9 @@ public class EventsController {
 
     @Autowired
     RegistrantRepository regRepo;
+    
+    @Autowired
+    CategoryRepository categoryRepo;
 
     @Autowired
     private EventsQueryDataValidator eventsQueryDataValidator;
@@ -133,7 +136,9 @@ public class EventsController {
 
 		//TODO: Figure out categories, set up ENUM?
 		//Category category = new Category(newEventData.getEventCategory(),"");
-		newEvent.setCategory(newEventData.getEventCategory());
+		//newEvent.setCategory(newEventData.getEventCategory());
+		Category category = this.categoryRepo.findByName(newEventData.getEventCategory()).get(0);
+		newEvent.setCategory(category);
 
 		return newEvent;
 	}
