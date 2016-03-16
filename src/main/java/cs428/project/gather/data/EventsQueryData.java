@@ -2,9 +2,12 @@ package cs428.project.gather.data;
 
 public class EventsQueryData {
 
-//	public static final String LONGITUDE = "longitude";
-//	public static final String LATITUDE = "latitude";
-//	public static final String RADIUS_KM = "radiusMi";
+	public static final String LONGITUDE_FIELD_NAME = "longitude";
+	public static final String LATITUDE_FIELD_NAME = "latitude";
+	public static final String RADIUS_MI_FIELD_NAME = "radiusMi";
+	public static final String TIME_WINDOW_FIELD_NAME = "hour";
+	
+	public static final float MAX_RADIUS = 20f;
 
 	private float longitude;
 	private float latitude;
