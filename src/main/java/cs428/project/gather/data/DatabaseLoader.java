@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
 import cs428.project.gather.data.model.Location;
 import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registered;
 import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
 import cs428.project.gather.data.repo.RegisteredRepository;
@@ -25,13 +27,15 @@ public class DatabaseLoader implements CommandLineRunner {
 	private final EventRepository eventRepo;
 //	private final LocationRepository locationRepo;
 	private final RegistrantRepository registrantRepo;
+	private final CategoryRepository categoryRepo;
 
 	@Autowired
-	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, LocationRepository locationRepo, RegistrantRepository registrantRepo) {
+	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, RegistrantRepository registrantRepo, CategoryRepository categoryRepo) {
 		this.registeredRepo = repository;
 		this.eventRepo = eventRepo;
 //		this.locationRepo = locationRepo;
 		this.registrantRepo = registrantRepo;
+		this.categoryRepo = categoryRepo;
 	}
 
 	@Override
@@ -45,7 +49,10 @@ public class DatabaseLoader implements CommandLineRunner {
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 //		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
+		Category testCategory = new Category("testCategory");
+		this.categoryRepo.save(testCategory);
 		testEvent.addOccurrence(occur);
+		testEvent.setCategory(testCategory);
 		Event eventResult = this.eventRepo.save(testEvent);
 		
 		//Right now, Event owns all relationships, so Event must be saved for data to be put in DB.
@@ -62,7 +69,9 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
 		newEvent.setDescription("lets play soccer!");
-		newEvent.setCategory("Soccer");
+		Category soccer = new Category("Soccer");
+		this.categoryRepo.save(soccer);
+		newEvent.setCategory(soccer);
 		this.eventRepo.save(newEvent);
 		
 		Event newEvent2 = new Event("Test2");
@@ -73,8 +82,10 @@ public class DatabaseLoader implements CommandLineRunner {
 		newEvent2.addOccurrence(newOccur2);	
 		Occurrence newOccur3 = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEvent2.addOccurrence(newOccur3);	
+		Category swim = new Category("Swim");
+		this.categoryRepo.save(swim);
 		newEvent2.setDescription("lets swim!");
-		newEvent2.setCategory("Swim");
+		newEvent2.setCategory(swim);
 		this.eventRepo.save(newEvent2);
 	}
 }

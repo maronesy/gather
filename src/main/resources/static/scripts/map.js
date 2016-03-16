@@ -301,7 +301,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			var iconOptions = {
 				"marker-size": "large",
-				"marker-symbol": "restaurant",
+				"marker-symbol": "star",
 				"marker-color": "#419641"
 			};
 
@@ -553,11 +553,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category, anEvent.description, anEvent.occurrences[0].timestamp, distanceFromCaller);
+		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
-
+	
 	function getNearByEvents(userCoordinates) {
 		var radiusMi = 40;
 		var hour = 24;

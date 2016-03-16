@@ -53,9 +53,9 @@ public class Event {
 	@ManyToMany
 	private Set<Registrant> participants = new HashSet<Registrant>();
 
-	//@ManyToOne
-	//private Category category;
-	private String category;
+	@ManyToOne(optional=false)
+	private Category category;
+	//private String category;
 
 	public Event() {}
 
@@ -91,7 +91,6 @@ public class Event {
 	public List<Occurrence> getOccurrences() {
 		return Collections.unmodifiableList(occurrences);
 	}
-
 
 	public String getDescription() {
 		return description;
@@ -134,13 +133,21 @@ public class Event {
 		return this.location;
 	}
 
-	public String getCategory(){
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Category getCategory(){
 		return this.category;
-
 	}
-	
-	public void setCategory(String category){
-		this.category=category;
 
-	}
+//	public String getCategory(){
+//		return this.category;
+//
+//	}
+//	
+//	public void setCategory(String category){
+//		this.category=category;
+//
+//	}
 }
