@@ -1,7 +1,6 @@
 package cs428.project.gather.controllers;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
@@ -88,8 +88,11 @@ public class EventsController {
 
 				Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 				Registrant owner = this.regRepo.findOne(actor.getActorID());
-				Event newEvent = buildEvent(newEventData, owner);
-
+				Event newEvent = buildEvent(newEventData, owner, bindingResult);
+				if (bindingResult.hasErrors()) {
+	                return RESTResourceResponseData.<Event>badResponse(bindingResult);
+				}
+				
 				Event savedEventResult = this.eventRepo.save(newEvent);
 
 				Coordinates callerLoc=newEventData.getCallerCoodinates();
@@ -98,7 +101,7 @@ public class EventsController {
 
 				System.out.println("DistanceFromCaller: " + distanceFromCaller);
 
-				return new ResponseEntity<RESTResourceResponseData<Event>>(new RESTResourceResponseData(0, savedEventResult), HttpStatus.CREATED);
+				return new ResponseEntity<RESTResourceResponseData<Event>>(new RESTResourceResponseData<Event>(0, savedEventResult), HttpStatus.CREATED);
 			}
 		} else {
 			System.out.println("An anonymous user tried to add an event.");
@@ -107,22 +110,25 @@ public class EventsController {
 		}
 	}
 
-	private Event buildEvent(NewEventData newEventData, Registrant owner) {
+	private Event buildEvent(NewEventData newEventData, Registrant owner, Errors errors) {
 		Event newEvent = new Event(newEventData.getEventName());
 		newEvent.setDescription(newEventData.getEventDescription());
 		newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
 
 		if(!newEvent.addParticipant(owner)){
-			//TODO: Error, unable to add participant
+			String message = "Cannot create event. Failed to add creator as participant.";
+			errors.reject("-7", message);
 		}
 
 		if(!newEvent.addOwner(owner)){
-			//TODO: Error, unable to add owner
+			String message = "Cannot create event. Failed to add creator as owner.";
+			errors.reject("-7", message);
 		}
 
 		Occurrence occurrence = new Occurrence("",new Timestamp(newEventData.getEventTime()));
 		if(!newEvent.addOccurrence(occurrence)){
-			//TODO: Error, unable to add occurrence
+			String message = "Cannot create event. Failed to add first occurrence to event.";
+			errors.reject("-7", message);
 		}
 
 		//TODO: Figure out categories, set up ENUM?

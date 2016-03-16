@@ -33,4 +33,6 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
     @Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE SQRT(POWER((l.latitude - ?1)/(0.014554*1.60934), 2.0) + POWER((l.longitude - ?2)/(0.014457*1.60934), 2.0)) < ?3")
     List<Event> findByLocationWithinKmRadius(double latitude, double longitude, double radius_km);
 
+    @Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE e.name = ?1 AND l.latitude = ?2 AND l.longitude = ?3 AND o.timestamp = time")
+    List<Event> findByNameAndLocationAndTime(String name, double latitude, double longitude, Timestamp time);
 }

@@ -4,8 +4,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class NewEventData {
-//	public static final String EMAIL_FIELD_NAME = "email";
-//	public static final String PASSWORD_FIELD_NAME = "password";
+	public static final String EVENT_NAME_FIELD_NAME = "eventName";
+	public static final String EVENT_COORDS_FIELD_NAME = "eventCoordinates";
+	public static final String EVENT_DESCRIPTION_FIELD_NAME = "eventDescription";
+	public static final String EVENT_CATEGORY_FIELD_NAME = "eventCategory";
+	public static final String EVENT_TIME_FIELD_NAME = "eventTime";
+	public static final String CALLER_COORDS_FIELD_NAME = "callerCoordinates";
+	
 
 	private String eventName;
 	private Coordinates eventCoordinates;
