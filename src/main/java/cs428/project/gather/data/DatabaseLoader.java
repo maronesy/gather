@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
 import cs428.project.gather.data.model.Location;
 import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registered;
 import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
 import cs428.project.gather.data.repo.RegisteredRepository;
@@ -25,13 +27,15 @@ public class DatabaseLoader implements CommandLineRunner {
 	private final EventRepository eventRepo;
 //	private final LocationRepository locationRepo;
 	private final RegistrantRepository registrantRepo;
+	private final CategoryRepository categoryRepo;
 
 	@Autowired
-	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, LocationRepository locationRepo, RegistrantRepository registrantRepo) {
+	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, RegistrantRepository registrantRepo, CategoryRepository categoryRepo) {
 		this.registeredRepo = repository;
 		this.eventRepo = eventRepo;
 //		this.locationRepo = locationRepo;
 		this.registrantRepo = registrantRepo;
+		this.categoryRepo = categoryRepo;
 	}
 
 	@Override
@@ -45,7 +49,10 @@ public class DatabaseLoader implements CommandLineRunner {
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 //		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
+		Category testCategory = new Category("testCategory");
+		this.categoryRepo.save(testCategory);
 		testEvent.addOccurrence(occur);
+		testEvent.setCategory(testCategory);
 		Event eventResult = this.eventRepo.save(testEvent);
 		
 		//Right now, Event owns all relationships, so Event must be saved for data to be put in DB.
@@ -62,7 +69,9 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
 		newEvent.setDescription("lets play soccer!");
-		newEvent.setCategory("Soccer");
+		Category soccer = new Category("Soccer ");
+		this.categoryRepo.save(soccer);
+		newEvent.setCategory(soccer);
 		this.eventRepo.save(newEvent);
 		
 		Event newEventa = new Event("Test2");
@@ -74,8 +83,9 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccurb = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEventa.addOccurrence(newOccurb);	
 		newEventa.setDescription("lets swim!");
-		newEventa.setCategory("Swim");
-		this.eventRepo.save(newEventa);
+		Category swim = new Category("Swim ");
+		this.categoryRepo.save(swim);
+		newEventa.setCategory(swim);
 		
 		Registrant User0 = new Registrant("nweissnat@emmerich.com","password","vgusikowski",9,17,92102);
 		this.registrantRepo.save(User0);
@@ -191,7 +201,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur0_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(93).getMillis()));
 		newEvent0.addOccurrence(newOccur0_3);
 		newEvent0.setDescription("Rem voluptatem amet quisquam ab. Dolore ex provident culpa modi. Quidem voluptatibus odio omnis.");
-		newEvent0.setCategory("Soccer");
+		newEvent0.setCategory(soccer);
 		this.eventRepo.save(newEvent0);
 		Event newEvent1 = new Event("Tempora asperiores neque numquam.");
 		Location newLoc1 = new Location("Id nihil accusamus.", "96892 Reilly Brooks Apt. 510", "Ramona", "CA", "92145", 32.746730, -117.130987);
@@ -202,7 +212,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur1_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(77).getMillis()));
 		newEvent1.addOccurrence(newOccur1_1);
 		newEvent1.setDescription("Eveniet magni impedit nam odio. Voluptate soluta pariatur porro at rerum cum.");
-		newEvent1.setCategory("Soccer");
+		newEvent1.setCategory(soccer);
 		this.eventRepo.save(newEvent1);
 		Event newEvent2 = new Event("Animi deserunt iusto optio at labore.");
 		Location newLoc2 = new Location("Tempora omnis assumenda maiores nesciunt.", "7121 Fay Branch Apt. 770", "Cardiff-by-the-Sea", "CA", "92174", 32.818237, -117.078013);
@@ -215,7 +225,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur2_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(74).getMillis()));
 		newEvent2.addOccurrence(newOccur2_2);
 		newEvent2.setDescription("Voluptate similique tempore in molestias doloremque. Iste velit accusamus eveniet deleniti ab.");
-		newEvent2.setCategory("Swim");
+		newEvent2.setCategory(swim);
 		this.eventRepo.save(newEvent2);
 		Event newEvent3 = new Event("Error sunt nulla commodi optio.");
 		Location newLoc3 = new Location("Itaque dignissimos commodi natus.", "0992 Hane Shoals", "Poway", "CA", "91976", 32.841826, -117.055208);
@@ -228,7 +238,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur3_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(15).getMillis()));
 		newEvent3.addOccurrence(newOccur3_2);
 		newEvent3.setDescription("Quae quidem animi voluptatem ad illum. Nam accusantium rerum ratione.");
-		newEvent3.setCategory("Rowing");
+		newEvent3.setCategory(swim);
 		this.eventRepo.save(newEvent3);
 		Event newEvent4 = new Event("Totam maxime tempora vitae assumenda.");
 		Location newLoc4 = new Location("Maxime voluptatum doloremque recusandae.", "18885 Buck Valley", "Poway", "CA", "92009", 32.712203, -117.035534);
@@ -239,7 +249,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur4_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(84).getMillis()));
 		newEvent4.addOccurrence(newOccur4_1);
 		newEvent4.setDescription("Asperiores repudiandae distinctio ea corporis. Suscipit ipsam in eligendi perspiciatis.");
-		newEvent4.setCategory("Swim");
+		newEvent4.setCategory(swim);
 		this.eventRepo.save(newEvent4);
 		Event newEvent5 = new Event("Tenetur ab est iste impedit.");
 		Location newLoc5 = new Location("Porro adipisci perspiciatis.", "1028 Thiel Crossroad", "El Cajon", "CA", "91902", 32.671730, -116.992118);
@@ -250,7 +260,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur5_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(49).getMillis()));
 		newEvent5.addOccurrence(newOccur5_1);
 		newEvent5.setDescription("Eligendi illo reprehenderit suscipit. In iusto ut aperiam.");
-		newEvent5.setCategory("Soccer");
+		newEvent5.setCategory(soccer);
 		this.eventRepo.save(newEvent5);
 		Event newEvent6 = new Event("Sint numquam quo corrupti.");
 		Location newLoc6 = new Location("Voluptate ad dolorem rerum.", "5579 Brain Street", "Pacific Beach", "CA", "92093", 32.742580, -117.057370);
@@ -259,7 +269,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur6_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(37).getMillis()));
 		newEvent6.addOccurrence(newOccur6_0);
 		newEvent6.setDescription("Laborum ullam nulla aliquam quia voluptates. Est deserunt ratione autem quas.");
-		newEvent6.setCategory("Rowing");
+		newEvent6.setCategory(swim);
 		this.eventRepo.save(newEvent6);
 		Event newEvent7 = new Event("Reiciendis dicta et qui ex.");
 		Location newLoc7 = new Location("Exercitationem veritatis repellat minima.", "30780 Akira Run", "Lemon Grove", "CA", "92164", 32.857299, -117.079957);
@@ -270,7 +280,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur7_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(4).getMillis()));
 		newEvent7.addOccurrence(newOccur7_1);
 		newEvent7.setDescription("Dolorum nemo cupiditate earum. Quam ipsam aliquid similique repudiandae reprehenderit quas.");
-		newEvent7.setCategory("Soccer");
+		newEvent7.setCategory(soccer);
 		this.eventRepo.save(newEvent7);
 		Event newEvent8 = new Event("Repellendus illum saepe in sunt.");
 		Location newLoc8 = new Location("Doloremque ad corporis.", "81676 Iliana Avenue Apt. 066", "Pacific Beach", "CA", "92186", 32.741295, -117.090050);
@@ -279,7 +289,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur8_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(63).getMillis()));
 		newEvent8.addOccurrence(newOccur8_0);
 		newEvent8.setDescription("Consequatur voluptatum quo adipisci. Molestiae amet soluta repudiandae commodi.");
-		newEvent8.setCategory("Swim");
+		newEvent8.setCategory(swim);
 		this.eventRepo.save(newEvent8);
 		Event newEvent9 = new Event("Necessitatibus earum fugiat asperiores.");
 		Location newLoc9 = new Location("Nemo minima eaque.", "91054 Wuckert Terrace", "Pala", "CA", "92158", 32.823024, -116.978862);
@@ -290,7 +300,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur9_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(95).getMillis()));
 		newEvent9.addOccurrence(newOccur9_1);
 		newEvent9.setDescription("Assumenda culpa id veniam natus. Iusto minima unde natus rem.");
-		newEvent9.setCategory("Soccer");
+		newEvent9.setCategory(soccer);
 		this.eventRepo.save(newEvent9);
 		Event newEvent10 = new Event("Natus ratione aperiam beatae modi.");
 		Location newLoc10 = new Location("Dolorum at.", "43853 Lulah Hills", "Rancho Santa Fe", "CA", "92037", 32.851825, -117.023549);
@@ -301,7 +311,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur10_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(78).getMillis()));
 		newEvent10.addOccurrence(newOccur10_1);
 		newEvent10.setDescription("Sequi similique ut tempore ex laborum ab. Id eaque aspernatur dolorum laboriosam ipsam.");
-		newEvent10.setCategory("Rowing");
+		newEvent10.setCategory(swim);
 		this.eventRepo.save(newEvent10);
 		Event newEvent11 = new Event("Quisquam est laudantium non quisquam.");
 		Location newLoc11 = new Location("Accusantium nesciunt facilis ipsa.", "9155 Murazik Pike Suite 741", "Cardiff", "CA", "92022", 32.824524, -117.058262);
@@ -314,7 +324,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur11_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(27).getMillis()));
 		newEvent11.addOccurrence(newOccur11_2);
 		newEvent11.setDescription("Quas accusamus ab voluptate repudiandae expedita velit. Veritatis repellendus eum sunt inventore.");
-		newEvent11.setCategory("Rowing");
+		newEvent11.setCategory(swim);
 		this.eventRepo.save(newEvent11);
 		Event newEvent12 = new Event("Blanditiis in laborum quis sed tempora.");
 		Location newLoc12 = new Location("Ex tenetur eius nesciunt.", "5249 Melvina Roads Apt. 365", "Jamul", "CA", "91917", 32.744530, -116.964347);
@@ -323,7 +333,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur12_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(82).getMillis()));
 		newEvent12.addOccurrence(newOccur12_0);
 		newEvent12.setDescription("Ratione consequatur omnis alias voluptatum. Recusandae illo porro alias delectus aut.");
-		newEvent12.setCategory("Swim");
+		newEvent12.setCategory(swim);
 		this.eventRepo.save(newEvent12);
 		Event newEvent13 = new Event("Temporibus sit est quaerat eum ut.");
 		Location newLoc13 = new Location("Rerum reiciendis temporibus totam.", "898 Garold Canyon Apt. 750", "Fallbrook", "CA", "92120", 32.716986, -117.076901);
@@ -332,7 +342,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur13_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(35).getMillis()));
 		newEvent13.addOccurrence(newOccur13_0);
 		newEvent13.setDescription("Officiis sequi autem eligendi. Est quidem repellat perferendis quas.");
-		newEvent13.setCategory("Swim");
+		newEvent13.setCategory(swim);
 		this.eventRepo.save(newEvent13);
 		Event newEvent14 = new Event("Provident molestias dolores delectus a.");
 		Location newLoc14 = new Location("Dolorem et deleniti ex.", "7663 Klein Heights", "Lakeside", "CA", "92101", 32.758546, -116.964625);
@@ -343,7 +353,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur14_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(30).getMillis()));
 		newEvent14.addOccurrence(newOccur14_1);
 		newEvent14.setDescription("Reiciendis qui reiciendis ducimus neque eius doloribus rerum. Id iste natus vel cum accusamus.");
-		newEvent14.setCategory("Swim");
+		newEvent14.setCategory(swim);
 		this.eventRepo.save(newEvent14);
 		Event newEvent15 = new Event("Non maiores voluptatem animi odit.");
 		Location newLoc15 = new Location("Unde est maiores.", "986 Reilly Extension Suite 368", "Valley Center", "CA", "92049", 32.613237, -117.010241);
@@ -358,7 +368,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur15_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(27).getMillis()));
 		newEvent15.addOccurrence(newOccur15_3);
 		newEvent15.setDescription("Non vitae eaque quos amet mollitia. Explicabo culpa sunt expedita. Tempora possimus nihil sequi.");
-		newEvent15.setCategory("Swim");
+		newEvent15.setCategory(swim);
 		this.eventRepo.save(newEvent15);
 		Event newEvent16 = new Event("Dolorem accusamus cupiditate soluta.");
 		Location newLoc16 = new Location("Iusto cumque.", "4035 Olson Villages", "Vista", "CA", "92037", 32.735804, -117.129987);
@@ -373,7 +383,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur16_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		newEvent16.addOccurrence(newOccur16_3);
 		newEvent16.setDescription("Accusantium fugiat nulla quidem similique. Soluta ipsa quo commodi autem.");
-		newEvent16.setCategory("Rowing");
+		newEvent16.setCategory(swim);
 		this.eventRepo.save(newEvent16);
 		Event newEvent17 = new Event("Magni vitae cum quasi sunt.");
 		Location newLoc17 = new Location("Officiis voluptate.", "75447 Koepp Ville", "Oceanside", "CA", "92160", 32.759899, -117.122761);
@@ -388,7 +398,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur17_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(44).getMillis()));
 		newEvent17.addOccurrence(newOccur17_3);
 		newEvent17.setDescription("Officia sit hic incidunt. Quibusdam iure sapiente quam. Ex dignissimos minima in.");
-		newEvent17.setCategory("Soccer");
+		newEvent17.setCategory(soccer);
 		this.eventRepo.save(newEvent17);
 		Event newEvent18 = new Event("Quibusdam facere enim illum magnam.");
 		Location newLoc18 = new Location("Animi reiciendis.", "3472 Deborah Rest", "Rancho Santa Fe", "CA", "91921", 32.775450, -117.040974);
@@ -399,7 +409,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur18_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(9).getMillis()));
 		newEvent18.addOccurrence(newOccur18_1);
 		newEvent18.setDescription("Illum voluptatem neque ab mollitia magni incidunt ipsum pariatur. Molestiae id quis magni neque.");
-		newEvent18.setCategory("Rowing");
+		newEvent18.setCategory(swim);
 		this.eventRepo.save(newEvent18);
 		Event newEvent19 = new Event("Quasi illum rem neque consectetur.");
 		Location newLoc19 = new Location("Laborum nesciunt tempore.", "18538 Crooks Rest Suite 872", "Point Loma", "CA", "92121", 32.701895, -117.100295);
@@ -408,7 +418,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur19_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(67).getMillis()));
 		newEvent19.addOccurrence(newOccur19_0);
 		newEvent19.setDescription("Omnis quisquam quasi dolorum aperiam facere. Corporis molestiae fugit vitae temporibus ipsam hic.");
-		newEvent19.setCategory("Rowing");
+		newEvent19.setCategory(swim);
 		this.eventRepo.save(newEvent19);
 		Event newEvent20 = new Event("Vel nulla aliquam reprehenderit a.");
 		Location newLoc20 = new Location("Esse illum.", "3249 Deckow Locks", "San Marco", "CA", "92170", 32.670679, -117.142151);
@@ -421,7 +431,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur20_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(72).getMillis()));
 		newEvent20.addOccurrence(newOccur20_2);
 		newEvent20.setDescription("Vero nihil expedita quaerat ea tenetur. Cumque quidem repudiandae nesciunt corporis.");
-		newEvent20.setCategory("Swim");
+		newEvent20.setCategory(swim);
 		this.eventRepo.save(newEvent20);
 		Event newEvent21 = new Event("Architecto quasi illum qui.");
 		Location newLoc21 = new Location("Consequuntur eos at error.", "695 Tawanda Ramp Apt. 697", "Del Mar", "CA", "91950", 32.867868, -117.070130);
@@ -430,7 +440,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur21_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(80).getMillis()));
 		newEvent21.addOccurrence(newOccur21_0);
 		newEvent21.setDescription("Amet magni minima soluta ratione error nesciunt. Dolor suscipit tempora culpa sed et cum.");
-		newEvent21.setCategory("Swim");
+		newEvent21.setCategory(swim);
 		this.eventRepo.save(newEvent21);
 		Event newEvent22 = new Event("Minus laudantium qui nemo.");
 		Location newLoc22 = new Location("Vel maiores commodi molestias at.", "713 Harber Shoals Suite 629", "San Marcos", "CA", "91945", 32.621487, -117.021852);
@@ -443,7 +453,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur22_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(62).getMillis()));
 		newEvent22.addOccurrence(newOccur22_2);
 		newEvent22.setDescription("Unde dolor enim ab iste porro dignissimos. Eos facilis porro expedita. Enim modi minima minima.");
-		newEvent22.setCategory("Rowing");
+		newEvent22.setCategory(swim);
 		this.eventRepo.save(newEvent22);
 		Event newEvent23 = new Event("Facere id nam libero necessitatibus.");
 		Location newLoc23 = new Location("Eius sed quaerat.", "5791 Brinley Island Suite 471", "Chula Vista", "CA", "92182", 32.631893, -117.131720);
@@ -452,7 +462,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur23_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(92).getMillis()));
 		newEvent23.addOccurrence(newOccur23_0);
 		newEvent23.setDescription("Dignissimos veniam nisi expedita facere odit. Dolores ut quia voluptates placeat voluptas.");
-		newEvent23.setCategory("Rowing");
+		newEvent23.setCategory(swim);
 		this.eventRepo.save(newEvent23);
 		Event newEvent24 = new Event("Voluptates nobis dolorum iure.");
 		Location newLoc24 = new Location("Deleniti deserunt natus.", "90622 Sawayn Cliffs", "Oceanside", "CA", "92138", 32.837130, -117.034496);
@@ -465,7 +475,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur24_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(81).getMillis()));
 		newEvent24.addOccurrence(newOccur24_2);
 		newEvent24.setDescription("Cumque odio dolor adipisci. Enim et voluptatem atque vitae minima enim corporis.");
-		newEvent24.setCategory("Soccer");
+		newEvent24.setCategory(soccer);
 		this.eventRepo.save(newEvent24);
 		Event newEvent25 = new Event("Odit rem dolor et nam.");
 		Location newLoc25 = new Location("Officiis magnam iusto.", "063 Jessie Squares Apt. 311", "San Ysidro", "CA", "91911", 32.603894, -116.950978);
@@ -476,7 +486,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur25_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(73).getMillis()));
 		newEvent25.addOccurrence(newOccur25_1);
 		newEvent25.setDescription("Sed cum minus natus cum. Debitis cumque quidem ullam praesentium provident numquam provident id.");
-		newEvent25.setCategory("Soccer");
+		newEvent25.setCategory(soccer);
 		this.eventRepo.save(newEvent25);
 		Event newEvent26 = new Event("Possimus eaque a voluptatum non nam.");
 		Location newLoc26 = new Location("Tempora blanditiis quae.", "806 Howell Junction", "Del Mar", "CA", "92154", 32.833332, -116.999812);
@@ -487,7 +497,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur26_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(81).getMillis()));
 		newEvent26.addOccurrence(newOccur26_1);
 		newEvent26.setDescription("Molestiae explicabo quo repudiandae distinctio. Magnam eius soluta repellendus esse.");
-		newEvent26.setCategory("Soccer");
+		newEvent26.setCategory(soccer);
 		this.eventRepo.save(newEvent26);
 		Event newEvent27 = new Event("Est doloribus occaecati a.");
 		Location newLoc27 = new Location("Aperiam aliquid repellendus in.", "650 Pouros Inlet", "Coronado", "CA", "92078", 32.699410, -117.116938);
@@ -496,7 +506,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur27_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(3).getMillis()));
 		newEvent27.addOccurrence(newOccur27_0);
 		newEvent27.setDescription("Dolore exercitationem distinctio voluptatum corrupti. Explicabo vero vitae corrupti harum.");
-		newEvent27.setCategory("Rowing");
+		newEvent27.setCategory(swim);
 		this.eventRepo.save(newEvent27);
 		Event newEvent28 = new Event("Quo aliquid ea possimus dolorem.");
 		Location newLoc28 = new Location("Iure illo ut.", "982 Kale Hill Apt. 777", "Chula Vista", "CA", "91906", 32.745796, -117.103188);
@@ -511,7 +521,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur28_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEvent28.addOccurrence(newOccur28_3);
 		newEvent28.setDescription("Magnam vero itaque quos saepe. Doloremque eos minima culpa quo delectus impedit molestiae.");
-		newEvent28.setCategory("Soccer");
+		newEvent28.setCategory(soccer);
 		this.eventRepo.save(newEvent28);
 		Event newEvent29 = new Event("Enim laudantium omnis ducimus.");
 		Location newLoc29 = new Location("Blanditiis totam dolor.", "279 Mills Green Apt. 700", "Chula Vista", "CA", "92079", 32.640105, -117.000357);
@@ -520,7 +530,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur29_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(71).getMillis()));
 		newEvent29.addOccurrence(newOccur29_0);
 		newEvent29.setDescription("Quasi vero ipsa nulla vitae. Vel quae id ipsa accusantium vitae.");
-		newEvent29.setCategory("Soccer");
+		newEvent29.setCategory(soccer);
 		this.eventRepo.save(newEvent29);
 		Event newEvent30 = new Event("Ea veniam sunt natus nostrum hic.");
 		Location newLoc30 = new Location("Voluptate occaecati nihil voluptate.", "8042 Gottlieb Hill Apt. 622", "El Cajon", "CA", "91909", 32.789822, -117.119993);
@@ -531,7 +541,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur30_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent30.addOccurrence(newOccur30_1);
 		newEvent30.setDescription("Unde error sapiente quisquam adipisci debitis. Est optio quod consectetur accusantium.");
-		newEvent30.setCategory("Swim");
+		newEvent30.setCategory(swim);
 		this.eventRepo.save(newEvent30);
 		Event newEvent31 = new Event("Quaerat numquam ipsum optio rerum.");
 		Location newLoc31 = new Location("Maiores quasi.", "4388 Debby Terrace", "Imperial", "CA", "92102", 32.780961, -117.052163);
@@ -546,7 +556,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur31_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(64).getMillis()));
 		newEvent31.addOccurrence(newOccur31_3);
 		newEvent31.setDescription("Magni recusandae nihil commodi quisquam porro autem. Consequatur quis vero vel architecto nesciunt.");
-		newEvent31.setCategory("Rowing");
+		newEvent31.setCategory(swim);
 		this.eventRepo.save(newEvent31);
 		Event newEvent32 = new Event("Maxime cumque qui consequatur.");
 		Location newLoc32 = new Location("Quaerat eaque saepe nesciunt.", "54585 Patrice Valley", "Live Oak Springs", "CA", "92197", 32.830257, -117.007299);
@@ -557,7 +567,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur32_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(3).getMillis()));
 		newEvent32.addOccurrence(newOccur32_1);
 		newEvent32.setDescription("Ipsam illo veniam dicta facere. Cumque porro in accusamus quam consequatur tempore.");
-		newEvent32.setCategory("Soccer");
+		newEvent32.setCategory(soccer);
 		this.eventRepo.save(newEvent32);
 		Event newEvent33 = new Event("Tenetur ex in est fugiat.");
 		Location newLoc33 = new Location("Eveniet culpa harum quo.", "569 Lucetta Plaza", "Santee", "CA", "92190", 32.777206, -117.056063);
@@ -566,7 +576,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur33_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(82).getMillis()));
 		newEvent33.addOccurrence(newOccur33_0);
 		newEvent33.setDescription("Sapiente ipsum quo dolore sit laudantium. Nesciunt laboriosam vel porro nemo.");
-		newEvent33.setCategory("Rowing");
+		newEvent33.setCategory(swim);
 		this.eventRepo.save(newEvent33);
 		Event newEvent34 = new Event("Repellendus libero harum id aspernatur.");
 		Location newLoc34 = new Location("Animi eaque in tempore.", "0221 Harvey Haven Suite 116", "Solana Beach", "CA", "92145", 32.743620, -116.963252);
@@ -581,7 +591,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur34_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(59).getMillis()));
 		newEvent34.addOccurrence(newOccur34_3);
 		newEvent34.setDescription("Praesentium dignissimos sit eum eius iusto quisquam quibusdam. Fugiat id nesciunt iusto amet.");
-		newEvent34.setCategory("Rowing");
+		newEvent34.setCategory(swim);
 		this.eventRepo.save(newEvent34);
 		Event newEvent35 = new Event("Nemo a minima provident repellendus.");
 		Location newLoc35 = new Location("Commodi maxime dolores ipsa.", "1179 Delmer Corner Apt. 292", "Valley Center", "CA", "92102", 32.795755, -116.974494);
@@ -592,7 +602,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur35_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(49).getMillis()));
 		newEvent35.addOccurrence(newOccur35_1);
 		newEvent35.setDescription("Porro quis nisi reiciendis hic iste et unde. Inventore exercitationem consequuntur odio recusandae.");
-		newEvent35.setCategory("Swim");
+		newEvent35.setCategory(swim);
 		this.eventRepo.save(newEvent35);
 		Event newEvent36 = new Event("Mollitia fugiat quasi esse delectus.");
 		Location newLoc36 = new Location("Minima totam.", "56472 Crona Freeway", "Poway", "CA", "92020", 32.663964, -116.963378);
@@ -605,7 +615,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur36_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(66).getMillis()));
 		newEvent36.addOccurrence(newOccur36_2);
 		newEvent36.setDescription("Laborum officia error a dolores magni. Deleniti sed vero reprehenderit nisi impedit sapiente nihil.");
-		newEvent36.setCategory("Swim");
+		newEvent36.setCategory(swim);
 		this.eventRepo.save(newEvent36);
 		Event newEvent37 = new Event("Qui natus vero impedit nihil.");
 		Location newLoc37 = new Location("Amet ullam at.", "51495 Gina Road", "Hillcrest", "CA", "92092", 32.861912, -117.097307);
@@ -620,7 +630,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur37_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(59).getMillis()));
 		newEvent37.addOccurrence(newOccur37_3);
 		newEvent37.setDescription("Et ipsa facere molestiae eum. Eos perferendis distinctio nulla consequatur quidem molestias totam.");
-		newEvent37.setCategory("Soccer");
+		newEvent37.setCategory(soccer);
 		this.eventRepo.save(newEvent37);
 		Event newEvent38 = new Event("Iste dicta minima doloremque dolorum.");
 		Location newLoc38 = new Location("Nihil dolore culpa.", "1688 Beahan Islands", "Oceanside", "CA", "91917", 32.606172, -117.139110);
@@ -635,7 +645,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur38_3 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(96).getMillis()));
 		newEvent38.addOccurrence(newOccur38_3);
 		newEvent38.setDescription("Quisquam culpa nihil velit amet itaque sapiente. Nobis culpa quam odit est distinctio quia.");
-		newEvent38.setCategory("Swim");
+		newEvent38.setCategory(swim);
 		this.eventRepo.save(newEvent38);
 		Event newEvent39 = new Event("Quae earum natus ipsa quasi illo odit.");
 		Location newLoc39 = new Location("Quae saepe quam.", "135 Erla Isle Suite 070", "Encinitas", "CA", "92132", 32.860777, -116.958876);
@@ -646,7 +656,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur39_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(39).getMillis()));
 		newEvent39.addOccurrence(newOccur39_1);
 		newEvent39.setDescription("Hic culpa expedita magni vero dolorum. Animi officia autem unde ipsum dolores vel.");
-		newEvent39.setCategory("Rowing");
+		newEvent39.setCategory(swim);
 		this.eventRepo.save(newEvent39);
 		Event newEvent40 = new Event("Fuga provident praesentium sequi est.");
 		Location newLoc40 = new Location("Enim adipisci pariatur consectetur.", "1882 Schmidt Row", "San Ysidro", "CA", "91977", 32.720974, -117.138055);
@@ -657,7 +667,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur40_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEvent40.addOccurrence(newOccur40_1);
 		newEvent40.setDescription("Quidem vitae tempore odio quis. Aliquam cupiditate et illum officia amet quam quis quam.");
-		newEvent40.setCategory("Swim");
+		newEvent40.setCategory(swim);
 		this.eventRepo.save(newEvent40);
 		Event newEvent41 = new Event("Dicta nostrum ab quia quia maiores.");
 		Location newLoc41 = new Location("Cum odio odio.", "06959 Linnie Landing", "Hillcrest", "CA", "92091", 32.801868, -117.045989);
@@ -666,7 +676,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur41_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(98).getMillis()));
 		newEvent41.addOccurrence(newOccur41_0);
 		newEvent41.setDescription("Ullam nostrum aperiam unde soluta. Rem hic aliquam sit officia quisquam reprehenderit.");
-		newEvent41.setCategory("Swim");
+		newEvent41.setCategory(swim);
 		this.eventRepo.save(newEvent41);
 		Event newEvent42 = new Event("Nesciunt nulla tenetur quia.");
 		Location newLoc42 = new Location("Repellendus quod illum esse.", "431 Kiehn Forks", "Del Mar", "CA", "92158", 32.637590, -116.962599);
@@ -675,7 +685,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur42_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(60).getMillis()));
 		newEvent42.addOccurrence(newOccur42_0);
 		newEvent42.setDescription("Illo vel in fugiat optio voluptas libero libero consequuntur. Officia inventore accusamus magnam.");
-		newEvent42.setCategory("Soccer");
+		newEvent42.setCategory(soccer);
 		this.eventRepo.save(newEvent42);
 		Event newEvent43 = new Event("Incidunt labore animi non accusamus.");
 		Location newLoc43 = new Location("Provident eos.", "35915 Wisozk Center Suite 927", "La Mesa", "CA", "92024", 32.690599, -117.124272);
@@ -686,7 +696,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur43_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(71).getMillis()));
 		newEvent43.addOccurrence(newOccur43_1);
 		newEvent43.setDescription("Quo earum commodi est laudantium. Debitis doloremque aliquam eaque reiciendis.");
-		newEvent43.setCategory("Rowing");
+		newEvent43.setCategory(swim);
 		this.eventRepo.save(newEvent43);
 		Event newEvent44 = new Event("Error officiis sit iure fugit aliquam.");
 		Location newLoc44 = new Location("Dicta nesciunt odio fugit.", "16913 Dolph Heights Suite 044", "San Marco", "CA", "92024", 32.792484, -117.055984);
@@ -697,7 +707,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur44_1 = new Occurrence("Competition", new Timestamp(DateTime.now().plusDays(36).getMillis()));
 		newEvent44.addOccurrence(newOccur44_1);
 		newEvent44.setDescription("Consectetur ex quis aliquid. Quo earum hic eum reiciendis. Nobis fugiat ipsum deserunt quis.");
-		newEvent44.setCategory("Soccer");
+		newEvent44.setCategory(soccer);
 		this.eventRepo.save(newEvent44);
 		Event newEvent45 = new Event("In libero consequatur dolore.");
 		Location newLoc45 = new Location("Maxime repudiandae.", "2887 Beatty Isle", "Pala", "CA", "92115", 32.608741, -117.082941);
@@ -706,7 +716,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur45_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(58).getMillis()));
 		newEvent45.addOccurrence(newOccur45_0);
 		newEvent45.setDescription("Voluptatem quidem odio cupiditate. Quae aliquid qui rem odio.");
-		newEvent45.setCategory("Soccer");
+		newEvent45.setCategory(soccer);
 		this.eventRepo.save(newEvent45);
 		Event newEvent46 = new Event("Illum eum dignissimos doloremque vero.");
 		Location newLoc46 = new Location("Facilis beatae ea.", "90036 Ebba Inlet Suite 809", "San Ysidro", "CA", "92124", 32.725060, -116.974962);
@@ -715,7 +725,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur46_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(8).getMillis()));
 		newEvent46.addOccurrence(newOccur46_0);
 		newEvent46.setDescription("Quo iste totam enim quos. Nobis laudantium modi ullam. Magni magnam ipsam nobis.");
-		newEvent46.setCategory("Soccer");
+		newEvent46.setCategory(soccer);
 		this.eventRepo.save(newEvent46);
 		Event newEvent47 = new Event("Soluta quos nobis voluptates.");
 		Location newLoc47 = new Location("Deleniti a optio molestiae.", "89706 Isabella Ridge Suite 807", "Campo", "CA", "91963", 32.738454, -117.009137);
@@ -728,7 +738,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur47_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(28).getMillis()));
 		newEvent47.addOccurrence(newOccur47_2);
 		newEvent47.setDescription("Velit laborum inventore nobis. Asperiores minima dolorum voluptates eligendi.");
-		newEvent47.setCategory("Swim");
+		newEvent47.setCategory(swim);
 		this.eventRepo.save(newEvent47);
 		Event newEvent48 = new Event("Est officia odio alias.");
 		Location newLoc48 = new Location("Minus sunt minus voluptatem.", "91999 Schumm Valleys", "Rancho Bernardo", "CA", "92112", 32.619248, -116.999523);
@@ -741,7 +751,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur48_2 = new Occurrence("Practice", new Timestamp(DateTime.now().plusDays(85).getMillis()));
 		newEvent48.addOccurrence(newOccur48_2);
 		newEvent48.setDescription("Magni atque perspiciatis autem tenetur. Quibusdam perferendis ducimus rerum.");
-		newEvent48.setCategory("Soccer");
+		newEvent48.setCategory(soccer);
 		this.eventRepo.save(newEvent48);
 		Event newEvent49 = new Event("Odit nobis aut tempora assumenda.");
 		Location newLoc49 = new Location("Consequatur consequatur ipsa.", "28377 John Squares", "Rancho Santa Fe", "CA", "92170", 32.751372, -116.983552);
@@ -750,7 +760,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur49_0 = new Occurrence("Meeting", new Timestamp(DateTime.now().plusDays(84).getMillis()));
 		newEvent49.addOccurrence(newOccur49_0);
 		newEvent49.setDescription("Quam consequatur sequi excepturi. Assumenda ipsa reprehenderit eos sed cum itaque.");
-		newEvent49.setCategory("Swim");
+		newEvent49.setCategory(swim);
 		this.eventRepo.save(newEvent49);
 
 	}

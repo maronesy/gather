@@ -301,7 +301,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			var iconOptions = {
 				"marker-size": "large",
-				"marker-symbol": "restaurant",
+				"marker-symbol": "star",
 				"marker-color": "#419641"
 			};
 
@@ -429,6 +429,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		submitNewEventForm();
 	});
 	
+	jQuery('#new-event-time').datetimepicker();
+	
 	function submitNewEventForm() {
 		var modalForm = $("#edit-new-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
@@ -464,13 +466,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			latitude: markerPosition.lat,
 			longitude: markerPosition.lng
 		};
-
+		
+		var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
 		var requestObject = {
 			eventName: eventData.newEventFormData.eventName,
 			eventCoordinates: markerCoordinates,
 			eventDescription: eventData.newEventFormData.eventDescription,
 			eventCategory: eventData.newEventFormData.eventCategory,
-			eventTime: eventData.newEventFormData.eventTime,
+			eventTime: utc,
 			callerCoordinates: currentUserCoordinates
 		};
 
@@ -550,11 +553,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category, anEvent.description, anEvent.occurrences[0].timestamp, distanceFromCaller);
+		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
-
+	
 	function getNearByEvents(userCoordinates) {
 		var radiusMi = 40;
 		var hour = 24;

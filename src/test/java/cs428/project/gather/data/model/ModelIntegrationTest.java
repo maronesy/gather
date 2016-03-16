@@ -1,9 +1,11 @@
 package cs428.project.gather.data.model;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
 
@@ -33,6 +36,9 @@ public class ModelIntegrationTest {
 	@Autowired
 	EventRepository eventRepo;
 	
+	@Autowired
+	CategoryRepository categoryRepo;
+	
 //	@Autowired
 //	LocationRepository locationRepo;
 	
@@ -41,15 +47,29 @@ public class ModelIntegrationTest {
 		//NOTE: Since Event currently owns the relationship, you must delete the events prior to deleting registrants
 		eventRepo.deleteAll();
 		registrantRepo.deleteAll();
+		categoryRepo.deleteAll();
 //		locationRepo.deleteAll();
 		
 		//Getting the count from the repo has some effect on flushing the tables. 
 		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
 		assertEquals(this.eventRepo.count(),0);
 		assertEquals(this.registrantRepo.count(),0);
+		assertEquals(this.categoryRepo.count(),0);
+		this.addThreeCategories();
 //		assertEquals(this.locationRepo.count(),0);
+		
 	}
 	
+	private void addThreeCategories() {
+		Category sports = new Category("Sports");
+		Category dining = new Category("Dining");
+		Category others = new Category("Others");
+		this.categoryRepo.save(sports);
+		this.categoryRepo.save(dining);
+		this.categoryRepo.save(others);
+	}
+	
+
 	@Test
 	@Transactional
 	public void testSaveLoadParticipants(){
@@ -62,6 +82,8 @@ public class ModelIntegrationTest {
 //		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(Calendar.getInstance().getTime().getTime()));
 //		testEvent.addOccurrence(occur);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event eventResult = this.eventRepo.save(testEvent);
 		
 		//Right now, Event owns all relationships, so Event must be saved for data to be put in DB.
@@ -78,6 +100,7 @@ public class ModelIntegrationTest {
 		Iterator<Registrant> participantIt = participants.iterator();
 		Registrant testParticipant = participantIt.next();
 		assertEquals(testParticipant.getDisplayName(),"testDisplayName");
+		assertTrue(eventResult.getCategory().getName().equals("Others"));		
 		
 	}
 
