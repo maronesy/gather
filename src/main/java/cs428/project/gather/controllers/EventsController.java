@@ -43,7 +43,7 @@ public class EventsController {
     private NewEventDataValidator newEventDataValidator;
 
     @RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
-    public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> events(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+    public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
         System.out.println("rawData: " + rawData);
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
