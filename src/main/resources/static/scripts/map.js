@@ -301,7 +301,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			var iconOptions = {
 				"marker-size": "large",
-				"marker-symbol": "restaurant",
+				"marker-symbol": "star",
 				"marker-color": "#419641"
 			};
 
