@@ -56,21 +56,25 @@ public class DatabaseLoader implements CommandLineRunner {
 		this.eventRepo.save(testEvent);
 		
 		Event newEvent = new Event("Test1");
-		Location newLoc = new Location(32.770, -117.04);
+		Location newLoc = new Location("Test Location", "6000 Yeswhere Blvd", "Los Angeles", "CA", "90007", 32.770, -117.04);
 
 		newEvent.setLocation(newLoc);
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
+		newEvent.setDescription("lets play soccer!");
+		newEvent.setCategory("Soccer");
 		this.eventRepo.save(newEvent);
 		
 		Event newEvent2 = new Event("Test2");
-		Location newLoc2 = new Location(32.780, -117.03);
+		Location newLoc2 = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 32.780, -117.03);
 
 		newEvent2.setLocation(newLoc2);
 		Occurrence newOccur2 = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		newEvent2.addOccurrence(newOccur2);	
 		Occurrence newOccur3 = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEvent2.addOccurrence(newOccur3);	
+		newEvent2.setDescription("lets swim!");
+		newEvent2.setCategory("Swim");
 		this.eventRepo.save(newEvent2);
 	}
 }
