@@ -554,7 +554,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
 		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category, anEvent.description, timeDisplay, distanceFromCaller);
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
