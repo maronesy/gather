@@ -102,16 +102,9 @@ public class EventControllerTest {
 		Coordinates uCoor = new Coordinates();
 		uCoor.setLatitude(12.33);
 		uCoor.setLongitude(111.24);
-		//attemptAddEvent(String name, Coordinates eCoor, String description, String category, long time, Coordinates callerLoc, String session)
-		
-		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", 12, uCoor, StringUtils.join(cookies,';'));
-//		String message = apiResponse.get("message").toString();
-//		Integer status = (Integer) (apiResponse.get("status"));
-//		assertEquals("success", message);
-//		assertEquals((Integer)0, status); //success
 
-		// Fetching the Registrant details directly from the DB to verify the
-		// API succeeded
+		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", 12, uCoor, StringUtils.join(cookies,';'));
+
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
 		Event anEvent = listEvents.get(0);
@@ -186,6 +179,7 @@ public class EventControllerTest {
 		return apiResponse;
 
 	}
+	
 //	private Map<String, Object> attemptGetEvent(float lat, float lon, float radius, int hour) throws JsonProcessingException {
 //		// Building the Request body data
 //		Map<String, Object> requestBody = new HashMap<String, Object>();
