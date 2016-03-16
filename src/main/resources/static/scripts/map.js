@@ -445,7 +445,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	});
 	
 	$('#new-event-time').datetimepicker();
-	//$("#new-event-category").selectmenu();
+	//$('#new-event-category').selectmenu();
 	
 	function submitNewEventForm() {
 		var modalForm = $("#edit-new-event-modal");
@@ -459,8 +459,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			establishedEvents[newEvent.id] = newEvent;
 
+			gather.global.nearEvents.push(newEvent);
+			loadEventsFirstView(currentUserCoordinates);
+			
 			placeEstablishedEventMarker(newEvent, true);
-
+			
 			//TODO event card not implemented, we currently have event list only
 			//addEventCard(newEvent, true);
 			//updateEventCountTitle();
