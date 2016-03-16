@@ -33,6 +33,9 @@ public class EventsController {
     RegistrantRepository regRepo;
 
     @Autowired
+    CategoryRepository categoryRepo;
+
+    @Autowired
     private EventsQueryDataValidator eventsQueryDataValidator;
 
     @Autowired
@@ -118,10 +121,11 @@ public class EventsController {
             //TODO: Error, unable to add occurrence
         }
 
-        //TODO: Figure out categories, set up ENUM?
-        //Category category = new Category(newEventData.getEventCategory(),"");
-        newEvent.setCategory(newEventData.getEventCategory());
-
+		//TODO: Figure out categories, set up ENUM?
+		//Category category = new Category(newEventData.getEventCategory(),"");
+		//newEvent.setCategory(newEventData.getEventCategory());
+		Category category = this.categoryRepo.findByName(newEventData.getEventCategory()).get(0);
+		newEvent.setCategory(category);
         return newEvent;
     }
 }

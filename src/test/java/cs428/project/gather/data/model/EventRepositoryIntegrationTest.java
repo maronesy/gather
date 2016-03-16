@@ -27,6 +27,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cs428.project.gather.GatherApplication;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
 
@@ -40,18 +41,33 @@ public class EventRepositoryIntegrationTest {
 	@Autowired
 	EventRepository eventRepo;
 	
+	@Autowired
+	CategoryRepository categoryRepo;
+	
 //	@Autowired
 //	LocationRepository locationRepo;
 
 	@Before
 	public void setUp() {
 		eventRepo.deleteAll();
+		categoryRepo.deleteAll();
 //		locationRepo.deleteAll();
 		
 		//Getting the count from the repo has some effect on flushing the tables. 
 		//If we don't ask for this count, we get a DataIntegrityViolationException from what seems like a constraint that isn't removed in deleteAll().
 		assertEquals(this.eventRepo.count(),0);
 //		assertEquals(this.locationRepo.count(),0);
+		assertEquals(this.categoryRepo.count(),0);
+		addThreeCategories();	
+	}
+	
+	private void addThreeCategories() {
+		Category sports = new Category("Sports");
+		Category dining = new Category("Dining");
+		Category others = new Category("Others");
+		this.categoryRepo.save(sports);
+		this.categoryRepo.save(dining);
+		this.categoryRepo.save(others);
 	}
 	
 	@Test
@@ -60,9 +76,12 @@ public class EventRepositoryIntegrationTest {
 		Event testEvent = new Event("Test Event");
 		Occurrence occur=new Occurrence("Single Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
+		List<Category> foundCategory = categoryRepo.findByName("Dining");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		assertTrue(result.getName().equals("Test Event"));		
+		assertTrue(result.getCategory().getName().equals("Dining"));		
 	}
 	
 	@Test
@@ -70,12 +89,15 @@ public class EventRepositoryIntegrationTest {
 		Event testEvent = new Event("Super Cool Test Event");
 		Occurrence occur=new Occurrence("Single Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
+		List<Category> foundCategory = categoryRepo.findByName("Sports");
+		testEvent.setCategory(foundCategory.get(0));
 		this.eventRepo.save(testEvent);
 			
 		List<Event> foundEvents = eventRepo.findByName("Super Cool Test Event");
 		
 		assertEquals(foundEvents.size(), 1);
 		assertTrue(foundEvents.get(0).getName().equals("Super Cool Test Event"));
+		assertTrue(foundEvents.get(0).getCategory().getName().equals("Sports"));
 	}
 	
 	@Test
@@ -87,6 +109,8 @@ public class EventRepositoryIntegrationTest {
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		testEvent.setLocation(location);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
@@ -97,6 +121,7 @@ public class EventRepositoryIntegrationTest {
 		Occurrence testOccur = occurIt.next();
 		assertEquals(testOccur.getDescription(),"Test Occurrence");
 		assertEquals(testEvent.getLocation().getCity(),"Los Angeles");
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 	
 	@Test
@@ -108,6 +133,8 @@ public class EventRepositoryIntegrationTest {
 		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime);
 		testEvent.addOccurrence(occur);
 		testEvent.addFeedback(feedback);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
@@ -119,6 +146,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(testFeedback.getRating(), 5);
 		assertEquals(testFeedback.getReview(), "What a great event!");
 		assertEquals(testFeedback.getDatetime(),feedbackTime);
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 	
 	
@@ -131,6 +159,8 @@ public class EventRepositoryIntegrationTest {
 		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
 		testEvent.addOccurrence(occur);
 		testEvent.addChangeLog(change);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
@@ -142,6 +172,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
 		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
 		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 	
 	@Test
@@ -150,6 +181,8 @@ public class EventRepositoryIntegrationTest {
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 //		this.locationRepo.save(location);
 		testEvent.setLocation(location);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		List<Event> foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
@@ -159,10 +192,13 @@ public class EventRepositoryIntegrationTest {
 		Event anotherEvent = new Event("Event at similar location");
 		Location similarLocation = new Location("Test Location2", "6543 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		anotherEvent.setLocation(similarLocation);
+		List<Category> anotherFoundCategory = categoryRepo.findByName("Others");
+		anotherEvent.setCategory(anotherFoundCategory.get(0));
 		result = this.eventRepo.save(anotherEvent);
 		
 		foundEvents = this.eventRepo.findByLocationWithin(30, 35, -120, -115);
 		assertEquals(foundEvents.size(), 2);
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 	
 	@Test
@@ -176,6 +212,8 @@ public class EventRepositoryIntegrationTest {
 		
 		Occurrence occur=new Occurrence("Test Occurrence", timestamp);
 		testEvent.addOccurrence(occur);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		Event foundEvent = this.eventRepo.findOne(result.getId());
@@ -202,6 +240,7 @@ public class EventRepositoryIntegrationTest {
 		
 		foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 0);	
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 	
 	@Test
@@ -221,6 +260,8 @@ public class EventRepositoryIntegrationTest {
 		testEvent.addOccurrence(occur);
 		testEvent.addOccurrence(otherOccur);
 		testEvent.setLocation(location);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		Event result = this.eventRepo.save(testEvent);
 		
 		//Search for events one day in the future, find none
@@ -240,6 +281,7 @@ public class EventRepositoryIntegrationTest {
 		upperBound = new Timestamp(dt.getMillis());
 		foundEvents = this.eventRepo.findByLocationAndOccurrenceTimeWithin(30, 35, -120, -115, upperBound);
 		assertEquals(foundEvents.size(), 1);
+		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 		
 }
