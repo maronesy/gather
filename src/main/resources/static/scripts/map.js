@@ -340,12 +340,27 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventMarker.openPopup();	
 	        });
 
+			setUpCategoryOptions()
+
 			eventMarker.addTo(map);
 
 			eventMarker.openPopup();
 		}
 	}
     
+	function setUpCategoryOptions(){
+
+		var newOptions={};
+		var catArray = gather.global.categories;
+		var $categories = $( "#new-event-category" );
+		$categories.empty();
+		for (i = 0; i < catArray.length; i++) {
+			newOptions[catArray[i].name] = catArray[i].name;
+			$categories.append($("<option></option>")
+				     .attr("value", catArray[i].name).text(catArray[i].name));
+		}
+	}
+	
 	this.discardNewEvent = function(newEventDataID) {
 		var eventData = newEvents[newEventDataID];
 
@@ -429,7 +444,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		submitNewEventForm();
 	});
 	
-	jQuery('#new-event-time').datetimepicker();
+	$('#new-event-time').datetimepicker();
+	//$("#new-event-category").selectmenu();
 	
 	function submitNewEventForm() {
 		var modalForm = $("#edit-new-event-modal");
@@ -466,7 +482,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			latitude: markerPosition.lat,
 			longitude: markerPosition.lng
 		};
-		
+
 		var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
 		var requestObject = {
 			eventName: eventData.newEventFormData.eventName,
