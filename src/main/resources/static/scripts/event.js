@@ -47,6 +47,7 @@ function loadEventsFirstView(userCoordinates) {
 				);
 			}
 		} else {
+			$('#eventTable').html('');
 			$('#eventTable').append(
 				'<tr> ' +
 					'<td colspan="3">  ' +
