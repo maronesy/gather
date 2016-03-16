@@ -24,118 +24,121 @@ import cs428.project.gather.validator.*;
 @Controller("eventController")
 public class EventsController {
 
-    private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
-    private static final double ONE_MILE_IN_DEGREES_LONGITUDE = 0.014457;
+	private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
+	private static final double ONE_MILE_IN_DEGREES_LONGITUDE = 0.014457;
 
-    @Autowired
-    EventRepository eventRepo;
+	@Autowired
+	EventRepository eventRepo;
 
-    @Autowired
-    RegistrantRepository regRepo;
+	@Autowired
+	RegistrantRepository regRepo;
 
-    @Autowired
-    CategoryRepository categoryRepo;
+	@Autowired
+	CategoryRepository categoryRepo;
 
-    @Autowired
-    private EventsQueryDataValidator eventsQueryDataValidator;
+	@Autowired
+	private EventsQueryDataValidator eventsQueryDataValidator;
 
-    @Autowired
-    private NewEventDataValidator newEventDataValidator;
+	@Autowired
+	private NewEventDataValidator newEventDataValidator;
 
-    @RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
-    public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-        System.out.println("rawData: " + rawData);
-        EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
+	@RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("rawData: " + rawData);
+		EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
-        eventsQueryDataValidator.validate(eventsData, bindingResult);
-        
-//        List<Event> events = new ArrayList<Event>();
-//        // Generate dummy events
-//        for (int i=0; i < 21; i++) {
-//            events.add(  new Event("event #" + Integer.toString(i))  );
-//        }
+		eventsQueryDataValidator.validate(eventsData, bindingResult);
+
+		// List<Event> events = new ArrayList<Event>();
+		// // Generate dummy events
+		// for (int i=0; i < 21; i++) {
+		// events.add( new Event("event #" + Integer.toString(i)) );
+		// }
 
 		if (bindingResult.hasErrors()) {
 			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
-        }
-        
-        // // Calculate the upper and lower latitude bounds.
-        double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
-        Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);
-        Double latitudeUpperBound = new Double(eventsData.getLatitude() + latitudeRadiusAdjustment);
-
-        // Calculate the upper and lower longitude bounds.
-        double longitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LONGITUDE * eventsData.getRadiusMi();
-        Double longitudeLowerBound = new Double(eventsData.getLongitude() - longitudeRadiusAdjustment);
-        Double longitudeUpperBound = new Double(eventsData.getLongitude()  + longitudeRadiusAdjustment);
-
-        Timestamp timeWindow;
-		if(eventsData.getHour() == -1){
-			//All events this year
-			timeWindow = new Timestamp(DateTime.now().plusYears(1).getMillis());
 		}
-		else{
-			//Events in the next <eventsData.getHour()> hours
+
+		// // Calculate the upper and lower latitude bounds.
+		double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
+		Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);
+		Double latitudeUpperBound = new Double(eventsData.getLatitude() + latitudeRadiusAdjustment);
+
+		// Calculate the upper and lower longitude bounds.
+		double longitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LONGITUDE * eventsData.getRadiusMi();
+		Double longitudeLowerBound = new Double(eventsData.getLongitude() - longitudeRadiusAdjustment);
+		Double longitudeUpperBound = new Double(eventsData.getLongitude() + longitudeRadiusAdjustment);
+
+		Timestamp timeWindow;
+		if (eventsData.getHour() == -1) {
+			// All events this year
+			timeWindow = new Timestamp(DateTime.now().plusYears(1).getMillis());
+		} else {
+			// Events in the next <eventsData.getHour()> hours
 			timeWindow = new Timestamp(DateTime.now().plusHours(eventsData.getHour()).getMillis());
 		}
 
+		List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound,
+				longitudeLowerBound, longitudeUpperBound, timeWindow);
+		// List<Event> events =
+		// eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(),
+		// eventsData.getLongitude(), eventsData.getRadiusMi());
+		return RESTPaginatedResourcesResponseData.createResponse(request, events);
+	}
 
-   		List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
-        //List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
-        return RESTPaginatedResourcesResponseData.createResponse(request, events);
-    }
+	@RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		// TODO: Wrap this in TryCatch, report exception to frontend.
+		NewEventData newEventData = (new Gson()).fromJson(rawData, NewEventData.class);
 
-    @RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    @ResponseBody
-    public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-        //TODO: Wrap this in TryCatch, report exception to frontend.
-        NewEventData newEventData  = (new Gson()).fromJson(rawData, NewEventData.class);
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can add events.");
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
 
-        if (! ActorTypeHelper.isRegisteredUser(request)) {
-            System.out.println("An anonymous user tried to add an event.");
-            bindingResult.reject("-7","Incorrect User State. Only registered users can add events.");
-            return RESTResourceResponseData.<Event>badResponse(bindingResult);
-        }
-
-        newEventDataValidator.validate(newEventData,bindingResult);
-        System.out.println("Validated: " + rawData);
-        if (bindingResult.hasErrors()) {
-            return RESTResourceResponseData.<Event>badResponse(bindingResult);
-        }
+		newEventDataValidator.validate(newEventData, bindingResult);
+		System.out.println("Validated: " + rawData);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
 
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 		Registrant owner = this.regRepo.findOne(actor.getActorID());
 		Event newEvent = buildEvent(newEventData, owner, bindingResult);
 		if (bindingResult.hasErrors()) {
-            return RESTResourceResponseData.<Event>badResponse(bindingResult);
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
 		}
 
-        Event savedEventResult = this.eventRepo.save(newEvent);
-        Coordinates callerLoc       = newEventData.getCallerCoodinates();
-        Coordinates eventLoc        = newEventData.getEventCoodinates();
-        double distanceFromCaller   = GeodeticHelper.getDistanceBetweenCoordinates(callerLoc, eventLoc);
-        System.out.println("DistanceFromCaller: " + distanceFromCaller);
+		Event savedEventResult = this.eventRepo.save(newEvent);
+		Coordinates callerLoc = newEventData.getCallerCoodinates();
+		Coordinates eventLoc = newEventData.getEventCoodinates();
+		double distanceFromCaller = GeodeticHelper.getDistanceBetweenCoordinates(callerLoc, eventLoc);
+		System.out.println("DistanceFromCaller: " + distanceFromCaller);
 
-        return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
-    }
+		return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
+	}
 
 	private Event buildEvent(NewEventData newEventData, Registrant owner, Errors errors) {
 		Event newEvent = new Event(newEventData.getEventName());
 		newEvent.setDescription(newEventData.getEventDescription());
 		newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
 
-		if(!newEvent.addParticipant(owner)){
+		if (!newEvent.addParticipant(owner)) {
 			String message = "Cannot create event. Failed to add creator as participant.";
 			errors.reject("-7", message);
 		}
 
-		if(!newEvent.addOwner(owner)){
+		if (!newEvent.addOwner(owner)) {
 			String message = "Cannot create event. Failed to add creator as owner.";
 			errors.reject("-7", message);
 		}
 
-		Occurrence occurrence = new Occurrence("",new Timestamp(newEventData.getEventTime()));
-		if(!newEvent.addOccurrence(occurrence)){
+		Occurrence occurrence = new Occurrence("", new Timestamp(newEventData.getEventTime()));
+		if (!newEvent.addOccurrence(occurrence)) {
 			String message = "Cannot create event. Failed to add first occurrence to event.";
 			errors.reject("-7", message);
 		}
