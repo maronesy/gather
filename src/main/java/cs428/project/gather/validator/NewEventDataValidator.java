@@ -10,7 +10,9 @@ import org.springframework.validation.Errors;
 
 import cs428.project.gather.data.Coordinates;
 import cs428.project.gather.data.NewEventData;
+import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 
 @Component
@@ -18,6 +20,9 @@ public class NewEventDataValidator extends AbstractValidator{
 	
 	@Autowired
     EventRepository eventRepo;
+	
+	@Autowired
+	CategoryRepository categoryRepo;
 
 	@Override
 	public boolean supports(Class<?> targetClass) {
@@ -75,7 +80,19 @@ public class NewEventDataValidator extends AbstractValidator{
 	}
 
 	private void validateEventCategory(NewEventData newEventData, Errors errors) {
-		// TODO: Check for valid category here.
+		String categoryStr = newEventData.getEventCategory();
+		if(categoryStr == null)
+		{
+			String message = "Field required-" + NewEventData.EVENT_CATEGORY_FIELD_NAME;
+			errors.reject("-1", message+":Event category is a required field.");
+		}
+		else{
+			List<Category> results  = this.categoryRepo.findByName(categoryStr);
+			if(results.size()!=1){
+				String message = "Field invalid-" + NewEventData.EVENT_CATEGORY_FIELD_NAME;
+				errors.reject("-5", message+":The input category was not recognized as a valid category.");
+			}
+		}
 		
 	}
 

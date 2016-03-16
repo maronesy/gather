@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -46,12 +47,18 @@ public class EventsController {
         System.out.println("rawData: " + rawData);
         EventsQueryData eventsData = (new Gson()).fromJson(rawData, EventsQueryData.class);
 
+        eventsQueryDataValidator.validate(eventsData, bindingResult);
+        
 //        List<Event> events = new ArrayList<Event>();
 //        // Generate dummy events
 //        for (int i=0; i < 21; i++) {
 //            events.add(  new Event("event #" + Integer.toString(i))  );
 //        }
 
+		if (bindingResult.hasErrors()) {
+			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+        }
+        
         // // Calculate the upper and lower latitude bounds.
         double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * eventsData.getRadiusMi();
         Double latitudeLowerBound = new Double(eventsData.getLatitude() - latitudeRadiusAdjustment);
@@ -62,12 +69,18 @@ public class EventsController {
         Double longitudeLowerBound = new Double(eventsData.getLongitude() - longitudeRadiusAdjustment);
         Double longitudeUpperBound = new Double(eventsData.getLongitude()  + longitudeRadiusAdjustment);
 
-        //TODO: fix time stamp when new changes are ready
-        Timestamp timeWindow = Timestamp.valueOf("2016-04-13 10:10:10.0");
-        //DateTime dt = new DateTime().now().plusHours(hoursFromData);
+        Timestamp timeWindow;
+		if(eventsData.getHour() == -1){
+			//All events this year
+			timeWindow = new Timestamp(DateTime.now().plusYears(1).getMillis());
+		}
+		else{
+			//Events in the next <eventsData.getHour()> hours
+			timeWindow = new Timestamp(DateTime.now().plusHours(eventsData.getHour()).getMillis());
+		}
 
 
-         List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
+   		List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound, longitudeLowerBound, longitudeUpperBound, timeWindow);
         //List<Event> events = eventRepo.findByLocationWithinKmRadius(eventsData.getLatitude(), eventsData.getLongitude(), eventsData.getRadiusMi());
         return RESTPaginatedResourcesResponseData.createResponse(request, events);
     }
@@ -90,12 +103,12 @@ public class EventsController {
             return RESTResourceResponseData.<Event>badResponse(bindingResult);
         }
 
-				Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
-				Registrant owner = this.regRepo.findOne(actor.getActorID());
-				Event newEvent = buildEvent(newEventData, owner, bindingResult);
-				if (bindingResult.hasErrors()) {
-	                return RESTResourceResponseData.<Event>badResponse(bindingResult);
-				}
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant owner = this.regRepo.findOne(actor.getActorID());
+		Event newEvent = buildEvent(newEventData, owner, bindingResult);
+		if (bindingResult.hasErrors()) {
+            return RESTResourceResponseData.<Event>badResponse(bindingResult);
+		}
 
         Event savedEventResult = this.eventRepo.save(newEvent);
         Coordinates callerLoc       = newEventData.getCallerCoodinates();
@@ -127,9 +140,6 @@ public class EventsController {
 			errors.reject("-7", message);
 		}
 
-		//TODO: Figure out categories, set up ENUM?
-		//Category category = new Category(newEventData.getEventCategory(),"");
-		//newEvent.setCategory(newEventData.getEventCategory());
 		Category category = this.categoryRepo.findByName(newEventData.getEventCategory()).get(0);
 		newEvent.setCategory(category);
 
