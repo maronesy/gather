@@ -51,7 +51,7 @@ public class SignInDataValidator extends AbstractValidator
 		if(password == null)
 		{
 			String message = "Field required-" + SignInData.PASSWORD_FIELD_NAME;
-			errors.reject("-1", message+"-Password is a required field.");
+			errors.reject("-1", message+":Password is a required field.");
 		}
 		else if(password.length() > 64)
 		{

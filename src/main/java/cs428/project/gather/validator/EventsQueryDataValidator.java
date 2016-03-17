@@ -1,18 +1,13 @@
 package cs428.project.gather.validator;
 
-
 import cs428.project.gather.data.EventsQueryData;
-import cs428.project.gather.data.repo.EventRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 @Component
 public class EventsQueryDataValidator extends AbstractValidator
 {
-	@Autowired
-	private EventRepository eventDataAdapter;
 
 	@Override
 	public boolean supports(Class<?> targetClass)
@@ -39,7 +34,7 @@ public class EventsQueryDataValidator extends AbstractValidator
 		}
 		else
 		{
-			validateDescription(eventData, errors);
+			validateTimeWindow(eventData, errors);
 			validateLatitude(eventData, errors);
 			validateLongitude(eventData, errors);
 			validateRadius(eventData, errors);
@@ -47,91 +42,42 @@ public class EventsQueryDataValidator extends AbstractValidator
 		}
 	}
 
-	private void validateDescription(EventsQueryData eventData, Errors errors)
+	private void validateTimeWindow(EventsQueryData eventData, Errors errors)
 	{
-//		String password = userRegistrationData.getPassword();
-//		if(password == null)
-//		{
-//			String message = "Field required-" + RegistrationData.PASSWORD_FIELD_NAME;
-//			errors.reject("-1", message+"-Password is a required field.");
-//		}
-//		else if(password.length() > 64)
-//		{
-//			String message = "Field invalid-" + RegistrationData.PASSWORD_FIELD_NAME;
-//			errors.reject("-2", message+":The password length must be 64 characters or less.");
-//		}
+		int timeWindow = eventData.getHour();
+		if(timeWindow < -1 || timeWindow == 0){
+			String message = "Field invalid-" + EventsQueryData.TIME_WINDOW_FIELD_NAME;
+			errors.reject("-3",message+":The time window must be greater than 0 hours, or it can be -1 to indicate returning all events in the next year.");
+		}
 	}
 
 	private void validateLatitude(EventsQueryData eventData, Errors errors)
 	{
-
-//		String displayName = userRegistrationData.getDisplayName();
-//
-//		if(displayName == null)
-//		{
-//			String message = "Field required-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-1", message+":Display name is a required field.");
-//		}
-//		else if(displayName.length() > 64)
-//		{
-//			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-2", message+":The display name length must be 64 characters or less.");
-//		}
-//		else if(eventDataAdapter.findByDisplayName(displayName).size()>=1)
-//		{
-//
-//			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-4",message+":The display name already exists.  Please enter another display name.");//, "The display name already exists.  Please enter another display name.");
-//			
-//		}
+		float latitude = eventData.getLatitude();
+		if(latitude < -90 || latitude > 90)
+		{
+			String message = "Field invalid-" + EventsQueryData.LATITUDE_FIELD_NAME;
+			errors.reject("-3", message+":The latitude value is out of range.");
+		}
 	}
 
 	private void validateLongitude(EventsQueryData eventData, Errors errors)
 	{
-//		String emailAddress = userRegistrationData.getEmail();
-//		if(emailAddress == null)
-//		{
-//			String message = "Field required-" + RegistrationData.EMAIL_FIELD_NAME;
-//			errors.reject("-1", message+":Email address is a required field.");
-//		}
-//		else if(emailAddress.length() > 128)
-//		{
-//			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
-//			errors.reject("-2", message+":The email address length must be 128 characters or less.");
-//		}
-//		else if(matchesEmailAddressPattern(emailAddress) == false)
-//		{
-//			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
-//			errors.reject("-3", message+":Please enter a valid email address.");
-//		}
-//		else if(registrantDataAdapter.findOneByEmail(emailAddress)!=null)
-//		{
-//			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
-//			errors.reject("-4", message+":The email address already exists.  Please enter another email address.");
-//		}
+		float longitude = eventData.getLongitude();
+		if(longitude < -180 || longitude > 180)
+		{
+			String message = "Field invalid-" + EventsQueryData.LONGITUDE_FIELD_NAME;
+			errors.reject("-3", message+":The longitude value is out of range.");
+		}
 	}
 	
 	private void validateRadius(EventsQueryData eventData, Errors errors)
 	{
-
-//		String displayName = userRegistrationData.getDisplayName();
-//
-//		if(displayName == null)
-//		{
-//			String message = "Field required-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-1", message+":Display name is a required field.");
-//		}
-//		else if(displayName.length() > 64)
-//		{
-//			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-2", message+":The display name length must be 64 characters or less.");
-//		}
-//		else if(eventDataAdapter.findByDisplayName(displayName).size()>=1)
-//		{
-//
-//			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-//			errors.reject("-4",message+":The display name already exists.  Please enter another display name.");//, "The display name already exists.  Please enter another display name.");
-//			
-//		}
+		float radius = eventData.getRadiusMi();
+		if(radius <= 0 || radius > EventsQueryData.MAX_RADIUS )
+		{
+			String message = "Field invalid-" + EventsQueryData.RADIUS_MI_FIELD_NAME;
+			errors.reject("-3", message+":The radius value must be greater than zero but less than " + EventsQueryData.MAX_RADIUS + ".");
+		}
 	}
 }
