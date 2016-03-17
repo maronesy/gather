@@ -579,7 +579,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function getNearByEvents(userCoordinates) {
-		var radiusMi = 40;
+		var radiusMi = 15;
 		var hour = 24;
 
 		$.ajax({
