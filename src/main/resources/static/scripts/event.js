@@ -13,7 +13,7 @@ function loadEventsFirstView(userCoordinates) {
 				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
 //				var rating = events[i].feedbacks.rating
-				var category = events[i].category;
+				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
@@ -47,6 +47,7 @@ function loadEventsFirstView(userCoordinates) {
 				);
 			}
 		} else {
+			$('#eventTable').html('');
 			$('#eventTable').append(
 				'<tr> ' +
 					'<td colspan="3">  ' +
