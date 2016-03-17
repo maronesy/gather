@@ -35,6 +35,7 @@ import cs428.project.gather.data.model.Event;
 import cs428.project.gather.data.model.Location;
 import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.validator.EventsQueryDataValidator;
@@ -59,6 +60,9 @@ public class EventControllerTest {
 
     @Autowired
     RegistrantRepository regRepo;
+    
+    @Autowired
+    CategoryRepository categoryRepo;
 
     @Autowired
     private EventsQueryDataValidator eventsQueryDataValidator;
@@ -75,6 +79,10 @@ public class EventControllerTest {
 		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
 		this.regRepo.save(aUser);
 		assertEquals(this.regRepo.count(), 1);
+		this.categoryRepo.deleteAll();
+		Category swim= new Category("Swim");
+		this.categoryRepo.save(swim);
+		
 	}
 
 
