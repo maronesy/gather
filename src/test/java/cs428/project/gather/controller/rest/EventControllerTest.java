@@ -103,7 +103,7 @@ public class EventControllerTest {
 		uCoor.setLatitude(12.33);
 		uCoor.setLongitude(111.24);
 
-		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", 12, uCoor, StringUtils.join(cookies,';'));
+		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.currentTimeMillis()+10000L, uCoor, StringUtils.join(cookies,';'));
 
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());

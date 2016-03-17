@@ -12,8 +12,22 @@ $(document).ready(function() {
 	sessionCheck();
 	onLoadSessionCheck();
 	headerSelect();
+	loadCategories();
 //	loadEventsFirstView();
 }); 
+
+function loadCategories(){
+	$.ajax({
+	 	accepts: "application/json",
+		type : "GET",
+		url : "api/categories",
+		contentType: "application/json; charset=UTF-8",
+		success : function(returnvalue) {
+			var categories=returnvalue._embedded.categories;
+			gather.global.categories = categories;
+		}
+	});
+}
 
 function resizeMap() {
 	var cw = $('#map-canvas').width()*.75;
