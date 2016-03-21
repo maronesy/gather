@@ -14,7 +14,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var map = buildMap();
 
-	var eventSearchRadiusInMiles = 2.0;
+	var eventSearchRadiusInMiles = 10.0;
 	var eventSearchRadiusInMeters = eventSearchRadiusInMiles * 1609.34;
 
 	var currentUserCoordinates = null;
@@ -53,7 +53,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
-
+			
+			map.setView([userCoordinates.latitude, userCoordinates.longitude], 10);
+			
 			if(typeof(successCallback) === "function") {
 				successCallback(userCoordinates);
 			}
