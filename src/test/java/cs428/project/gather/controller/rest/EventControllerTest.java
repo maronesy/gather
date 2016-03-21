@@ -1,13 +1,15 @@
 package cs428.project.gather.controller.rest;
 
-import java.sql.Timestamp;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,16 +34,12 @@ import cs428.project.gather.data.Coordinates;
 import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.Location;
-import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.validator.EventsQueryDataValidator;
 import cs428.project.gather.validator.NewEventDataValidator;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -51,9 +49,6 @@ public class EventControllerTest {
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private RestTemplate restTemplate = new TestRestTemplate();
-
-	private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
-	private static final double ONE_MILE_IN_DEGREES_LONGITUDE = 0.014457;
 
     @Autowired
     EventRepository eventRepo;
