@@ -44,7 +44,7 @@ import cs428.project.gather.validator.NewEventDataValidator;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class EventControllerTest {
+public class JoinControllerTest {
 
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -79,35 +79,8 @@ public class EventControllerTest {
 		this.categoryRepo.save(swim);
 		
 	}
-	
-	@Test
-	public void testGetEvent() throws JsonProcessingException {
-		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
-		
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10, 500);
-		String status = apiResponse.getStatusCode().toString();
 
-		assertEquals("200", status);
 
-	}
-
-	@Test
-	public void testGetEventWrongRadius() throws JsonProcessingException {
-		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.341);
-		eCoor.setLongitude(111.231);
-
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 25, 500);
-		String status = apiResponse.getStatusCode().toString();
-
-		assertEquals("400", status);
-
-	}
-	
 	@Test
 	public void testAddNewEvent() throws JsonProcessingException {
 		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
@@ -126,15 +99,15 @@ public class EventControllerTest {
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
 		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
+		eCoor.setLatitude(12.34);
+		eCoor.setLongitude(111.23);
 		
 		Coordinates uCoor = new Coordinates();
 		uCoor.setLatitude(12.33);
 		uCoor.setLongitude(111.24);
 
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
-
+		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
+		Object events = apiResponse.get("events");
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
 		Event anEvent = listEvents.get(0);
@@ -210,34 +183,33 @@ public class EventControllerTest {
 
 	}
 	
-	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("latitude", lat);
-		requestBody.put("longitude", lon);
-		requestBody.put("radiusMi", radius);
-		requestBody.put("hour", hour);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-				RESTResponseData.class);
-		
-//		@SuppressWarnings("unchecked")
-//		Map<String, Object> apiResponse2 = (Map<String, Object>) restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-//				Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(apiResponse);
-
-		//Asserting the response of the API.
-		return apiResponse;
-
-	}
+//	private Map<String, Object> attemptGetEvent(float lat, float lon, float radius, int hour) throws JsonProcessingException {
+//		// Building the Request body data
+//		Map<String, Object> requestBody = new HashMap<String, Object>();
+//		requestBody.put("latitude", lat);
+//		requestBody.put("longitude", lon);
+//		requestBody.put("radius", radius);
+//		requestBody.put("hour", hour);
+//		HttpHeaders requestHeaders = new HttpHeaders();
+//		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+//
+//		// Creating http entity object with request body and headers
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+//				requestHeaders);
+//
+//		Object urlVariables = null;
+//		// Invoking the API
+//	ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
+//	Map.class, Collections.EMPTY_MAP);
+////		@SuppressWarnings("unchecked")
+////		Map<String, Object> apiResponse = restTemplate.exchange("http://localhost:8888/rest/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
+//
+//
+////		assertNotNull(apiResponse);
+//
+//		// Asserting the response of the API.
+////		return apiResponse;
+//
+//	}
 
 }
