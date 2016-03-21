@@ -61,7 +61,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
-				//determineCoordByZipCode();
 				if(typeof(failureCallback) === "function") {
 					failureCallback();
 				}
