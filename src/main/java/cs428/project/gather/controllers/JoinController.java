@@ -78,6 +78,7 @@ public class JoinController {
 
 	private Event joinEvent(JoinEventData joinEventData, Registrant participant, Errors errors) {
 		
+		//TODO: add an error check in case event or participant are not found
 		Long eventId = joinEventData.getEventId();
 		Event joinedEvent = eventRepo.findOne(eventId);
 		joinedEvent.addParticipant(participant);

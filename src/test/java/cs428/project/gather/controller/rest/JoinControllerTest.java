@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -119,6 +120,9 @@ public class JoinControllerTest {
 		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies,';'));
 		Set<Registrant> listParticipant = anEvent.getParticipants();
 		Registrant participant = null;
+		
+		//Registrant participant = findParticipant(listParticipant);		
+		
 		for(Registrant partic: listParticipant){
 			if (partic.getEmail().toString() == "existed@email.com"){
 				participant = partic;
@@ -218,5 +222,15 @@ public class JoinControllerTest {
 		// Asserting the response of the API.
 		return apiResponse;
 
+	}
+	
+	@Transactional
+	public Registrant findParticipant(Set<Registrant> listParticipant){	
+		for(Registrant partic: listParticipant){
+			if (partic.getEmail().toString() == "existed@email.com"){
+				return partic;
+			}
+		}
+		return null;
 	}
 }
