@@ -33,22 +33,22 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "event_id")
     private List<Occurrence> occurrences = new ArrayList<Occurrence>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "event_id")
     private Set<Feedback> feedbacks = new HashSet<Feedback>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "event_id")
     private Set<ChangeLog> changeLog = new HashSet<ChangeLog>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Registrant> subscribers = new HashSet<Registrant>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Registrant> owners = new HashSet<Registrant>();
 
     @ManyToMany(fetch = FetchType.EAGER)

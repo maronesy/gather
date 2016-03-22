@@ -94,7 +94,7 @@ public class JoinControllerTest {
 		
 		// Invoking the API
 		
-		ResponseEntity<RESTResponseData> response = checkSesseion(requestEntity);
+		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
 		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
 
 		RESTResponseData responseData = response.getBody();
@@ -119,9 +119,7 @@ public class JoinControllerTest {
 		Long eventId = anEvent.getId();
 		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies,';'));
 		Set<Registrant> listParticipant = anEvent.getParticipants();
-		Registrant participant = null;
-		
-		//Registrant participant = findParticipant(listParticipant);		
+		Registrant participant = null;		
 		
 		for(Registrant partic: listParticipant){
 			if (partic.getEmail().toString() == "existed@email.com"){
@@ -154,7 +152,7 @@ public class JoinControllerTest {
 
 	}
 	
-	private ResponseEntity<RESTResponseData> checkSesseion(HttpEntity<String> requestEntity) throws JsonProcessingException {
+	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity) throws JsonProcessingException {
 
 		// Invoking the API
 		
@@ -222,15 +220,5 @@ public class JoinControllerTest {
 		// Asserting the response of the API.
 		return apiResponse;
 
-	}
-	
-	@Transactional
-	public Registrant findParticipant(Set<Registrant> listParticipant){	
-		for(Registrant partic: listParticipant){
-			if (partic.getEmail().toString() == "existed@email.com"){
-				return partic;
-			}
-		}
-		return null;
 	}
 }

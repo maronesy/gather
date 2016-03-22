@@ -88,10 +88,9 @@ public class EventControllerTest {
 		eCoor.setLongitude(111.232);
 		
 		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10, 500);
-		String status = apiResponse.getStatusCode().toString();
-
-		assertEquals("200", status);
-
+		
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
+	
 	}
 
 	@Test
@@ -102,9 +101,8 @@ public class EventControllerTest {
 		eCoor.setLongitude(111.231);
 
 		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 25, 500);
-		String status = apiResponse.getStatusCode().toString();
-
-		assertEquals("400", status);
+		
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
 	}
 	
