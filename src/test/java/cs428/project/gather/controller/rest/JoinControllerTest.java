@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -82,7 +83,7 @@ public class JoinControllerTest {
 
 
 	@Test
-	public void testAddNewEvent() throws JsonProcessingException {
+	public void testJoinEvent() throws JsonProcessingException {
 		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
 		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
@@ -113,7 +114,17 @@ public class JoinControllerTest {
 		Event anEvent = listEvents.get(0);
 		assertEquals("EventOne", anEvent.getName());
 		assertEquals("DescOne", anEvent.getDescription());
-
+		
+		Long eventId = anEvent.getId();
+		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies,';'));
+		Set<Registrant> listParticipant = anEvent.getParticipants();
+		Registrant participant = null;
+		for(Registrant partic: listParticipant){
+			if (partic.getEmail().toString() == "existed@email.com"){
+				participant = partic;
+			}
+		}
+		assertEquals(true, listParticipant.contains(participant));
 	}
 	
 	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
@@ -183,33 +194,29 @@ public class JoinControllerTest {
 
 	}
 	
-//	private Map<String, Object> attemptGetEvent(float lat, float lon, float radius, int hour) throws JsonProcessingException {
-//		// Building the Request body data
-//		Map<String, Object> requestBody = new HashMap<String, Object>();
-//		requestBody.put("latitude", lat);
-//		requestBody.put("longitude", lon);
-//		requestBody.put("radius", radius);
-//		requestBody.put("hour", hour);
-//		HttpHeaders requestHeaders = new HttpHeaders();
-//		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-//
-//		// Creating http entity object with request body and headers
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-//				requestHeaders);
-//
-//		Object urlVariables = null;
-//		// Invoking the API
-//	ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
-//	Map.class, Collections.EMPTY_MAP);
-////		@SuppressWarnings("unchecked")
-////		Map<String, Object> apiResponse = restTemplate.exchange("http://localhost:8888/rest/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
-//
-//
-////		assertNotNull(apiResponse);
-//
-//		// Asserting the response of the API.
-////		return apiResponse;
-//
-//	}
+	private Map<String, Object> attemptJoinEvent(Long Id, String session) throws JsonProcessingException {
+		// Building the Request body data
+		
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("EventId", Id);
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", session);
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		// Invoking the API
+		@SuppressWarnings("unchecked")
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/join", httpEntity,
+				Map.class, Collections.EMPTY_MAP);
+
+
+		assertNotNull(apiResponse);
+
+		// Asserting the response of the API.
+		return apiResponse;
+
+	}
 }
