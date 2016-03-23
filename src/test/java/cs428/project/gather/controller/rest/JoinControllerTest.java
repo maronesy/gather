@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,7 +46,7 @@ import cs428.project.gather.validator.NewEventDataValidator;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class EventControllerTest {
+public class JoinControllerTest {
 
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -79,35 +81,10 @@ public class EventControllerTest {
 		this.categoryRepo.save(swim);
 		
 	}
-	
-	@Test
-	public void testGetEvent() throws JsonProcessingException {
-		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
-		
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10, 500);
-		
-		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
-	
-	}
+
 
 	@Test
-	public void testGetEventWrongRadius() throws JsonProcessingException {
-		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.341);
-		eCoor.setLongitude(111.231);
-
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 25, 500);
-		
-		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-
-	}
-	
-	@Test
-	public void testAddNewEvent() throws JsonProcessingException {
+	public void testJoinEvent() throws JsonProcessingException {
 		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
 		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
@@ -117,28 +94,39 @@ public class EventControllerTest {
 		
 		// Invoking the API
 		
-		ResponseEntity<RESTResponseData> response = checkSesseion(requestEntity);
+		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
 		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
 
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
 		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
+		eCoor.setLatitude(12.34);
+		eCoor.setLongitude(111.23);
 		
 		Coordinates uCoor = new Coordinates();
 		uCoor.setLatitude(12.33);
 		uCoor.setLongitude(111.24);
 
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
-
+		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
+		Object events = apiResponse.get("events");
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
 		Event anEvent = listEvents.get(0);
 		assertEquals("EventOne", anEvent.getName());
 		assertEquals("DescOne", anEvent.getDescription());
-
+		
+		Long eventId = anEvent.getId();
+		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies,';'));
+		Set<Registrant> listParticipant = anEvent.getParticipants();
+		Registrant participant = null;		
+		
+		for(Registrant partic: listParticipant){
+			if (partic.getEmail().toString() == "existed@email.com"){
+				participant = partic;
+			}
+		}
+		assertEquals(true, listParticipant.contains(participant));
 	}
 	
 	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
@@ -164,7 +152,7 @@ public class EventControllerTest {
 
 	}
 	
-	private ResponseEntity<RESTResponseData> checkSesseion(HttpEntity<String> requestEntity) throws JsonProcessingException {
+	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity) throws JsonProcessingException {
 
 		// Invoking the API
 		
@@ -208,14 +196,13 @@ public class EventControllerTest {
 
 	}
 	
-	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour) throws JsonProcessingException {
+	private Map<String, Object> attemptJoinEvent(Long Id, String session) throws JsonProcessingException {
 		// Building the Request body data
+		
 		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("latitude", lat);
-		requestBody.put("longitude", lon);
-		requestBody.put("radiusMi", radius);
-		requestBody.put("hour", hour);
+		requestBody.put("EventId", Id);
 		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", session);
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -224,18 +211,14 @@ public class EventControllerTest {
 
 		// Invoking the API
 		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-				RESTResponseData.class);
-		
-//		@SuppressWarnings("unchecked")
-//		Map<String, Object> apiResponse2 = (Map<String, Object>) restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-//				Map.class, Collections.EMPTY_MAP);
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/join", httpEntity,
+				Map.class, Collections.EMPTY_MAP);
+
 
 		assertNotNull(apiResponse);
 
-		//Asserting the response of the API.
+		// Asserting the response of the API.
 		return apiResponse;
 
 	}
-
 }
