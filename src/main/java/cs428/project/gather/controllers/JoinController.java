@@ -51,7 +51,7 @@ public class JoinController {
 
 		if (!ActorTypeHelper.isRegisteredUser(request)) {
 			System.out.println("An anonymous user tried to add an event.");
-			bindingResult.reject("-7", "Incorrect User State. Only registered users can add events.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can join events.");
 			return RESTResourceResponseData.<Event> badResponse(bindingResult);
 		}
 
