@@ -567,7 +567,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
 
 		$(establishedEventContent).find("button").each(function(index) {
-			$(this).attr("data-event-id", anEvent.locationID);
+			$(this).attr("data-event-id", anEvent.id);
 		});
 
 		//TODO: distance from caller should be calculated based on anEvent object
@@ -602,7 +602,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 							latitude: gather.global.nearEvents[i].location.latitude,
 							longitude: gather.global.nearEvents[i].location.longitude
 							}
+					console.log(JSON.stringify(gather.global.nearEvents[i]));
 					placeEstablishedEventMarker(gather.global.nearEvents[i], true);
+					
+					establishedEvents[gather.global.nearEvents[i].id] = gather.global.nearEvents[i];
+					
 				}
 				loadEventsFirstView(userCoordinates);
 			},
@@ -678,9 +682,72 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
 	}
+	
+	this.joinEvent = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			
+			if (gather.global.session.signedIn == false){
+				alert("You need to be signed in to join an event")
+			}else {
+				establishedEvent.eventMarker.closePopup();
+				
+				doJoinEvent(eventID, function(updatedEvent) {
+					alert("You have joined this event");
+				}, function() {
+					displayGeneralFailureModal();
+				});
+			}
+		}
+	}
+	
+	function doJoinEvent(eventID, successCallback, failureCallback) {
+		
+		var requestOptions = {
+			type: "POST",
+			url: "/rest/join",
+			contentType: "application/json; charset=UTF-8",
+			data: '{ "eventId" : ' + eventID +' }',
+			dataType: "json",
+			timeout: 10000,
+			success: function(response) {
+				if(typeof(successCallback) === "function") {
+					successCallback(response.result);
+					
+				}
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
+
+	
+	function updateEventMarker(eventMarker, coordinates, iconOptions) {
+		if(coordinates !== null && typeof(coordinates) === "object") {
+			var eventPosition = new L.LatLng(coordinates.latitude, coordinates.longitude);
+			eventMarker.setLatLng(eventPosition);
+		}
+
+		if(iconOptions !== null && typeof(iconOptions) === "object") {
+			var icon = new L.mapbox.marker.icon(iconOptions);
+			eventMarker.setIcon(icon);
+		}
+
+		eventMarker.update();
+	}
 }
-
-
 
 function determineCoordByZipCode1(zipCode) {
 	

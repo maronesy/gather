@@ -322,8 +322,6 @@ function sessionCheck() {
 }
 
 
-
-
 function updateGreeting(){
 	document.getElementById("greetings").innerHTML = "Welcome "+gather.global.currentDisplayName;
 }

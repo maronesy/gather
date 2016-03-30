@@ -200,7 +200,7 @@ public class JoinControllerTest {
 		// Building the Request body data
 		
 		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("EventId", Id);
+		requestBody.put("eventId", Id);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", session);
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
