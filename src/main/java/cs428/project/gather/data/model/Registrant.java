@@ -1,5 +1,7 @@
 package cs428.project.gather.data.model;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -7,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Registrant extends Actor {
@@ -17,12 +21,15 @@ public class Registrant extends Actor {
 	private int defaultTimeWindow = 1;
 	private int defaultZip = 90210;
 
+	@JsonIgnore
 	@ManyToMany(mappedBy = "subscribers")
 	private Set<Event> subscribedEvents = new HashSet<Event>();
 
+	@JsonIgnore
 	@ManyToMany(mappedBy = "owners")
 	private Set<Event> ownedEvents = new HashSet<Event>();
 
+	@JsonIgnore
 	@ManyToMany(mappedBy = "participants")
 	private Set<Event> joinedEvents = new HashSet<Event>();
 
@@ -100,5 +107,15 @@ public class Registrant extends Actor {
 
 	public boolean joinEvent(Event event) {
 		return joinedEvents.add(event);
+	}
+	
+	@JsonIgnore
+	public Set<Event> getJoinedEvents() {
+		return Collections.unmodifiableSet(joinedEvents);
+	}
+
+	@JsonIgnore
+	public Set<Event> getOwnedEvents() {
+		return Collections.unmodifiableSet(ownedEvents);
 	}
 }

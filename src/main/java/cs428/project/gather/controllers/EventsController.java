@@ -1,6 +1,7 @@
 package cs428.project.gather.controllers;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -148,4 +149,37 @@ public class EventsController {
 
 		return newEvent;
 	}
+	
+	@RequestMapping(value = "/rest/events/userJoined")
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request, BindingResult bindingResult){
+		
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to obtain their joined event list.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can request their joined event list.");
+			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+		}
+		
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant user = this.regRepo.findOne(actor.getActorID());
+		
+		List<Event> events = new ArrayList<Event>(user.getJoinedEvents());
+		return RESTPaginatedResourcesResponseData.createResponse(request, events);
+	}
+	
+	@RequestMapping(value = "/rest/events/userOwned")
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request, BindingResult bindingResult){
+		
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to obtain their joined event list.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can request their joined event list.");
+			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+		}
+		
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant user = this.regRepo.findOne(actor.getActorID());
+		
+		List<Event> events = new ArrayList<Event>(user.getOwnedEvents());
+		return RESTPaginatedResourcesResponseData.createResponse(request, events);
+	}
+
 }
