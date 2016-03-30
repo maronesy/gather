@@ -190,9 +190,9 @@
 				Check in to rank this location and leave feedback.</p>
 
 				<div class="modal-footer">
-					<button class="btn btn-default" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon"></span>Join</button>
+					<button class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
 					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button>
-					<button class="btn btn-primary" onclick="mapManager.checkInFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-ok"></span> Check In</button>
+					<button class="btn btn-primary" onclick="mapManager.checkInEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-ok"></span> Check In</button>  
 				</div>
 			</div>
 		</div>
@@ -230,5 +230,4 @@
 
 
 </html>
-
 

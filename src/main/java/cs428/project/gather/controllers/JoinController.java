@@ -46,6 +46,7 @@ public class JoinController {
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request,
 			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("Validated: " + rawData);
 		// TODO: Wrap this in TryCatch, report exception to frontend.
 		JoinEventData joinEventData = (new Gson()).fromJson(rawData, JoinEventData.class);
 
@@ -54,7 +55,8 @@ public class JoinController {
 			bindingResult.reject("-7", "Incorrect User State. Only registered users can join events.");
 			return RESTResourceResponseData.<Event> badResponse(bindingResult);
 		}
-
+		
+		
 		// validating passed join data
 		joinEventDataValidator.validate(joinEventData, bindingResult);
 		
@@ -82,6 +84,7 @@ public class JoinController {
 		Long eventId = joinEventData.getEventId();
 		Event joinedEvent = eventRepo.findOne(eventId);
 		joinedEvent.addParticipant(participant);
+		eventRepo.save(joinedEvent);
 
 		return joinedEvent;
 	}

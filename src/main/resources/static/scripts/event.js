@@ -6,6 +6,7 @@ function loadEventsFirstView(userCoordinates) {
 		if (events.length != 0) {
 			$('#eventTable').html('');
 			for(i = 0; i < events.length; i++){
+				var eventId = events[i].id;
 				var lat1 = events[i].location.latitude;
 				var lon1 = events[i].location.longitude;
 				var lat2 = parseFloat(userCoordinates.latitude);
@@ -24,7 +25,7 @@ function loadEventsFirstView(userCoordinates) {
 				var zipCode = events[i].location.zipCode;
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
-				$('#eventTable').append(
+				$('.eventTable').append(
 					'<tr> ' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
@@ -36,6 +37,7 @@ function loadEventsFirstView(userCoordinates) {
 									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
 									'<h4 class="list-title">'+ title +'</h4>' +
 									'<span class="pull-right"></span>' +
+									'<p id="eventId">Event ID: '+ eventId +'</p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
 									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
