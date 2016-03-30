@@ -564,8 +564,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		eventMarker.addTo(map);
 
 		anEvent.eventMarker = eventMarker;
+		if (isCurrentUserOnwer(anEvent.owners)){
+			$("#establishedEventFooter").prepend("<button class=\"btn btn-info\" onclick=\"mapManager.removeEvent(this.getAttribute('data-event-id')); return false;\"><span class=\"glyphicon glyphicon-remove\"></span> Remove </button>");
+		}
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
-
+		
 		$(establishedEventContent).find("button").each(function(index) {
 			$(this).attr("data-event-id", anEvent.id);
 		});
@@ -573,10 +576,21 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
+
 		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
 		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+	}
+	
+	function isCurrentUserOnwer(owners){
+		var result=false;
+		for(i = 0; i < owners.length; i++){
+			if(owners[i].displayName == gather.global.currentDisplayName){
+				result = true;
+			}
+		}
+		return result;
 	}
 	
 	function getNearByEvents(userCoordinates) {
