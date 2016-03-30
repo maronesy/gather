@@ -747,6 +747,58 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
+	this.removeEvent = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			
+			if (gather.global.session.signedIn == false){
+				displayGeneralFailureModal();
+
+			}else {
+				establishedEvent.eventMarker.closePopup();
+				
+				doRemoveEvent(eventID, function(updatedEvent) {
+					$("#event-removed-modal").modal("show");
+					var eventMarker = establishedEvent.eventMarker;
+					map.removeLayer(eventMarker);
+				}, function() {
+					displayGeneralFailureModal();
+				});
+			}
+		}
+	}
+	
+	function doRemoveEvent(eventID, successCallback, failureCallback) {
+		
+		var requestOptions = {
+			type: "POST",
+			url: "/rest/events/remove",
+			contentType: "application/json; charset=UTF-8",
+			data: '{ "eventId" : ' + eventID +' }',
+			dataType: "json",
+			timeout: 10000,
+			success: function(response) {
+				if(typeof(successCallback) === "function") {
+					successCallback(response.result);
+					
+				}
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
 	
 	function updateEventMarker(eventMarker, coordinates, iconOptions) {
 		if(coordinates !== null && typeof(coordinates) === "object") {
