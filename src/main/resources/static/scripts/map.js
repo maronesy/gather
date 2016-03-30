@@ -565,7 +565,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		anEvent.eventMarker = eventMarker;
 		if (isCurrentUserOnwer(anEvent.owners)){
-			//$("#establishedEventFooter").prepend("<button class=\"btn btn-info\" onclick=\"mapManager.removeEvent(this.getAttribute('data-event-id')); return false;\"><span class=\"glyphicon glyphicon-remove\"></span> Remove </button>");
 			$('#removeEventBtn').show();
 		}else{
 			$('#removeEventBtn').hide();
