@@ -41,6 +41,9 @@ public class EventsController {
 
 	@Autowired
 	private NewEventDataValidator newEventDataValidator;
+	
+	@Autowired
+	private JoinEventDataValidator joinEventDataValidator;
 
 	@RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request,
@@ -147,5 +150,52 @@ public class EventsController {
 		newEvent.setCategory(category);
 
 		return newEvent;
+	}
+	
+	@RequestMapping(value = "/rest/events/join", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("Validated: " + rawData);
+		// TODO: Wrap this in TryCatch, report exception to frontend.
+		JoinEventData joinEventData = (new Gson()).fromJson(rawData, JoinEventData.class);
+
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can join events.");
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+		
+		
+		// validating passed join data
+		joinEventDataValidator.validate(joinEventData, bindingResult);
+		
+		System.out.println("Validated: " + rawData);
+		
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant participant = this.regRepo.findOne(actor.getActorID());
+		
+		// Adding user to participant list
+		Event joinedEvent = joinEvent(joinEventData, participant, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.CREATED);
+	}
+
+	private Event joinEvent(JoinEventData joinEventData, Registrant participant, Errors errors) {
+		
+		//TODO: add an error check in case event or participant are not found
+		Long eventId = joinEventData.getEventId();
+		Event joinedEvent = eventRepo.findOne(eventId);
+		joinedEvent.addParticipant(participant);
+		eventRepo.save(joinedEvent);
+
+		return joinedEvent;
 	}
 }
