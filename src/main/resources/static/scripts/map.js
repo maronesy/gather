@@ -715,7 +715,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		
 		var requestOptions = {
 			type: "POST",
-			url: "/rest/join",
+			url: "/rest/events/join",
 			contentType: "application/json; charset=UTF-8",
 			data: '{ "eventId" : ' + eventID +' }',
 			dataType: "json",
