@@ -296,7 +296,6 @@ public class EventRepositoryIntegrationTest {
 		//Setting up event
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		testEvent.setLocation(location);
@@ -306,13 +305,10 @@ public class EventRepositoryIntegrationTest {
 		//Creating users and join
 		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 		Registrant participant = this.registrantRepo.save(aUser);
-		aUser = new Registrant("subscriber@email.com","password","subscriber",10L,3,10000);
-		Registrant subscriber = this.registrantRepo.save(aUser);
 		aUser = new Registrant("owner@email.com","password","owner",10L,3,10000);
 		Registrant owner = this.registrantRepo.save(aUser);
 		testEvent.addParticipant(participant);
 		testEvent.addOwner(owner);
-		//testEvent.addSubscriber(subscriber);
 		
 		Event result = this.eventRepo.save(testEvent);
 		Event foundEvent = this.eventRepo.findOne(result.getId());
@@ -323,20 +319,9 @@ public class EventRepositoryIntegrationTest {
 		assertTrue(foundParticipant!=null);
 		assertTrue(foundSubscriber!=null);
 		assertTrue(foundOwner!=null);
-//		assertEquals(foundParticipant.getJoinedEvents().size(),1);
-//		assertTrue(foundSubscriber.getSubscribedEvents().size()==1);
-//		assertTrue(foundOwner.getOwnedEvents().size()==1);
 		
 		eventRepo.delete(result);
-//		for (Registrant user : result.getParticipants()) {
-//		     user.removeJoinedEvent(result);
-//		}
-//		for (Registrant user : result.getOnwers()) {
-//		     user.removeOwnedEvent(result);
-//		}
-//		for (Registrant user : result.getSubscribers()) {
-//		     user.removeSubscribedEvent(result);
-//		}
+
 		Event afterDelete = this.eventRepo.findOne(result.getId());
 		assertTrue(afterDelete==null);
 		foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
