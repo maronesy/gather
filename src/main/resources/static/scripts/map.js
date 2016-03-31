@@ -284,7 +284,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			addNewEvent()
 		}else{
 			$("#anonymous-user-add-event-failure-modal").modal("show");
-			$('#failureModalRegister').on('click', function() {
+			$('#failureAddEventModalRegisterBtn').on('click', function() {
 				$('#registerButton').trigger('click');
 			});
 		}
@@ -355,7 +355,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var catArray = gather.global.categories;
 		var $categories = $( "#new-event-category" );
 		$categories.empty();
-		for (i = 0; i < catArray.length; i++) {
+		for (var i = 0; i < catArray.length; i++) {
 			newOptions[catArray[i].name] = catArray[i].name;
 			$categories.append($("<option></option>")
 				     .attr("value", catArray[i].name).text(catArray[i].name));
@@ -564,8 +564,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		eventMarker.addTo(map);
 
 		anEvent.eventMarker = eventMarker;
+		if (isCurrentUserOnwer(anEvent.owners)){
+			$('#removeEventBtn').show();
+		}else{
+			$('#removeEventBtn').hide();
+		}
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
-
+		
 		$(establishedEventContent).find("button").each(function(index) {
 			$(this).attr("data-event-id", anEvent.id);
 		});
@@ -573,10 +578,21 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
+
 		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
 		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+	}
+	
+	function isCurrentUserOnwer(owners){
+		var result=false;
+		for(var i = 0; i < owners.length; i++){
+			if(owners[i].displayName == gather.global.currentDisplayName){
+				result = true;
+			}
+		}
+		return result;
 	}
 	
 	function getNearByEvents(userCoordinates) {
@@ -595,7 +611,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				gather.global.nearEvents = returnvalue.results;
 
 				console.log(JSON.stringify(gather.global.nearEvents))
-				for(i = 0; i < gather.global.nearEvents.length; i++){
+				for(var i = 0; i < gather.global.nearEvents.length; i++){
 //					alert(gather.global.nearEvents[i].location.latitude);
 //					alert(gather.global.nearEvents[i].location.longitude);
 					var eCoordinates = {
@@ -658,7 +674,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 //        	} 
 //        });
         
-        for (i in zipList) {
+        for (var i in zipList) {
         	if(zipList[i].zip == zipCode){
 				uCoordinates = {
 				latitude: zipList[i].latitude,
@@ -698,12 +714,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		else {
 			
 			if (gather.global.session.signedIn == false){
-				alert("You need to be signed in to join an event")
+				$("#anonymous-user-join-event-failure-modal").modal("show");
+				$('#failureJoinEventModalRegisterBtn').on('click', function() {
+					$('#registerButton').trigger('click');
+				});
 			}else {
 				establishedEvent.eventMarker.closePopup();
 				
 				doJoinEvent(eventID, function(updatedEvent) {
-					alert("You have joined this event");
+					$("#event-join-modal").modal("show");
 				}, function() {
 					displayGeneralFailureModal();
 				});
@@ -739,6 +758,58 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
+	this.removeEvent = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			
+			if (gather.global.session.signedIn == false){
+				displayGeneralFailureModal();
+
+			}else {
+				establishedEvent.eventMarker.closePopup();
+				
+				doRemoveEvent(eventID, function(updatedEvent) {
+					$("#event-removed-modal").modal("show");
+					var eventMarker = establishedEvent.eventMarker;
+					map.removeLayer(eventMarker);
+				}, function() {
+					displayGeneralFailureModal();
+				});
+			}
+		}
+	}
+	
+	function doRemoveEvent(eventID, successCallback, failureCallback) {
+		
+		var requestOptions = {
+			type: "POST",
+			url: "/rest/events/remove",
+			contentType: "application/json; charset=UTF-8",
+			data: '{ "eventId" : ' + eventID +' }',
+			dataType: "json",
+			timeout: 10000,
+			success: function(response) {
+				if(typeof(successCallback) === "function") {
+					successCallback(response.result);
+					
+				}
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
 	
 	function updateEventMarker(eventMarker, coordinates, iconOptions) {
 		if(coordinates !== null && typeof(coordinates) === "object") {
@@ -769,7 +840,7 @@ function determineCoordByZipCode1(zipCode) {
     
     var uCoordinates = null
     
-    for (i in zipList) {
+    for (var i in zipList) {
     	if(zipList[i].zip == zipCode){
 			uCoordinates = {
 			latitude: zipList[i].latitude,

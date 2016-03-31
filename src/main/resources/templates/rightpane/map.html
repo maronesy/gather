@@ -107,6 +107,44 @@
 		</div>
 	</div>
 	
+	<div class="modal fade" id="event-removed-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Event Removed</h4>
+				</div>
+
+				<div class="modal-body">
+					<span>Your event has been removed.</span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="event-join-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Event Joined</h4>
+				</div>
+
+				<div class="modal-body">
+					<span>You have joined the event.</span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<div class="modal fade" id="anonymous-user-add-event-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -121,8 +159,29 @@
 					
 				</div>
 				<div class="modal-footer">
-					<button id="failureModalRegister" type="button" class="btn btn-default" data-dismiss="modal">Register</button>
-					<button id="failureModalClose" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button id="failureAddEventModalRegisterBtn" type="button" class="btn btn-default" data-dismiss="modal">Register</button>
+					<button id="failureAddEventModalCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="anonymous-user-join-event-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Anonymous User Attempts to Join Event</h4>
+				</div>
+
+				<div class="modal-body">
+					<span>As an anonymous user, you are not able to to join new events.</span><br></br><br></br>
+					<span>Please sign in in the front page or register with the button below.</span>
+					
+				</div>
+				<div class="modal-footer">
+					<button id="failureJoinEventModalRegisterBtn" type="button" class="btn btn-default" data-dismiss="modal">Register</button>
+					<button id="failureJoinEventModalCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
@@ -189,7 +248,8 @@
 				<p><b>Have you been to this event?</b><br></br>
 				Check in to rank this location and leave feedback.</p>
 
-				<div class="modal-footer">
+				<div class="modal-footer" id="establishedEventFooter">
+					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
 					<button class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
 					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button> 
 				</div>

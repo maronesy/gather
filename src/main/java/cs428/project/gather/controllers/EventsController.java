@@ -191,7 +191,7 @@ public class EventsController {
 			@RequestBody String rawData, BindingResult bindingResult) {
 		System.out.println("Validated: " + rawData);
 		// TODO: Wrap this in TryCatch, report exception to frontend.
-		JoinEventData joinEventData = (new Gson()).fromJson(rawData, JoinEventData.class);
+		EventIdData joinEventData = (new Gson()).fromJson(rawData, EventIdData.class);
 
 		if (!ActorTypeHelper.isRegisteredUser(request)) {
 			System.out.println("An anonymous user tried to add an event.");
@@ -221,7 +221,7 @@ public class EventsController {
 		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.CREATED);
 	}
 
-	private Event joinEvent(JoinEventData joinEventData, Registrant participant, Errors errors) {
+	private Event joinEvent(EventIdData joinEventData, Registrant participant, Errors errors) {
 		
 		//TODO: add an error check in case event or participant are not found
 		Long eventId = joinEventData.getEventId();
@@ -230,5 +230,60 @@ public class EventsController {
 		eventRepo.save(joinedEvent);
 
 		return joinedEvent;
+	}
+	
+	@RequestMapping(value = "/rest/events/remove", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> removeEvent(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("Validated: " + rawData);
+		// TODO: Wrap this in TryCatch, report exception to frontend.
+		EventIdData removeEventData = (new Gson()).fromJson(rawData, EventIdData.class);
+
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can remove events.");
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+		
+		
+		// validating passed join data
+		joinEventDataValidator.validate(removeEventData, bindingResult);
+		
+		System.out.println("Validated: " + rawData);
+		
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant participant = this.regRepo.findOne(actor.getActorID());
+		
+		// Adding user to participant list
+		Event joinedEvent = removeEvent(removeEventData, participant, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.OK);
+	}
+
+	private Event removeEvent(EventIdData removeEventData, Registrant participant, Errors errors) {
+		
+		//TODO: add an error check in case event or participant are not found
+		Long eventId = removeEventData.getEventId();
+		Event targetEvent = eventRepo.findOne(eventId);
+		eventRepo.delete(targetEvent);
+//		for (Registrant user : targetEvent.getParticipants()) {
+//		     user.removeJoinedEvent(targetEvent);
+//		}
+//		for (Registrant user : targetEvent.getOnwers()) {
+//		     user.removeOwnedEvent(targetEvent);
+//		}
+//		for (Registrant user : targetEvent.getSubscribers()) {
+//		     user.removeSubscribedEvent(targetEvent);
+//		}
+
+		return targetEvent;
 	}
 }
