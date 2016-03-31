@@ -1,6 +1,6 @@
 package cs428.project.gather.data;
 
-public class JoinEventData {
+public class EventIdData {
 
 	private Long eventId;
 

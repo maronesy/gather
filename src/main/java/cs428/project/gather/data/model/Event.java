@@ -122,6 +122,10 @@ public class Event {
     public Set<Registrant> getParticipants(){
         return Collections.unmodifiableSet(participants);
     }
+    
+    public Set<Registrant> getOwners(){
+        return Collections.unmodifiableSet(owners);
+    }
 
     public boolean addParticipant(Registrant aUser){
         return participants.add(aUser);
