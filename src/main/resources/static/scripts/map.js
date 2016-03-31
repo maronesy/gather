@@ -574,7 +574,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$(establishedEventContent).find("button").each(function(index) {
 			$(this).attr("data-event-id", anEvent.id);
 		});
-
+		
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
 		var establishedEventHTML = establishedEventContent[0].outerHTML; 
@@ -697,6 +697,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
+	}
+	
+	this.showPop = function(eventId) {
+		var myEvent = establishedEvents[eventId];
+		eMarker = myEvent.eventMarker;
+		eMarker.openPopup();
 	}
 	
 	this.joinEvent = function(eventID) {
