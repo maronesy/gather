@@ -1,4 +1,3 @@
-
 function loadEventsFirstView(userCoordinates) {
 	var events = gather.global.nearEvents
 
@@ -14,6 +13,7 @@ function loadEventsFirstView(userCoordinates) {
 				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
 //				var rating = events[i].feedbacks.rating
+				//this.getAttribute(\'data-event-id\')
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var datetime = new Date( unixtime );
@@ -26,7 +26,7 @@ function loadEventsFirstView(userCoordinates) {
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
 				$('.eventTable').append(
-					'<tr> ' +
+					'<tr href="#" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
 								'<a href="#" class="pull-left"> ' +
