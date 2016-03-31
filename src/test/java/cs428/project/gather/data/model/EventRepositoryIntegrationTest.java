@@ -291,7 +291,6 @@ public class EventRepositoryIntegrationTest {
 	}
 		
 	@Test
-	@Transactional
 	public void testRemoveEvent(){		
 		//Setting up event
 		Event testEvent = new Event("Test Event");
@@ -314,23 +313,25 @@ public class EventRepositoryIntegrationTest {
 		Event foundEvent = this.eventRepo.findOne(result.getId());
 		assertTrue(foundEvent.getName().equals("Test Event"));
 		Registrant foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
-		Registrant foundSubscriber = registrantRepo.findOneByEmail("subscriber@email.com");
 		Registrant foundOwner = registrantRepo.findOneByEmail("owner@email.com");
 		assertTrue(foundParticipant!=null);
-		assertTrue(foundSubscriber!=null);
 		assertTrue(foundOwner!=null);
+		assertEquals(foundParticipant.getJoinedEvents().size(),1);
+		assertEquals(foundOwner.getOwnedEvents().size(),1);
+		
 		
 		eventRepo.delete(result);
 
 		Event afterDelete = this.eventRepo.findOne(result.getId());
 		assertTrue(afterDelete==null);
 		foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
-		foundSubscriber = registrantRepo.findOneByEmail("subscriber@email.com");
 		foundOwner = registrantRepo.findOneByEmail("owner@email.com");
 		assertTrue(foundParticipant!=null);
-		assertTrue(foundSubscriber!=null);
 		assertTrue(foundOwner!=null);
+		assertEquals(foundParticipant.getJoinedEvents().size(),0);
+		assertEquals(foundOwner.getOwnedEvents().size(),0);
 
+		
 		
 	}
 }

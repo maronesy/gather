@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -22,15 +23,15 @@ public class Registrant extends Actor {
 	private int defaultZip = 90210;
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "subscribers")
+	@ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
 	private Set<Event> subscribedEvents = new HashSet<Event>();
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "owners")
+	@ManyToMany(mappedBy = "owners", fetch = FetchType.EAGER)
 	private Set<Event> ownedEvents = new HashSet<Event>();
 
 	@JsonIgnore
-	@ManyToMany(mappedBy = "participants")
+	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	private Set<Event> joinedEvents = new HashSet<Event>();
 
 	@ManyToMany
