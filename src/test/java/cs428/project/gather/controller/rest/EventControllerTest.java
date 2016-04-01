@@ -373,10 +373,22 @@ public class EventControllerTest {
 		eventRepo.save(eventOne);
 		assertEquals(2,eventOne.getParticipants().size());
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
+		Registrant currentOwner = regRepo.findOneByEmail("existed@email.com");
 		
 		//After set up an event and join, now, modify it
 		attemptUpdateEvent(eventOneId,"EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime()+20000L, uCoor, StringUtils.join(cookies,';'), participant, newOwner);
 		
+		//Verify the event got updated
+		Event afterUpdate = eventRepo.findOne(eventOneId);
+		assertEquals("EventOneUpdated",afterUpdate.getName());
+		assertEquals("DescOneUpdated",afterUpdate.getDescription());
+		assertEquals("Soccer",afterUpdate.getCategory().getName());
+		assertEquals(2,afterUpdate.getOccurrences().size());
+		assertEquals(2,afterUpdate.getOwners().size());
+		assertEquals(1,afterUpdate.getParticipants().size());
+		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
+		assertTrue(afterUpdate.getOwners().contains(newOwner));
+		assertTrue(afterUpdate.getOwners().contains(currentOwner));
 	}
 
 	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description, String category, long time, Coordinates uCoor, String session, Registrant participantToRemove, Registrant ownerToAdd) throws JsonProcessingException {
