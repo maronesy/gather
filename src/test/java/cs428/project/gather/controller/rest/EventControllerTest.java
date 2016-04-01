@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,7 @@ import cs428.project.gather.data.Coordinates;
 import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
+import cs428.project.gather.data.model.Occurrence;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
@@ -73,11 +76,17 @@ public class EventControllerTest {
 		regRepo.deleteAll();
 		assertEquals(this.regRepo.count(), 0);
 		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
+		Registrant participant = new Registrant("participant@email.com", "password", "participantName", 10L, 3, 10000);
+		Registrant newOwner = new Registrant("newOwner@email.com", "password", "newOwner", 10L, 3, 10000);
+		this.regRepo.save(participant);
 		this.regRepo.save(aUser);
-		assertEquals(this.regRepo.count(), 1);
+		this.regRepo.save(newOwner);
+		assertEquals(this.regRepo.count(), 3);
 		this.categoryRepo.deleteAll();
 		Category swim= new Category("Swim");
 		this.categoryRepo.save(swim);
+		Category soccer= new Category("Soccer");
+		this.categoryRepo.save(soccer);
 		
 	}
 	
@@ -310,5 +319,110 @@ public class EventControllerTest {
 		return apiResponse;
 
 	}
+	
+	@Test
+	public void testUpdateEventBasic() throws JsonProcessingException {
+		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
+		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
+		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
+		
+		// Invoking the API
+		
+		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
+		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+
+		RESTResponseData responseData = response.getBody();
+		assertTrue(responseData.getMessage().equals("Session Found"));
+		
+		Coordinates eCoor = new Coordinates();
+		eCoor.setLatitude(12.34);
+		eCoor.setLongitude(111.23);
+		
+		Coordinates uCoor = new Coordinates();
+		uCoor.setLatitude(12.33);
+		uCoor.setLongitude(111.24);
+
+		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
+
+		List<Event> listEvents = this.eventRepo.findByName("EventOne");
+		assertEquals(1, listEvents.size());
+		Event eventOne = listEvents.get(0);
+		assertEquals("EventOne", eventOne.getName());
+		assertEquals("DescOne", eventOne.getDescription());
+		
+		
+		Long eventOneId = eventOne.getId();
+
+		attemptJoinEvent(eventOneId, StringUtils.join(cookies,';'));
+		Set<Registrant> listParticipant = eventOne.getParticipants();
+		Registrant participant = null;		
+		
+		for(Registrant partic: listParticipant){
+			if (partic.getEmail().toString() == "existed@email.com"){
+				participant = partic;
+			}
+		}
+		assertEquals(true, listParticipant.contains(participant));
+		
+		//Add the other participant
+		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
+		eventOne.addParticipant(newParticipant);
+		eventRepo.save(eventOne);
+		assertEquals(2,eventOne.getParticipants().size());
+		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
+		
+		//After set up an event and join, now, modify it
+		attemptUpdateEvent(eventOneId,"EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime()+20000L, uCoor, StringUtils.join(cookies,';'), participant, newOwner);
+		
+	}
+
+	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description, String category, long time, Coordinates uCoor, String session, Registrant participantToRemove, Registrant ownerToAdd) throws JsonProcessingException {
+		List<Occurrence> occurrencesToAdd =  new ArrayList<Occurrence>();
+		List<Occurrence> occurrencesToRemove =  new ArrayList<Occurrence>();
+		List<Registrant> ownersToAdd = new ArrayList<Registrant>();
+		List<Registrant> ownersToRemove = new ArrayList<Registrant>();
+		List<Registrant> participantsToAdd = new ArrayList<Registrant>();
+		List<Registrant> participantsToRemove = new ArrayList<Registrant>();
+		ownersToAdd.add(ownerToAdd);
+		participantsToRemove.add(participantToRemove);
+		occurrencesToAdd.add(new Occurrence("",new Timestamp(time)));
+		// Building the Request body data		
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("eventId", eventId);
+		requestBody.put("eventName", name);
+		requestBody.put("eventCoordinates", eCoor);
+		requestBody.put("eventDescription", description);
+		requestBody.put("eventCategory", category);
+		requestBody.put("eventTime", time);
+		requestBody.put("callerCoordinates", uCoor);
+		requestBody.put("occurrencesToAdd", occurrencesToAdd);
+		requestBody.put("occurrencesToRemove", occurrencesToRemove);
+		requestBody.put("ownersToAdd", ownersToAdd);
+		requestBody.put("ownersToRemove", ownersToRemove);
+		requestBody.put("participantsToAdd", participantsToAdd);
+		requestBody.put("participantsToRemove", participantsToRemove);
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", session);
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		// Invoking the API
+		@SuppressWarnings("unchecked")
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/update", httpEntity,
+				Map.class, Collections.EMPTY_MAP);
+
+
+		assertNotNull(apiResponse);
+
+		// Asserting the response of the API.
+		return apiResponse;
+
+	}
 }
