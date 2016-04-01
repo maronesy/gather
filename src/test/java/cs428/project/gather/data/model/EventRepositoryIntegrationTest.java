@@ -331,7 +331,69 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(foundParticipant.getJoinedEvents().size(),0);
 		assertEquals(foundOwner.getOwnedEvents().size(),0);
 
+	}
+	
+	@Test
+	public void testUpdateEvent(){		
+		//Setting up event
+		Event testEvent = new Event("Test Event");
+		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
+		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
+		testEvent.addOccurrence(occur);
+		testEvent.setLocation(location);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
 		
+		//Creating users and join
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant participant = this.registrantRepo.save(aUser);
+		aUser = new Registrant("owner@email.com","password","owner",10L,3,10000);
+		Registrant owner = this.registrantRepo.save(aUser);
+		testEvent.addParticipant(participant);
+		testEvent.addOwner(owner);
+		
+		//Create participants and owners to join the event
+		Event result = this.eventRepo.save(testEvent);
+		Event foundEvent = this.eventRepo.findOne(result.getId());
+		assertTrue(foundEvent.getName().equals("Test Event"));
+		Registrant foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
+		Registrant foundOwner = registrantRepo.findOneByEmail("owner@email.com");
+		assertTrue(foundParticipant!=null);
+		assertTrue(foundOwner!=null);
+		assertEquals(foundParticipant.getJoinedEvents().size(),1);
+		assertEquals(foundOwner.getOwnedEvents().size(),1);
+		
+		//Modify the event
+		String newEventName = "Updated Event Name";
+		Location newLocation = new Location("New Test Location", "1234 NewPlace Blvd", "San Francisco", "CA", "94530", 134.0498, -1118.2498);
+		Occurrence newOccur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis()));
+		testEvent.addOccurrence(newOccur);
+		testEvent.setLocation(newLocation);
+		List<Category> newCategory = categoryRepo.findByName("Sports");
+		testEvent.setCategory(newCategory.get(0));
+		Registrant newOwner = new Registrant("newOnwer@email.com","password","newOwer",10L,3,10000);
+		Registrant newParticipant = new Registrant("newParticipant@email.com","password","newParticipant",10L,3,10000);
+		newOwner = this.registrantRepo.save(newOwner);
+		newParticipant = this.registrantRepo.save(newParticipant);
+		testEvent.addOwner(newOwner);
+		testEvent.addParticipant(newParticipant);
+		testEvent.setName(newEventName);
+
+		eventRepo.save(testEvent);
+
+		Event afterModification = this.eventRepo.findOne(result.getId());
+		assertTrue(afterModification!=null);
+		newParticipant = registrantRepo.findOneByEmail("newParticipant@email.com");
+		newOwner = registrantRepo.findOneByEmail("newOnwer@email.com");
+		assertTrue(newParticipant!=null);
+		assertTrue(newOwner!=null);
+		assertEquals(1,newParticipant.getJoinedEvents().size());
+		assertEquals(1,newOwner.getOwnedEvents().size());
+		assertEquals(2,afterModification.getOwners().size()); //2 owners now
+		assertEquals(2,afterModification.getParticipants().size()); //2 participants now
+		assertEquals(2,afterModification.getOccurrences().size()); //2 occurrences now
+		assertEquals("Updated Event Name",afterModification.getName()); //event name is updated
+		assertEquals("Sports",afterModification.getCategory().getName()); //category is changed to Sports
 		
 	}
 }
