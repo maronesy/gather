@@ -208,7 +208,11 @@ public class EventsController {
 
 	private Event performUpdateEvent(UpdateEventData updateEventData, Registrant owner, Errors errors) {
 		Event targetEvent = this.eventRepo.findOne(updateEventData.getEventId());
-
+		
+		if(!eventContainsOwner(targetEvent,owner,errors)){
+			return targetEvent;
+		}
+		
 		targetEvent.setName(updateEventData.getEventName());
 		targetEvent.setDescription(updateEventData.getEventDescription());
 		targetEvent.setLocation(new Location(updateEventData.getEventCoodinates()));
@@ -268,6 +272,15 @@ public class EventsController {
 		return targetEvent;
 	}
 	
+	private boolean eventContainsOwner(Event targetEvent, Registrant owner, Errors errors) {
+		if(!targetEvent.getOwners().contains(owner)){
+			String message = "Cannot update event. The request Registrant is not the event owner.";
+			errors.reject("-9", message);
+			return false;
+		}
+		return true;
+	}
+
 	@RequestMapping(value = "/rest/events/userJoined")
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request, BindingResult bindingResult){
 		
@@ -372,10 +385,10 @@ public class EventsController {
 		}
 
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
-		Registrant participant = this.regRepo.findOne(actor.getActorID());
+		Registrant owner = this.regRepo.findOne(actor.getActorID());
 		
 		// Adding user to participant list
-		Event joinedEvent = removeEvent(removeEventData, participant, bindingResult);
+		Event joinedEvent = removeEvent(removeEventData, owner, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event> badResponse(bindingResult);
 		}
@@ -383,21 +396,15 @@ public class EventsController {
 		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.OK);
 	}
 
-	private Event removeEvent(EventIdData removeEventData, Registrant participant, Errors errors) {
+	private Event removeEvent(EventIdData removeEventData, Registrant owner, Errors errors) {
 		
 		//TODO: add an error check in case event or participant are not found
 		Long eventId = removeEventData.getEventId();
 		Event targetEvent = eventRepo.findOne(eventId);
+		if(!eventContainsOwner(targetEvent,owner,errors)){
+			return targetEvent;
+		}
 		eventRepo.delete(targetEvent);
-//		for (Registrant user : targetEvent.getParticipants()) {
-//		     user.removeJoinedEvent(targetEvent);
-//		}
-//		for (Registrant user : targetEvent.getOnwers()) {
-//		     user.removeOwnedEvent(targetEvent);
-//		}
-//		for (Registrant user : targetEvent.getSubscribers()) {
-//		     user.removeSubscribedEvent(targetEvent);
-//		}
 
 		return targetEvent;
 	}
