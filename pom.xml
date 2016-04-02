@@ -210,6 +210,7 @@
 					<jsTestSrcDir>src/test/resources/static/scripts/specs</jsTestSrcDir>
 					<preloadSources>
 						<source>src/main/resources/static/jasmine-jquery.js</source>
+						<source>src/main/resources/static/mock-ajax.js</source>
 						<source>src/main/resources/static/scripts/jquery-1.12.1.min.js</source>
 					</preloadSources>
 					<webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
