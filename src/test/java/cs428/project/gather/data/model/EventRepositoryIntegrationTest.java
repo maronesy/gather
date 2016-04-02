@@ -30,6 +30,7 @@ import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.LocationRepository;
+import cs428.project.gather.data.repo.RegistrantRepository;
 
 import org.joda.time.*;
 
@@ -44,6 +45,9 @@ public class EventRepositoryIntegrationTest {
 	@Autowired
 	CategoryRepository categoryRepo;
 	
+	@Autowired
+	RegistrantRepository registrantRepo;
+	
 //	@Autowired
 //	LocationRepository locationRepo;
 
@@ -51,6 +55,7 @@ public class EventRepositoryIntegrationTest {
 	public void setUp() {
 		eventRepo.deleteAll();
 		categoryRepo.deleteAll();
+		registrantRepo.deleteAll();
 //		locationRepo.deleteAll();
 		
 		//Getting the count from the repo has some effect on flushing the tables. 
@@ -58,6 +63,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(this.eventRepo.count(),0);
 //		assertEquals(this.locationRepo.count(),0);
 		assertEquals(this.categoryRepo.count(),0);
+		assertEquals(this.registrantRepo.count(),0);
 		addThreeCategories();	
 	}
 	
@@ -284,4 +290,48 @@ public class EventRepositoryIntegrationTest {
 		assertTrue(result.getCategory().getName().equals("Others"));		
 	}
 		
+	@Test
+	public void testRemoveEvent(){		
+		//Setting up event
+		Event testEvent = new Event("Test Event");
+		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
+		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
+		testEvent.addOccurrence(occur);
+		testEvent.setLocation(location);
+		List<Category> foundCategory = categoryRepo.findByName("Others");
+		testEvent.setCategory(foundCategory.get(0));
+		
+		//Creating users and join
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant participant = this.registrantRepo.save(aUser);
+		aUser = new Registrant("owner@email.com","password","owner",10L,3,10000);
+		Registrant owner = this.registrantRepo.save(aUser);
+		testEvent.addParticipant(participant);
+		testEvent.addOwner(owner);
+		
+		Event result = this.eventRepo.save(testEvent);
+		Event foundEvent = this.eventRepo.findOne(result.getId());
+		assertTrue(foundEvent.getName().equals("Test Event"));
+		Registrant foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
+		Registrant foundOwner = registrantRepo.findOneByEmail("owner@email.com");
+		assertTrue(foundParticipant!=null);
+		assertTrue(foundOwner!=null);
+		assertEquals(foundParticipant.getJoinedEvents().size(),1);
+		assertEquals(foundOwner.getOwnedEvents().size(),1);
+		
+		
+		eventRepo.delete(result);
+
+		Event afterDelete = this.eventRepo.findOne(result.getId());
+		assertTrue(afterDelete==null);
+		foundParticipant = registrantRepo.findOneByEmail("testuser@email.com");
+		foundOwner = registrantRepo.findOneByEmail("owner@email.com");
+		assertTrue(foundParticipant!=null);
+		assertTrue(foundOwner!=null);
+		assertEquals(foundParticipant.getJoinedEvents().size(),0);
+		assertEquals(foundOwner.getOwnedEvents().size(),0);
+
+		
+		
+	}
 }

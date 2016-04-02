@@ -1,12 +1,17 @@
 package cs428.project.gather.data.model;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Registrant extends Actor {
@@ -17,13 +22,16 @@ public class Registrant extends Actor {
 	private int defaultTimeWindow = 1;
 	private int defaultZip = 90210;
 
-	@ManyToMany(mappedBy = "subscribers")
+	@JsonIgnore
+	@ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
 	private Set<Event> subscribedEvents = new HashSet<Event>();
 
-	@ManyToMany(mappedBy = "owners")
+	@JsonIgnore
+	@ManyToMany(mappedBy = "owners", fetch = FetchType.EAGER)
 	private Set<Event> ownedEvents = new HashSet<Event>();
 
-	@ManyToMany(mappedBy = "participants")
+	@JsonIgnore
+	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	private Set<Event> joinedEvents = new HashSet<Event>();
 
 	@ManyToMany
@@ -100,5 +108,15 @@ public class Registrant extends Actor {
 
 	public boolean joinEvent(Event event) {
 		return joinedEvents.add(event);
+	}
+	
+	@JsonIgnore
+	public Set<Event> getJoinedEvents() {
+		return Collections.unmodifiableSet(joinedEvents);
+	}
+
+	@JsonIgnore
+	public Set<Event> getOwnedEvents() {
+		return Collections.unmodifiableSet(ownedEvents);
 	}
 }

@@ -1,16 +1,16 @@
 package cs428.project.gather.data;
 
-public class JoinEventData {
+public class EventIdData {
 
-	private Long EventId;
+	private Long eventId;
 
 	public Long getEventId()
 	{
-		return EventId;
+		return eventId;
 	}
 
 	public void setEventId(Long id)
 	{
-		this.EventId = EventId;
+		this.eventId = id;
 	}
 }

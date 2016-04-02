@@ -1,6 +1,7 @@
 package cs428.project.gather.controllers;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,9 @@ public class EventsController {
 
 	@Autowired
 	private NewEventDataValidator newEventDataValidator;
+	
+	@Autowired
+	private JoinEventDataValidator joinEventDataValidator;
 
 	@RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request,
@@ -147,5 +151,139 @@ public class EventsController {
 		newEvent.setCategory(category);
 
 		return newEvent;
+	}
+	
+	@RequestMapping(value = "/rest/events/userJoined")
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request, BindingResult bindingResult){
+		
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to obtain their joined event list.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can request their joined event list.");
+			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+		}
+		
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant user = this.regRepo.findOne(actor.getActorID());
+		
+		List<Event> events = new ArrayList<Event>(user.getJoinedEvents());
+		return RESTPaginatedResourcesResponseData.createResponse(request, events);
+	}
+	
+	@RequestMapping(value = "/rest/events/userOwned")
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request, BindingResult bindingResult){
+		
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to obtain their joined event list.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can request their joined event list.");
+			return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+		}
+		
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant user = this.regRepo.findOne(actor.getActorID());
+		
+		List<Event> events = new ArrayList<Event>(user.getOwnedEvents());
+		return RESTPaginatedResourcesResponseData.createResponse(request, events);
+	}
+
+	@RequestMapping(value = "/rest/events/join", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("Validated: " + rawData);
+		// TODO: Wrap this in TryCatch, report exception to frontend.
+		EventIdData joinEventData = (new Gson()).fromJson(rawData, EventIdData.class);
+
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can join events.");
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+		
+		
+		// validating passed join data
+		joinEventDataValidator.validate(joinEventData, bindingResult);
+		
+		System.out.println("Validated: " + rawData);
+		
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant participant = this.regRepo.findOne(actor.getActorID());
+		
+		// Adding user to participant list
+		Event joinedEvent = joinEvent(joinEventData, participant, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.CREATED);
+	}
+
+	private Event joinEvent(EventIdData joinEventData, Registrant participant, Errors errors) {
+		
+		//TODO: add an error check in case event or participant are not found
+		Long eventId = joinEventData.getEventId();
+		Event joinedEvent = eventRepo.findOne(eventId);
+		joinedEvent.addParticipant(participant);
+		eventRepo.save(joinedEvent);
+
+		return joinedEvent;
+	}
+	
+	@RequestMapping(value = "/rest/events/remove", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> removeEvent(HttpServletRequest request,
+			@RequestBody String rawData, BindingResult bindingResult) {
+		System.out.println("Validated: " + rawData);
+		// TODO: Wrap this in TryCatch, report exception to frontend.
+		EventIdData removeEventData = (new Gson()).fromJson(rawData, EventIdData.class);
+
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			System.out.println("An anonymous user tried to add an event.");
+			bindingResult.reject("-7", "Incorrect User State. Only registered users can remove events.");
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+		
+		
+		// validating passed join data
+		joinEventDataValidator.validate(removeEventData, bindingResult);
+		
+		System.out.println("Validated: " + rawData);
+		
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		Registrant participant = this.regRepo.findOne(actor.getActorID());
+		
+		// Adding user to participant list
+		Event joinedEvent = removeEvent(removeEventData, participant, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		}
+
+		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.OK);
+	}
+
+	private Event removeEvent(EventIdData removeEventData, Registrant participant, Errors errors) {
+		
+		//TODO: add an error check in case event or participant are not found
+		Long eventId = removeEventData.getEventId();
+		Event targetEvent = eventRepo.findOne(eventId);
+		eventRepo.delete(targetEvent);
+//		for (Registrant user : targetEvent.getParticipants()) {
+//		     user.removeJoinedEvent(targetEvent);
+//		}
+//		for (Registrant user : targetEvent.getOnwers()) {
+//		     user.removeOwnedEvent(targetEvent);
+//		}
+//		for (Registrant user : targetEvent.getSubscribers()) {
+//		     user.removeSubscribedEvent(targetEvent);
+//		}
+
+		return targetEvent;
 	}
 }

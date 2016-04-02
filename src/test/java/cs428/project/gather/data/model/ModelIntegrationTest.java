@@ -71,7 +71,6 @@ public class ModelIntegrationTest {
 	
 
 	@Test
-	@Transactional
 	public void testSaveLoadParticipants(){
 		
 		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
@@ -93,14 +92,20 @@ public class ModelIntegrationTest {
 //		aUser.joinEvent(testEvent);
 		eventResult = this.eventRepo.save(testEvent);
 		
+		//Make sure the event has a participant
 		Event foundEvent = this.eventRepo.findOne(eventResult.getId());
 		Set<Registrant> participants = foundEvent.getParticipants();
 		assertEquals(participants.size(),1);
 		
+		//Make sure the participant is the correct user
 		Iterator<Registrant> participantIt = participants.iterator();
 		Registrant testParticipant = participantIt.next();
 		assertEquals(testParticipant.getDisplayName(),"testDisplayName");
 		assertTrue(eventResult.getCategory().getName().equals("Others"));		
+		
+		//Make sure the user has reference to the event they joined
+		Registrant participant = this.registrantRepo.findOne(registrantResult.getActorID());
+		assertEquals(participant.getJoinedEvents().size(), 1);
 		
 	}
 

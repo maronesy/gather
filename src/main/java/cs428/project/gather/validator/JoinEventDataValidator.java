@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import cs428.project.gather.data.EventsQueryData;
-import cs428.project.gather.data.JoinEventData;
+import cs428.project.gather.data.EventIdData;
 
 @Component
 public class JoinEventDataValidator extends AbstractValidator {
@@ -26,7 +26,7 @@ public class JoinEventDataValidator extends AbstractValidator {
 	public void validate(Object target, Errors errors)
 	{
 		
-		JoinEventData eventData = (JoinEventData)target;
+		EventIdData eventData = (EventIdData)target;
 
 		if(eventData == null)
 		{
@@ -38,7 +38,7 @@ public class JoinEventDataValidator extends AbstractValidator {
 		}
 	}
 
-	private void validateEventId(JoinEventData joinData, Errors errors)
+	private void validateEventId(EventIdData joinData, Errors errors)
 	{
 		Long id = joinData.getEventId();
 		if(id < 0 || id == null){
