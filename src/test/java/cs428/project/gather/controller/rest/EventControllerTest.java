@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.management.AttributeList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -32,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.Coordinates;
+import cs428.project.gather.data.RESTPaginatedResourcesResponseData;
 import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
@@ -287,7 +291,6 @@ public class EventControllerTest {
 	
 	private Map<String, Object> attemptJoinEvent(Long Id, String session) throws JsonProcessingException {
 		// Building the Request body data
-		
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventId", Id);
 		HttpHeaders requestHeaders = new HttpHeaders();
@@ -309,6 +312,50 @@ public class EventControllerTest {
 		// Asserting the response of the API.
 		return apiResponse;
 
+	}
+	
+	@Test
+	public void testGetJoinedEventList() throws JsonProcessingException{
+		//Create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
+		Event event2 = new Event("Event2");
+		event2.setCategory(swim);
+		Event event3 = new Event("Event3");
+		event3.setCategory(swim);
+		
+		//Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+		event2.addParticipant(user);
+		event3.addParticipant(user);
+		
+		//Save events to DB
+		List<Event> eventsToSave = new ArrayList<Event>();
+		eventsToSave.add(event1);
+		eventsToSave.add(event2);
+		eventsToSave.add(event3);
+		this.eventRepo.save(eventsToSave);
+		
+		//Sign in
+		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
+		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
+
+		//Check session
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
+		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
+		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
+		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+		RESTResponseData responseData = response.getBody();
+		assertTrue(responseData.getMessage().equals("Session Found"));
+		
+		//Make sure we get OK response from request
+		ResponseEntity<RESTResponseData> getJoinedEventsResponse = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, RESTResponseData.class );
+		assertTrue(getJoinedEventsResponse.getStatusCode().equals(HttpStatus.OK));
+		
 	}
 
 }
