@@ -625,6 +625,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					
 				}
 				loadEventsFirstView(userCoordinates);
+//				joinedEvents();
+//				ownedEvents();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 //			    alert(jqXHR.status);
@@ -642,6 +644,29 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			}
 		});
+	}
+	
+//	function joinedEvents() {
+//		//alert(gather.global.email)
+//		var nEvents = gather.global.nearEvents;
+//		for (var i = 0; i < nEvents.length; i++){
+//			alert(nEvents[i].participants[0].email);
+//			if (nEvents[i].participants[i].email == gather.global.email) {
+//				gather.global.joinedEvents.push(nEvents[i]);
+//			}
+//		}
+//	}
+	
+
+
+	function ownedEvents() {
+		for (var event in gather.global.nearEvents){
+			for(owner in event.owners){
+				if (owner.email == gather.global.email) {
+					gather.global.ownedEvents.push(event);
+				}
+			}
+		}
 	}
 	
 	this.determineCoordByZipCode = function(zipCode) {

@@ -164,6 +164,7 @@ public class EventsController {
 		
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 		Registrant user = this.regRepo.findOne(actor.getActorID());
+		System.out.println("Validate: " + user);
 		
 		List<Event> events = new ArrayList<Event>(user.getJoinedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);

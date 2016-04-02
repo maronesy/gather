@@ -169,7 +169,7 @@ function signIn() {
 	$('#loginFormSubmit').on(
 			'click',
 			function() {
-				var email = $("#signInEmail").val();
+				gather.global.email = $("#signInEmail").val();
 				var password = $("#signInPassword").val();
 				$.ajax({
 				 	accepts: "application/json",
@@ -178,7 +178,7 @@ function signIn() {
 					contentType: "application/json; charset=UTF-8",
 					dataType: "json",
 					data : '{ \
-						"email" : "' + email + '", \
+						"email" : "' + gather.global.email + '", \
 						"password" : "' + password + '" \
 					}',
 					success : function(returnvalue) {
@@ -189,6 +189,7 @@ function signIn() {
 							gather.global.currentDisplayName = returnvalue.displayName;
 							updateGreeting();
 							headerSelect()
+							loadJoinedEvents()
 						} else {
 //							alert(returnvalue.status)
 //							alert(returnvalue.message)
@@ -198,7 +199,6 @@ function signIn() {
 					}
 				});
 			});
-
 }
 
 function signOut() {
@@ -234,14 +234,14 @@ function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
 			function() {
-				var email = $("#inputEmail").val();
+				gather.global.email = $("#inputEmail").val();
 				var password = $("#inputPassword1").val();
 				var confirmPassword = $("#inputPassword2").val();
 				var displayName = $("#inputDisplayName").val();
 				var registerBox = $('#registerFormSubmit').attr('href');
-				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
+				if (displayName == "" || password == "" || confirmPassword == "" || gather.global.email == "") {
 					$('#formFeedback').html('All the fields are required');
-				} else if (validateEmail(email) == false) {
+				} else if (validateEmail(gather.global.email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
 				} else if (validatePass(password) == false) {
@@ -262,7 +262,7 @@ function signUp() {
 							$('#loading').show();
 						},
 						data : '{ \
-							"email" : ' + email + ', \
+							"email" : ' + gather.global.email + ', \
 							"password" : ' + password + ', \
 							"displayName" : ' + displayName + ' \
 						}',
@@ -306,8 +306,11 @@ function sessionCheck() {
 			if (returnvalue.status == 5) {
 				gather.global.session.signedIn = true;
 				gather.global.currentDisplayName = jqXHR.responseJSON.displayName;
+				gather.global.email = jqXHR.responseJSON.email;
 				updateGreeting();
 				headerSelect();
+				joinedEvents();
+				loadJoinedEvents();
 			}else {
 				gather.global.session.signedIn = false;
 				headerSelect();
@@ -321,6 +324,34 @@ function sessionCheck() {
 	});
 }
 
+function joinedEvents() {
+	alert("Hello");
+	$.ajax({
+	 	accepts: "application/json",
+		type : "GET",
+		url : "/rest/events/userJoined",
+		contentType: "application/json; charset=UTF-8",
+		success : function(returnvalue) {
+			gather.global.joinedEvents = returnvalue.results;
+			alert("Hello");
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+//		    alert(jqXHR.status);
+//		    alert(textStatus);
+		    alert(errorThrown);
+			if (errorThrown == "Found") {
+				signedIn = true;
+				alert("error")
+				updateGreeting();
+				headerSelect();
+			} else {
+				signedIn = false;
+				headerSelect();
+			}
+
+		}
+	});
+}
 
 function updateGreeting(){
 	document.getElementById("greetings").innerHTML = "Welcome "+gather.global.currentDisplayName;
