@@ -88,19 +88,19 @@ describe("zip code button click test", function() {
 		  });
 	  
 	  it("non-digit zip code", function() {
-		    runs(function() {
-		    	$("#zipCode").val('asdff');
-		    	$("#enterZip").trigger('click');
-		    });
-
-		    waitsFor(function() {
-		    	return ($('#zipCodeErrorBox').html() == 'Zip code must be five digits')
-		    }, "no response after clicking #enterZip", 2000);
-
-		    runs(function() {
-		    	expect($('#zipCodeErrorBox').html()).toBe('Zip code must be five digits')
-		    });
-		  });
+		runs(function() {
+			$("#zipCode").val('asdff');
+			$("#enterZip").trigger('click');
+		});
+		
+		waitsFor(function() {
+			return ($('#zipCodeErrorBox').html() == 'Zip code must be five digits')
+		}, "no response after clicking #enterZip", 2000);
+		
+		runs(function() {
+			expect($('#zipCodeErrorBox').html()).toBe('Zip code must be five digits')
+		});
+	  });
 	  
 //	  it("non-existing zip code", function() {
 //		    runs(function() {
@@ -124,33 +124,89 @@ describe("register form tests", function () {
 		//jasmine-jquery.js defines Fixtures root to be 
 		//'src/main/resources/templates' on line 40.
 		loadFixtures('registerform.html');
+		jasmine.Ajax.installMock();
 		$("#inputEmail").val('test@email.com');
     	$("#inputPassword1").val('password1');
     	$("#inputPassword2").val('password2');
     	$("#inputDisplayName").val('iamthetestuser');
 	});
+	
+	afterEach(function() {
+		jasmine.Ajax.uninstallMock();
+	});
 
+//    it("registration success", function() {
+//    	// submitting the form with information in beforeEach
+//    	spyOn($, "ajax");
+//    	$("#inputPassword2").val('password1');
+//    	runs(function() {
+//    		$("#registerFormSubmit").trigger('click');
+//    	});
+//    	
+//    	waitsFor(function() {
+//	    	return ($.ajax.mostRecentCall.args[0] == 0)
+//	    }, 'register form was never clicked', 2000);
+//    		
+//		runs(function() {
+//			expect($.ajax.mostRecentCall.args[0]["url"]).toEqual(configuration.url);
+////			expect($('#formFeedback').html()).toBe('Registration Success!')
+//		});
+//    });
+
+	
 	it("clicks the #registerFormSubmit", function() {
 		spyOnEvent($('#registerFormSubmit'), 'click');
     	$("#registerFormSubmit").trigger('click');
     	expect('click').toHaveBeenTriggeredOn($('#registerFormSubmit'));
 	});
 
-//    it("check registration form confirm password", function() {
-//    	// submitting the form with information in beforeEach
-//    	$("#registerFormSubmit").trigger('click');
-//
-////    	waitsFor(function() {
-////    		var formFeedback = $('#formFeedback').html();
-////    		return (formFeedback=='Passwords do not match');
-////    	  }, 'register form was never clicked', 2000);
+    it("check registration form confirm password", function() {
+    	// submitting the form with information in beforeEach
+    	runs(function() {
+    		$("#registerFormSubmit").trigger('click');
+    	});
+    	
+    	waitsFor(function() {
+	    	return ($('#formFeedback').html() == 'Passwords do not match')
+	    }, 'register form was never clicked', 2000);
+    		
+		runs(function() {
+			expect($('#formFeedback').html()).toBe('Passwords do not match')
+		});
+    });
+
+//    it("check registration form duplicate email", function() {
+//    	$("#inputEmail").val('testuser@email.com');
+//    	$("#inputPassword2").val('password1');
+//    	runs(function() {
+//    		$("#registerFormSubmit").trigger('click');
+//    	});
 //    	
-//    	var formFeedback = $('#formFeedback').html();
-//        var expectedFormFeedback = 'Passwords do not match';
-////   	 we expect warning saying that passwords do not match 	
-//        expect(formFeedback).toBe(expectedFormFeedback)
+//    	waitsFor(function() {
+//	    	return ($('#formFeedback').html() == 'This email is in use.')
+//	    }, 'register form was never clicked', 2000);
 //
-//    });	 
+//		runs(function() {
+//			expect($('#formFeedback').html()).toBe('This email is in use.')
+//		});
+//    });
+
+    it("display name cannot contain spaces", function() {
+    	// submitting the form with information in beforeEach
+    	$("#inputPassword2").val('password1');
+    	$("#inputDisplayName").val('iamt hetestuser');
+    	runs(function() {
+    		$("#registerFormSubmit").trigger('click');
+    	});
+    	
+    	waitsFor(function() {
+	    	return ($('#formFeedback').html() == 'Display name cannot have spaces')
+	    }, 'register form was never clicked', 2000);
+    		
+		runs(function() {
+			expect($('#formFeedback').html()).toBe('Display name cannot have spaces')
+		});
+    });
     
     it("registration form exists", function() {
     	var formExists = false
