@@ -139,11 +139,11 @@ function loadOwnedEvents() {
 			$('.eventTable').html('');
 			for(i = 0; i < events.length; i++){
 				var eventId = events[i].id;
-				var lat1 = events[i].location.latitude;
-				var lon1 = events[i].location.longitude;
-				var lat2 = parseFloat(userCoordinates.latitude);
-				var lon2 = parseFloat(userCoordinates.longitude);
-				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
+//				var lat1 = events[i].location.latitude;
+//				var lon1 = events[i].location.longitude;
+//				var lat2 = parseFloat(userCoordinates.latitude);
+//				var lon2 = parseFloat(userCoordinates.longitude);
+//				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
 //				var rating = events[i].feedbacks.rating
 				//this.getAttribute(\'data-event-id\')
@@ -166,7 +166,6 @@ function loadOwnedEvents() {
 									'<img height="60px;" width="60px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/> ' +
 								'</a>' +
 								'<div class="media-body">' +
-									'<span class="pull-right">'+ dist +' mi</span>' +
 									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
 									'<h4 class="list-title">'+ title +'</h4>' +
 									'<span class="pull-right"></span>' +

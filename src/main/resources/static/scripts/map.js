@@ -138,6 +138,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				currentUserCoordinates = userCoordinates;
 				if (gather.global.session.signedIn == true){
 					joinedEvents();
+					ownedEvents();
 				}
 			}
 		}
@@ -692,13 +693,32 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 
 	function ownedEvents() {
-		for (var event in gather.global.nearEvents){
-			for(owner in event.owners){
-				if (owner.email == gather.global.email) {
-					gather.global.ownedEvents.push(event);
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userOwned",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.ownedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.joinedEvents.length; i++){
+					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
 				}
+				loadOwnedEvents();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
 			}
-		}
+		});
 	}
 	
 	this.determineCoordByZipCode = function(zipCode) {
