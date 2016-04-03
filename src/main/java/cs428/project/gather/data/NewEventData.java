@@ -10,7 +10,7 @@ public class NewEventData {
 	public static final String EVENT_CATEGORY_FIELD_NAME = "eventCategory";
 	public static final String EVENT_TIME_FIELD_NAME = "eventTime";
 	public static final String CALLER_COORDS_FIELD_NAME = "callerCoordinates";
-	
+
 
 	private String eventName;
 	private Coordinates eventCoordinates;
@@ -19,21 +19,16 @@ public class NewEventData {
 	private long eventTime;
 	private Coordinates callerCoordinates;
 
-	
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder();
-
 		builder.append(eventName);
 		builder.append(eventCoordinates);
 		builder.append(eventDescription);
 		builder.append(eventCategory);
 		builder.append(eventTime);
 		builder.append(callerCoordinates);
-		
-
 		int hashCode = builder.toHashCode();
-
 		return hashCode;
 	}
 
@@ -45,7 +40,6 @@ public class NewEventData {
 			equal = true;
 		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
 			NewEventData anotherEventData = (NewEventData) anotherObject;
-
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 
 			equalsBuilder.append(this.eventName, anotherEventData.eventName);
