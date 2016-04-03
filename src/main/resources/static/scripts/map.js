@@ -700,7 +700,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			contentType: "application/json; charset=UTF-8",
 			success : function(returnvalue) {
 				gather.global.ownedEvents = returnvalue.results;
-				for(var i = 0; i < gather.global.joinedEvents.length; i++){
+				for(var i = 0; i < gather.global.ownedEvents.length; i++){
 					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
 				}
 				loadOwnedEvents();

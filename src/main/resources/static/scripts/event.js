@@ -136,7 +136,7 @@ function loadOwnedEvents() {
 
 	if (events != null) {
 		if (events.length != 0) {
-			$('.eventTable').html('');
+			$('.ownedTable').html('');
 			for(i = 0; i < events.length; i++){
 				var eventId = events[i].id;
 //				var lat1 = events[i].location.latitude;
@@ -158,7 +158,7 @@ function loadOwnedEvents() {
 				var zipCode = events[i].location.zipCode;
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
-				$('.eventTable').append(
+				$('.ownedTable').append(
 					'<tr href="#" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
@@ -181,8 +181,8 @@ function loadOwnedEvents() {
 				);
 			}
 		} else {
-			$('.eventTable').html('');
-			$('.eventTable').append(
+			$('.ownedTable').html('');
+			$('.ownedTable').append(
 				'<tr> ' +
 					'<td colspan="3">  ' +
 						'<div class="media event-card"> ' +
