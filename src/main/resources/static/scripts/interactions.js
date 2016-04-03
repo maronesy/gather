@@ -321,34 +321,6 @@ function sessionCheck() {
 	});
 }
 
-function joinedEvents() {
-	$.ajax({
-	 	accepts: "application/json",
-		type : "GET",
-		url : "/rest/events/userJoined",
-		contentType: "application/json; charset=UTF-8",
-		success : function(returnvalue) {
-			gather.global.joinedEvents = returnvalue.results;
-			loadJoinedEvents();
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-//		    alert(jqXHR.status);
-//		    alert(textStatus);
-		    alert(errorThrown);
-			if (errorThrown == "Found") {
-				signedIn = true;
-				alert("error")
-				updateGreeting();
-				headerSelect();
-			} else {
-				signedIn = false;
-				headerSelect();
-			}
-
-		}
-	});
-}
-
 function updateGreeting(){
 	document.getElementById("greetings").innerHTML = "Welcome "+gather.global.currentDisplayName;
 }

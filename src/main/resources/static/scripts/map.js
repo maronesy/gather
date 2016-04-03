@@ -27,6 +27,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var newEvents = [];
 
 	var establishedEvents = [];
+	var establishedJoinedEvents = [];
+	var establishedOwnedEvents = [];
 
 	function buildMap() {
 		var mapOptions = {
@@ -628,6 +630,37 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					
 				}
 				loadEventsFirstView(userCoordinates);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+//			    alert(jqXHR.status);
+//			    alert(textStatus);
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+	function joinedEvents() {
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userJoined",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.joinedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.joinedEvents.length; i++){
+					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];			
+				}
+				loadJoinedEvents();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 //			    alert(jqXHR.status);
