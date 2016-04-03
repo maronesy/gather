@@ -13,6 +13,7 @@ $(document).ready(function() {
 	onLoadSessionCheck();
 	headerSelect();
 	loadCategories();
+	newEventChecks();
 //	loadEventsFirstView();
 }); 
 
@@ -229,6 +230,21 @@ function signOut() {
 }
 
 
+function newEventChecks() {
+	$('#new-event-save').on(
+			'click',
+				function() {
+					var eventName = $("#new-event-name").val();
+					var eventDescription = $("#new-event-description").val();
+					var eventTime = $("#new-event-time").val();
+					var eventCategory = $('#new-event-category').val();
+					if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+						$('#formEventFeedback').html('All the fields are required');
+					} else if (validateDisplayName(eventDescription) == false) {
+						$('#formEventFeedback').html('Display name must be between than 5 and 15 characters');
+					}
+			});
+}
 
 function signUp() {
 	$('#registerFormSubmit').on(
@@ -382,4 +398,12 @@ function resetRegisterFields() {
 	//$("#registration").reset();
 	return;
 }
+
+function resetNewEventFields() {
+	document.getElementById("new-event-form").reset();
+	//$("#registration").reset();
+	return;
+}
+
+
 
