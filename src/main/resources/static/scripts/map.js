@@ -663,8 +663,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				loadJoinedEvents();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-//			    alert(jqXHR.status);
-//			    alert(textStatus);
 			    alert(errorThrown);
 				if (errorThrown == "Found") {
 					signedIn = true;
