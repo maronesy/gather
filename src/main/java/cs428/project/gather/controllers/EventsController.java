@@ -298,7 +298,7 @@ public class EventsController {
 	}
 	
 	@RequestMapping(value = "/rest/events/userOwned")
-	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request, BindingResult bindingResult){
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request){
 		
 		if (!ActorTypeHelper.isRegisteredUser(request)) {
 			System.out.println("An anonymous user tried to obtain their joined event list.");

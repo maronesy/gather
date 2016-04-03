@@ -627,4 +627,37 @@ public class EventControllerTest {
 		assertTrue(!afterUpdate.getOwners().contains(newOwner));
 		assertTrue(afterUpdate.getOwners().contains(currentOwner));
 	}
+	
+	@Test
+	public void testGetOwnedEventListSingleEvent() throws JsonProcessingException{
+				//Create events
+				Category swim = this.categoryRepo.findByName("Swim").get(0);
+				assertTrue(swim != null);
+				Event event1 = new Event("Event1");
+				event1.setCategory(swim);
+				
+				//Add user as participant in events
+				Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+				event1.addOwner(user);
+				
+				//Save events to DB
+				this.eventRepo.save(event1);
+				
+				HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+				
+				//Receive the request body as a string so that it can be parsed and validated
+				ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
+				assertEquals(HttpStatus.OK, responseStr.getStatusCode());
+				
+				//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
+				RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+				
+				//Make sure event returned
+				List<Event> events = resourceResponseData.getResults();
+				assertEquals(1, events.size());
+				
+				//Check event
+				Event event = events.get(0);
+				assertEquals("Event1", event.getName());
+	}
 }
