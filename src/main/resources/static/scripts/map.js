@@ -659,7 +659,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				gather.global.joinedEvents = returnvalue.results;
 				for(var i = 0; i < gather.global.joinedEvents.length; i++){
-					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];			
+					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
+					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];	
 				}
 				loadJoinedEvents();
 			},
@@ -701,6 +702,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				gather.global.ownedEvents = returnvalue.results;
 				for(var i = 0; i < gather.global.ownedEvents.length; i++){
+					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
 					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
 				}
 				loadOwnedEvents();
