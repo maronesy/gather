@@ -1,10 +1,12 @@
 package cs428.project.gather.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import cs428.project.gather.data.model.*;
 
-import cs428.project.gather.data.model.Occurrence;
-import cs428.project.gather.data.model.Registrant;
+import java.util.*;
+import java.lang.reflect.Type;
+import com.google.gson.*;
+import cs428.project.gather.validator.NewEventDataValidator;
+import org.springframework.validation.Errors;
 
 public class UpdateEventData extends NewEventData {
 	private Long eventId;
@@ -14,6 +16,27 @@ public class UpdateEventData extends NewEventData {
 	private List<Registrant> ownersToRemove = new ArrayList<Registrant>();
 	private List<Registrant> participantsToAdd = new ArrayList<Registrant>();
 	private List<Registrant> participantsToRemove = new ArrayList<Registrant>();
+
+
+	public static UpdateEventData parseIn(String rawData, NewEventDataValidator newEventDataValidator, Errors errors) {
+		System.out.println("rawData: " + rawData);
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+			// Register an adapter to manage the date types as long values
+			@Override
+			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+				return new Date(json.getAsJsonPrimitive().getAsLong());
+			}
+		});
+		Gson gson = builder.create();
+		UpdateEventData updateEventData = gson.fromJson(rawData, UpdateEventData.class);
+		newEventDataValidator.validate(updateEventData, errors);
+		return updateEventData;
+	}
+
+	public void validate(NewEventDataValidator newEventDataValidator, Errors errors) {
+		newEventDataValidator.validate(this, errors);
+	}
 
 	public List<Occurrence> getOccurrencesToAdd() {
 		return occurrencesToAdd;

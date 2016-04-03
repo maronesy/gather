@@ -1,7 +1,6 @@
 package cs428.project.gather.data;
 import java.util.*;
 import com.google.gson.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import cs428.project.gather.validator.EventsQueryDataValidator;
 import org.springframework.validation.Errors;
 
@@ -19,6 +18,7 @@ public class EventsQueryData {
 	private Set<String> categories = new HashSet<String>();
 
 	public static EventsQueryData parseIn(String rawData, EventsQueryDataValidator eventsQueryDataValidator, Errors errors) {
+		System.out.println("rawData: " + rawData);
 		EventsQueryData eventsQuery = (new Gson()).fromJson(rawData, EventsQueryData.class);
 		eventsQuery.validate(eventsQueryDataValidator, errors);
 		return eventsQuery;

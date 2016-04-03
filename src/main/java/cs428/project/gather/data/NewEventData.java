@@ -1,7 +1,12 @@
 package cs428.project.gather.data;
 
+import cs428.project.gather.utilities.*;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import com.google.gson.*;
+import cs428.project.gather.validator.NewEventDataValidator;
+import org.springframework.validation.Errors;
 
 public class NewEventData {
 	public static final String EVENT_NAME_FIELD_NAME = "eventName";
@@ -11,13 +16,23 @@ public class NewEventData {
 	public static final String EVENT_TIME_FIELD_NAME = "eventTime";
 	public static final String CALLER_COORDS_FIELD_NAME = "callerCoordinates";
 
-
 	private String eventName;
 	private Coordinates eventCoordinates;
 	private String eventDescription;
 	private String eventCategory;
 	private long eventTime;
 	private Coordinates callerCoordinates;
+
+	public static NewEventData parseIn(String rawData, NewEventDataValidator newEventDataValidator, Errors errors) {
+		System.out.println("rawData: " + rawData);
+		NewEventData eventData = (new Gson()).fromJson(rawData, NewEventData.class);
+		eventData.validate(newEventDataValidator, errors);
+		return eventData;
+	}
+
+	public void validate(NewEventDataValidator newEventDataValidator, Errors errors) {
+		newEventDataValidator.validate(this, errors);
+	}
 
 	@Override
 	public int hashCode() {
@@ -100,5 +115,9 @@ public class NewEventData {
 
 	public void setCallerCoodinates(Coordinates callerCoodinates) {
 		this.callerCoordinates = callerCoodinates;
+	}
+
+	public double distanceFromCaller() {
+		return GeodeticHelper.getDistanceBetweenCoordinates(getCallerCoodinates(), getEventCoodinates());
 	}
 }
