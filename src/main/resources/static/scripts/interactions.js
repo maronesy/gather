@@ -232,14 +232,14 @@ function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
 			function() {
-				gather.global.email = $("#inputEmail").val();
+				var email = $("#inputEmail").val();
 				var password = $("#inputPassword1").val();
 				var confirmPassword = $("#inputPassword2").val();
 				var displayName = $("#inputDisplayName").val();
 				var registerBox = $('#registerFormSubmit').attr('href');
-				if (displayName == "" || password == "" || confirmPassword == "" || gather.global.email == "") {
+				if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
 					$('#formFeedback').html('All the fields are required');
-				} else if (validateEmail(gather.global.email) == false) {
+				} else if (validateEmail(email) == false) {
 					$('#formFeedback').html(
 							'Please enter a valid email address');
 				} else if (validatePass(password) == false) {
@@ -249,6 +249,8 @@ function signUp() {
 					$('#formFeedback').html('Passwords do not match');
 				} else if (validateDisplayName(displayName) == false) {
 					$('#formFeedback').html('Display name must be between than 5 and 15 characters');
+				} else if (displayName.indexOf(' ') >= 0) {
+					$('#formFeedback').html('Display name cannot have spaces');
 				} else {
 				 $.ajax({
 					 	accepts: "application/json",
@@ -260,7 +262,7 @@ function signUp() {
 							$('#loading').show();
 						},
 						data : '{ \
-							"email" : ' + gather.global.email + ', \
+							"email" : ' + email + ', \
 							"password" : ' + password + ', \
 							"displayName" : ' + displayName + ' \
 						}',
@@ -269,6 +271,7 @@ function signUp() {
 						},
 						success : function(returnvalue) {
 							if (returnvalue.status == 0) {
+								$('#formFeedback').html('Registration Success!');
 								$(registerBox).fadeOut(100);
 								$('#mask , .register-popup').fadeOut(300, function() {
 									$('#mask').remove();
@@ -283,14 +286,10 @@ function signUp() {
 								if (returnvalue.status != 0) {
 //									alert(returnvalue.status)
 //									alert(returnvalue.message)
-									$('#form_feedback').html('This email is in use.');
+									$('#formFeedback').html('This email is in use.');
 									
 								}
 							}
-						},
-						error : function(jqXHR, textStatus, errorThrown) {
-							var responseMessage = $.parseJSON(jqXHR.responseText).message;
-							$('#formFeedback').html(responseMessage);
 						}
 					});
 					
