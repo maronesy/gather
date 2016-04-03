@@ -145,4 +145,16 @@ public class Event {
     public Category getCategory(){
         return this.category;
     }
+    
+    public boolean removeParticipant(Registrant aUser){
+        return participants.remove(aUser);
+    }
+    
+    public boolean removeOwner(Registrant aUser){
+        return owners.remove(aUser);
+    }
+    
+    public boolean removeOccurrence(Occurrence occurrence){
+        return occurrences.remove(occurrence);
+    }
 }

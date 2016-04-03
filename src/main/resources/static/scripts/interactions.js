@@ -228,7 +228,10 @@ function signOut() {
 
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> fcc642f25d4e3f807068a0679d2a3ada36351ecc
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
@@ -250,6 +253,8 @@ function signUp() {
 					$('#formFeedback').html('Passwords do not match');
 				} else if (validateDisplayName(displayName) == false) {
 					$('#formFeedback').html('Display name must be between than 5 and 15 characters');
+				} else if (displayName.indexOf(' ') >= 0) {
+					$('#formFeedback').html('Display name cannot have spaces');
 				} else {
 				 $.ajax({
 					 	accepts: "application/json",
@@ -270,6 +275,7 @@ function signUp() {
 						},
 						success : function(returnvalue) {
 							if (returnvalue.status == 0) {
+								$('#formFeedback').html('Registration Success!');
 								$(registerBox).fadeOut(100);
 								$('#mask , .register-popup').fadeOut(300, function() {
 									$('#mask').remove();
@@ -284,10 +290,14 @@ function signUp() {
 								if (returnvalue.status != 0) {
 //									alert(returnvalue.status)
 //									alert(returnvalue.message)
-									$('#form_feedback').html('This email is in use.');
+									$('#formFeedback').html('This email is in use.');
 									
 								}
 							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							var responseMessage = $.parseJSON(jqXHR.responseText).message;
+							$('#formFeedback').html(responseMessage);
 						}
 					});
 					
