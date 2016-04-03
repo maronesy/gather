@@ -415,7 +415,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+		
 		$("#new-event-name").val(eventData.newEventFormData.eventName);
 		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
 		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
@@ -427,22 +427,51 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+	
 		if(eventData !== undefined) {
 			eventData.newEventFormData.eventName = $("#new-event-name").val();
 			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
 			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
 			eventData.newEventFormData.eventTime = $("#new-event-time").val();
+			
 		}
 	}
 	
-	$("body").on("submit", "#new-event-form", function(event) {
-		event.preventDefault();
+/*	$("body").on("submit", "#new-event-form", function(event) {
+		
+		var eventName = $("#new-event-name").val();
+		var eventDescription = $("#new-event-description").val();
+		var eventTime = $("#new-event-time").val();
+		var eventCategory = $('#new-event-category').val();
+		if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+			$('#formEventFeedback').html('All the fields are required');
+		} else if (validateDisplayName(eventDescription) == false) {
+			$('#formEventFeedback').html('Display name must be between than 5 and 15 characters');
+		}else{
+			event.preventDefault();
+			//alert("about to submit the event form!")
+			storeNewEventFormData();
+			submitNewEventForm();
+		}
+	});
+	*/
 
-		//alert("about to submit the event form!")
-		storeNewEventFormData();
-
-		submitNewEventForm();
+	$('#new-event-save').on(
+			'click', function() {
+				var eventName = $("#new-event-name").val();
+				var eventDescription = $("#new-event-description").val();
+				var eventTime = $("#new-event-time").val();
+				var eventCategory = $('#new-event-category').val();
+				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+					$('#formEventFeedback').html('All the fields are required');
+				} else if (validateDisplayName(eventDescription) == false) {
+					$('#formEventFeedback').html('Event description must be between than 5 and 15 characters');
+				}else{
+					event.preventDefault();
+					//alert("about to submit the event form!")
+					storeNewEventFormData();
+					submitNewEventForm();
+				}
 	});
 	
 	$('#new-event-time').datetimepicker();
