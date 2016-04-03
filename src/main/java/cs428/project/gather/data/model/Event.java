@@ -1,30 +1,21 @@
 package cs428.project.gather.data.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import cs428.project.gather.data.EventsQueryData;
+import cs428.project.gather.data.repo.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
+import java.util.*;
+import java.sql.Timestamp;
+import javax.persistence.*;
+import org.joda.time.DateTime;
 import org.springframework.util.Assert;
-
 import lombok.Data;
 
 @Data
 @Entity
 public class Event {
+    private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
+    private static final double ONE_MILE_IN_DEGREES_LONGITUDE = 0.014457;
+
     private @Id @Column(name="ID") @GeneratedValue Long id;
 
     private String name;
@@ -122,7 +113,7 @@ public class Event {
     public Set<Registrant> getParticipants(){
         return Collections.unmodifiableSet(participants);
     }
-    
+
     public Set<Registrant> getOwners(){
         return Collections.unmodifiableSet(owners);
     }
@@ -145,16 +136,47 @@ public class Event {
     public Category getCategory(){
         return this.category;
     }
-    
+
     public boolean removeParticipant(Registrant aUser){
         return participants.remove(aUser);
     }
-    
+
     public boolean removeOwner(Registrant aUser){
         return owners.remove(aUser);
     }
-    
+
     public boolean removeOccurrence(Occurrence occurrence){
         return occurrences.remove(occurrence);
+    }
+
+    public static List<Event> queryForEvents(EventsQueryData queryParams, EventRepository eventRepo) {
+        // Calculate the upper and lower latitude bounds.
+        double latitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LATITUDE * queryParams.getRadiusMi();
+        Double latitudeLowerBound = new Double(queryParams.getLatitude() - latitudeRadiusAdjustment);
+        Double latitudeUpperBound = new Double(queryParams.getLatitude() + latitudeRadiusAdjustment);
+
+        // Calculate the upper and lower longitude bounds.
+        double longitudeRadiusAdjustment = ONE_MILE_IN_DEGREES_LONGITUDE * queryParams.getRadiusMi();
+        Double longitudeLowerBound = new Double(queryParams.getLongitude() - longitudeRadiusAdjustment);
+        Double longitudeUpperBound = new Double(queryParams.getLongitude() + longitudeRadiusAdjustment);
+
+        Timestamp timeWindow = new Timestamp( (queryParams.getHour() == -1) ?
+                                                DateTime.now().plusYears(1).getMillis() : // All events this year
+                                                DateTime.now().plusHours(queryParams.getHour()).getMillis() ); // Events in the next <queryParams.getHour() > hours
+
+        List<Event> events = eventRepo.findByLocationAndOccurrenceTimeWithin(latitudeLowerBound, latitudeUpperBound,
+                                        longitudeLowerBound, longitudeUpperBound, timeWindow);
+
+        // Filter out events by matching categories, only if categories was provided (not empty)
+        List<Event> categoryFilteredEvents = events;
+        if (! queryParams.getCategories().isEmpty()) {
+            categoryFilteredEvents = new ArrayList<Event>();
+            for (Event ev : events) {
+                if (queryParams.getCategories().contains(ev.getCategory().getName()))
+                    categoryFilteredEvents.add(ev);
+            }
+        }
+
+        return categoryFilteredEvents;
     }
 }
