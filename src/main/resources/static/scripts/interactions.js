@@ -1,15 +1,15 @@
 $(document).ready(function() {
+	locateMe();
+	sessionCheck();
 	resizeLayout();
 	resizeMap();
 //	tableInteractions();
-	locateMe();
 	enterZip();
 	registerBox();
 	signUp();
 	signIn();
 	signOut();
 	removeZipCodeError();
-	sessionCheck();
 	onLoadSessionCheck();
 	headerSelect();
 	loadCategories();
@@ -229,7 +229,6 @@ function signOut() {
 }
 
 
-
 function signUp() {
 	$('#registerFormSubmit').on(
 			'click',
@@ -309,8 +308,6 @@ function sessionCheck() {
 				gather.global.email = jqXHR.responseJSON.email;
 				updateGreeting();
 				headerSelect();
-				joinedEvents();
-				loadJoinedEvents();
 			}else {
 				gather.global.session.signedIn = false;
 				headerSelect();
@@ -325,7 +322,6 @@ function sessionCheck() {
 }
 
 function joinedEvents() {
-	alert("Hello");
 	$.ajax({
 	 	accepts: "application/json",
 		type : "GET",
@@ -333,7 +329,7 @@ function joinedEvents() {
 		contentType: "application/json; charset=UTF-8",
 		success : function(returnvalue) {
 			gather.global.joinedEvents = returnvalue.results;
-			alert("Hello");
+			loadJoinedEvents();
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 //		    alert(jqXHR.status);

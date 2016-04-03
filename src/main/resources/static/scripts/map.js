@@ -134,6 +134,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				placeUserMarker(userCoordinates);
 				getNearByEvents(userCoordinates);
 				currentUserCoordinates = userCoordinates;
+				if (gather.global.session.signedIn == true){
+					joinedEvents();
+				}
 			}
 		}
 	}
@@ -625,8 +628,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					
 				}
 				loadEventsFirstView(userCoordinates);
-//				joinedEvents();
-//				ownedEvents();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 //			    alert(jqXHR.status);
