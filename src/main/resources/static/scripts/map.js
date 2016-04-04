@@ -464,15 +464,37 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				var eventCategory = $('#new-event-category').val();
 				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
 					$('#formEventFeedback').html('All the fields are required');
-				} else if (validateDisplayName(eventDescription) == false) {
-					$('#formEventFeedback').html('Event description must be between than 5 and 15 characters');
+				} else if (validateEventDescription(eventDescription) == false) {
+					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
 				}else{
 					event.preventDefault();
 					//alert("about to submit the event form!")
 					storeNewEventFormData();
 					submitNewEventForm();
+					$("#new-event-name").val('');
+					$("#new-event-description").val('');
+					$('#new-event-category').val('');
+					$("#new-event-time").val('');
+					$('#formEventFeedback').html('');
 				}
 	});
+	
+	$('#new-event-close').on(
+			'click', function() {
+				$("#new-event-name").val('');
+				$("#new-event-description").val('');
+				$('#new-event-category').val('');
+				$("#new-event-time").val('');
+				$('#formEventFeedback').html('');
+	});
+	
+	function validateEventDescription(eventDescription){
+		if (eventDescription.length < 5 || eventDescription.length > 120) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	
 	$('#new-event-time').datetimepicker();
 	//$('#new-event-category').selectmenu();
