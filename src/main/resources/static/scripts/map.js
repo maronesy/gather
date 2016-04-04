@@ -436,25 +436,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			
 		}
 	}
-	
-/*	$("body").on("submit", "#new-event-form", function(event) {
-		
-		var eventName = $("#new-event-name").val();
-		var eventDescription = $("#new-event-description").val();
-		var eventTime = $("#new-event-time").val();
-		var eventCategory = $('#new-event-category').val();
-		if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
-			$('#formEventFeedback').html('All the fields are required');
-		} else if (validateDisplayName(eventDescription) == false) {
-			$('#formEventFeedback').html('Display name must be between than 5 and 15 characters');
-		}else{
-			event.preventDefault();
-			//alert("about to submit the event form!")
-			storeNewEventFormData();
-			submitNewEventForm();
-		}
-	});
-	*/
 
 	$('#new-event-save').on(
 			'click', function() {
@@ -468,25 +449,24 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
 				}else{
 					event.preventDefault();
-					//alert("about to submit the event form!")
 					storeNewEventFormData();
 					submitNewEventForm();
-					$("#new-event-name").val('');
-					$("#new-event-description").val('');
-					$('#new-event-category').val('');
-					$("#new-event-time").val('');
-					$('#formEventFeedback').html('');
+					clearEventForm();
 				}
 	});
 	
 	$('#new-event-close').on(
 			'click', function() {
-				$("#new-event-name").val('');
-				$("#new-event-description").val('');
-				$('#new-event-category').val('');
-				$("#new-event-time").val('');
-				$('#formEventFeedback').html('');
+				clearEventForm();
 	});
+	
+	function clearEventForm(){
+		$("#new-event-name").val('');
+		$("#new-event-description").val('');
+		$('#new-event-category').val('');
+		$("#new-event-time").val('');
+		$('#formEventFeedback').html('');
+	}
 	
 	function validateEventDescription(eventDescription){
 		if (eventDescription.length < 5 || eventDescription.length > 120) {
