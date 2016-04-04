@@ -65,16 +65,16 @@ public class EventsController {
 	@RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		NewEventData newEventData = NewEventData.parseIn(rawData, newEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event newEvent = Event.buildEventFrom(newEventData, getUser(request), categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event savedEventResult = this.eventRepo.save(newEvent);
@@ -85,16 +85,16 @@ public class EventsController {
 	@RequestMapping(value = "/rest/events/update", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> updateEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		UpdateEventData updateEventData = UpdateEventData.parseIn(rawData, newEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event savedEventResult = this.eventRepo.save(updatedResult);
@@ -124,16 +124,16 @@ public class EventsController {
 	@RequestMapping(value = "/rest/events/join", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		EventIdData joinEventData = EventIdData.parseIn(rawData, joinEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event joinedEvent = getUser(request).joinEvent(joinEventData, eventRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.CREATED);
@@ -142,16 +142,16 @@ public class EventsController {
 	@RequestMapping(value = "/rest/events/remove", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> removeEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event> badResponse(bindingResult);
+		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		EventIdData removeEventData = EventIdData.parseIn(rawData, joinEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		Event joinedEvent = getUser(request).removeEvent(removeEventData, eventRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
-			return RESTResourceResponseData.<Event> badResponse(bindingResult);
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
 		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.OK);

@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class RegisterControllerTest {
+public class RegistrantsControllerTest {
 
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -89,7 +89,7 @@ public class RegisterControllerTest {
 		assertEquals(0, listUsers.size());
 
 	}
-	
+
 	@Test
 	public void testRegisterDuplicatedUserDisplayName() throws JsonProcessingException {
 
@@ -103,7 +103,7 @@ public class RegisterControllerTest {
 		// Fetching the Registrant details directly from the DB to verify nothing added
 		assertEquals(1,this.registrantRepo.count());
 	}
-	
+
 	@Test
 	public void testRegisterDisplayNameTooLong() throws JsonProcessingException {
 
@@ -117,7 +117,7 @@ public class RegisterControllerTest {
 		// Fetching the Registrant details directly from the DB to verify nothing added
 		assertEquals(1,this.registrantRepo.count());
 	}
-	
+
 	@Test
 	public void testRegisterInvalidEmailAddress() throws JsonProcessingException {
 
@@ -131,7 +131,7 @@ public class RegisterControllerTest {
 		// Fetching the Registrant details directly from the DB to verify nothing added
 		assertEquals(1,this.registrantRepo.count());
 	}
-	
+
 	private Map<String, Object> attemptAddUser(String email, String password, String displayName) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
