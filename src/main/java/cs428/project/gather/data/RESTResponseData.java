@@ -58,6 +58,13 @@ public class RESTResponseData {
         HttpStatus httpStatus=convertErrorCodeToHttpStatus(errorCode);
         return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
     }
+    
+	public static ResponseEntity<RESTResponseData> responseBuilder(String errorCodeStr, String errorMessage) {
+		int errorCode = -1;
+		errorCode = Integer.parseInt(errorCodeStr);
+		HttpStatus httpStatus = convertErrorCodeToHttpStatus(errorCode);
+		return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,errorMessage),httpStatus);
+	}
 
     private static HttpStatus convertErrorCodeToHttpStatus(int errorCode) {
         HttpStatus result = HttpStatus.BAD_REQUEST;

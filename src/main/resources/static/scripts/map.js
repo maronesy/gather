@@ -27,6 +27,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var newEvents = [];
 
 	var establishedEvents = [];
+	var establishedJoinedEvents = [];
+	var establishedOwnedEvents = [];
 
 	function buildMap() {
 		var mapOptions = {
@@ -134,6 +136,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				placeUserMarker(userCoordinates);
 				getNearByEvents(userCoordinates);
 				currentUserCoordinates = userCoordinates;
+				if (gather.global.session.signedIn == true){
+					joinedEvents();
+					ownedEvents();
+				}
 			}
 		}
 	}
@@ -629,6 +635,79 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			error: function(jqXHR, textStatus, errorThrown) {
 //			    alert(jqXHR.status);
 //			    alert(textStatus);
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+	function joinedEvents() {
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userJoined",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.joinedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.joinedEvents.length; i++){
+					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
+					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];	
+				}
+				loadJoinedEvents();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+//	function joinedEvents() {
+//		//alert(gather.global.email)
+//		var nEvents = gather.global.nearEvents;
+//		for (var i = 0; i < nEvents.length; i++){
+//			alert(nEvents[i].participants[0].email);
+//			if (nEvents[i].participants[i].email == gather.global.email) {
+//				gather.global.joinedEvents.push(nEvents[i]);
+//			}
+//		}
+//	}
+	
+
+
+	function ownedEvents() {
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userOwned",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.ownedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.ownedEvents.length; i++){
+					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
+					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
+				}
+				loadOwnedEvents();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
 				if (errorThrown == "Found") {
 					signedIn = true;

@@ -103,17 +103,20 @@ public class EventsController {
 	}
 
 	@RequestMapping(value = "/rest/events/userJoined")
-	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request) {
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			return RESTPaginatedResourcesResponseData.badResponse("-7", "Incorrect User State. Only registered users can request their joined event list.");
+		}
 
 		List<Event> events = new ArrayList<Event>(getUser(request).getJoinedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
 
 	@RequestMapping(value = "/rest/events/userOwned")
-	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request, BindingResult bindingResult) {
-		if (! authenticateRequest(request, bindingResult)) return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
-
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request){
+		if (!ActorTypeHelper.isRegisteredUser(request)) {
+			return RESTPaginatedResourcesResponseData.badResponse("-7", "Incorrect User State. Only registered users can request their owned event list.");
+		}
 		List<Event> events = new ArrayList<Event>(getUser(request).getOwnedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}

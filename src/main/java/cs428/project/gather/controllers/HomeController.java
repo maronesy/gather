@@ -24,4 +24,14 @@ public class HomeController {
 	public String zipcode() {
 		return "zipcode";
 	}
+	
+	@RequestMapping(value = "/joined")
+	public String joined() {
+		return "joined";
+	}
+	
+	@RequestMapping(value = "/owned")
+	public String owned() {
+		return "owned";
+	}
 }
