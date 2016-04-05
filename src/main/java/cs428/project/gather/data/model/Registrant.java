@@ -34,7 +34,7 @@ public class Registrant extends Actor {
 	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	private Set<Event> joinedEvents = new HashSet<Event>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Category> preferences = new HashSet<Category>();
 
 	public Registrant() {
@@ -66,6 +66,7 @@ public class Registrant extends Actor {
 		this.email = email;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
@@ -120,6 +121,18 @@ public class Registrant extends Actor {
 		return Collections.unmodifiableSet(ownedEvents);
 	}
 
+	public Set<Category> getPreferences() {
+		return Collections.unmodifiableSet(preferences);
+	}
+
+	public static Registrant buildRegistrantFrom(RegistrationData registrationData) {
+		Registrant newRegistrant = new Registrant();
+		newRegistrant.setEmail(registrationData.getEmail());
+		newRegistrant.setPassword(registrationData.getPassword());
+		newRegistrant.setDisplayName(registrationData.getDisplayName());
+		return newRegistrant;
+	}
+
 	public Event joinEvent(EventIdData joinEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = joinEventData.getEventId();
 		Event joinedEvent = eventRepo.findOne(eventId);
@@ -137,5 +150,34 @@ public class Registrant extends Actor {
 
 		eventRepo.delete(targetEvent);
 		return targetEvent;
+	}
+
+	public Registrant updateUsing(RegistrationData updateInfo, CategoryRepository categoryRepo, Errors errors) {
+		if (updateInfo.getEmail() != null) {
+			System.out.println("Updating with new email:  " + updateInfo.getEmail());
+			setEmail(updateInfo.getEmail());
+		}
+
+		if (updateInfo.getPassword() != null) {
+			System.out.println("Updating with new password:  " + updateInfo.getPassword());
+			setPassword(updateInfo.getPassword());
+		}
+
+		if (updateInfo.getDisplayName() != null) {
+			System.out.println("Updating with new displayName:  " + updateInfo.getDisplayName());
+			setDisplayName(updateInfo.getDisplayName());
+		}
+
+		if (updateInfo.getDefaultTimeWindow() > 0) {
+			System.out.println("Updating with new defaultTimeWindow:  " + updateInfo.getDefaultTimeWindow());
+			setDefaultTimeWindow(updateInfo.getDefaultTimeWindow());
+		}
+
+		if (updateInfo.getDefaultZip() > 0) {
+			System.out.println("Updating with new defaultZip:  " + updateInfo.getDefaultZip());
+			setDefaultZip(updateInfo.getDefaultZip());
+		}
+
+		return this;
 	}
 }

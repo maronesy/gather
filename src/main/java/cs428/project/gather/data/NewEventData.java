@@ -1,11 +1,11 @@
 package cs428.project.gather.data;
 
+import cs428.project.gather.validator.*;
 import cs428.project.gather.utilities.*;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.google.gson.*;
-import cs428.project.gather.validator.NewEventDataValidator;
 import org.springframework.validation.Errors;
 
 public class NewEventData {
@@ -23,15 +23,15 @@ public class NewEventData {
 	private long eventTime;
 	private Coordinates callerCoordinates;
 
-	public static NewEventData parseIn(String rawData, NewEventDataValidator newEventDataValidator, Errors errors) {
+	public static NewEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
 		NewEventData eventData = (new Gson()).fromJson(rawData, NewEventData.class);
-		eventData.validate(newEventDataValidator, errors);
+		eventData.validate(validator, errors);
 		return eventData;
 	}
 
-	public void validate(NewEventDataValidator newEventDataValidator, Errors errors) {
-		newEventDataValidator.validate(this, errors);
+	public void validate(AbstractValidator validator, Errors errors) {
+		validator.validate(this, errors);
 	}
 
 	@Override

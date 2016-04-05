@@ -1,7 +1,7 @@
 package cs428.project.gather.data;
 import java.util.*;
 import com.google.gson.*;
-import cs428.project.gather.validator.EventsQueryDataValidator;
+import cs428.project.gather.validator.*;
 import org.springframework.validation.Errors;
 
 public class EventsQueryData {
@@ -17,15 +17,15 @@ public class EventsQueryData {
 	private int hour = -1;
 	private Set<String> categories = new HashSet<String>();
 
-	public static EventsQueryData parseIn(String rawData, EventsQueryDataValidator eventsQueryDataValidator, Errors errors) {
+	public static EventsQueryData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
 		EventsQueryData eventsQuery = (new Gson()).fromJson(rawData, EventsQueryData.class);
-		eventsQuery.validate(eventsQueryDataValidator, errors);
+		eventsQuery.validate(validator, errors);
 		return eventsQuery;
 	}
 
-	public void validate(EventsQueryDataValidator eventsQueryDataValidator, Errors errors) {
-		eventsQueryDataValidator.validate(this, errors);
+	public void validate(AbstractValidator validator, Errors errors) {
+		validator.validate(this, errors);
 	}
 
 	public float getLongitude() {

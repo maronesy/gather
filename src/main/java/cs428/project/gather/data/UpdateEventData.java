@@ -5,7 +5,7 @@ import cs428.project.gather.data.model.*;
 import java.util.*;
 import java.lang.reflect.Type;
 import com.google.gson.*;
-import cs428.project.gather.validator.NewEventDataValidator;
+import cs428.project.gather.validator.*;
 import org.springframework.validation.Errors;
 
 public class UpdateEventData extends NewEventData {
@@ -17,8 +17,7 @@ public class UpdateEventData extends NewEventData {
 	private List<Registrant> participantsToAdd = new ArrayList<Registrant>();
 	private List<Registrant> participantsToRemove = new ArrayList<Registrant>();
 
-
-	public static UpdateEventData parseIn(String rawData, NewEventDataValidator newEventDataValidator, Errors errors) {
+	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
@@ -30,12 +29,12 @@ public class UpdateEventData extends NewEventData {
 		});
 		Gson gson = builder.create();
 		UpdateEventData updateEventData = gson.fromJson(rawData, UpdateEventData.class);
-		newEventDataValidator.validate(updateEventData, errors);
+		updateEventData.validate(validator, errors);
 		return updateEventData;
 	}
 
-	public void validate(NewEventDataValidator newEventDataValidator, Errors errors) {
-		newEventDataValidator.validate(this, errors);
+	public void validate(AbstractValidator validator, Errors errors) {
+		validator.validate(this, errors);
 	}
 
 	public List<Occurrence> getOccurrencesToAdd() {
@@ -61,13 +60,12 @@ public class UpdateEventData extends NewEventData {
 	public List<Registrant> getParticipantsToRemove() {
 		return participantsToRemove;
 	}
-	public Long getEventId()
-	{
+
+	public Long getEventId() {
 		return eventId;
 	}
 
-	public void setEventId(Long id)
-	{
+	public void setEventId(Long id) {
 		this.eventId = id;
 	}
 }
