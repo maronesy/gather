@@ -65,7 +65,7 @@ public class RegistrantsController {
 		return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/rest/registrants/info", method = RequestMethod.GET, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value = "/rest/registrants/info", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Registrant>> getRegistrant(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Registrant> badResponse(bindingResult);

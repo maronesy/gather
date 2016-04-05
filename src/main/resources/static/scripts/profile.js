@@ -11,10 +11,31 @@ function leftPaneSelect() {
 
 function loadProfilePage() {
 	$('#myProfile').on('click', function() {
-		$("#profile").show();
-		$("#map").hide();
-		updateProfileHeader();
+		$.ajax({
+		 	accepts: "application/json",
+			type : "PUT",
+			url : "rest/registrants/info",
+			contentType: "application/json; charset=UTF-8",
+			dataType: "json",
+			data : '{}',
+			success : function(returnvalue) {
+				if (returnvalue.status == 0) {
+					var displayName = returnvalue.result.displayName
+					var defaultZip = returnvalue.result.defaultZip
+					var defaultTimeWindow = returnvalue.result.defaultTimeWindow
+					$("#profileDisplayName").val(displayName)
+					$("#profileZipCode").val(defaultZip)
+					$("#profileTimeWindow").val(defaultTimeWindow)
+					$("#profile").show();
+					$("#map").hide();
+					updateProfileHeader();
+				} else {
+					
+				}
+			}
+		});
 	});
+	
 	$('#profileBack').on('click', function() {
 		$("#profile").hide();
 		$("#map").show();

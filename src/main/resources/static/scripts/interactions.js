@@ -172,7 +172,7 @@ function signIn() {
 							gather.global.currentDisplayName = returnvalue.displayName;
 							updateGreeting();
 							headerSelect();
-							loadJoinedEvents()
+							loadJoinedEvents();
 						} else {
 //							alert(returnvalue.status)
 //							alert(returnvalue.message)
