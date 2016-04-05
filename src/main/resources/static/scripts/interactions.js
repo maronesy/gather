@@ -290,6 +290,10 @@ function signUp() {
 									
 								}
 							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							var responseMessage = $.parseJSON(jqXHR.responseText).message;
+							$('#formFeedback').html(responseMessage);
 						}
 					});
 					
