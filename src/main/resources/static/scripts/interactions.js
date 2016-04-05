@@ -383,4 +383,3 @@ function resetRegisterFields() {
 	//$("#registration").reset();
 	return;
 }
-

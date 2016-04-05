@@ -421,7 +421,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+		
 		$("#new-event-name").val(eventData.newEventFormData.eventName);
 		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
 		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
@@ -433,23 +433,54 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+	
 		if(eventData !== undefined) {
 			eventData.newEventFormData.eventName = $("#new-event-name").val();
 			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
 			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
 			eventData.newEventFormData.eventTime = $("#new-event-time").val();
+			
 		}
 	}
-	
-	$("body").on("submit", "#new-event-form", function(event) {
-		event.preventDefault();
 
-		//alert("about to submit the event form!")
-		storeNewEventFormData();
-
-		submitNewEventForm();
+	$('#new-event-save').on(
+			'click', function() {
+				var eventName = $("#new-event-name").val();
+				var eventDescription = $("#new-event-description").val();
+				var eventTime = $("#new-event-time").val();
+				var eventCategory = $('#new-event-category').val();
+				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+					$('#formEventFeedback').html('All the fields are required');
+				} else if (validateEventDescription(eventDescription) == false) {
+					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
+				}else{
+					event.preventDefault();
+					storeNewEventFormData();
+					submitNewEventForm();
+					clearEventForm();
+				}
 	});
+	
+	$('#new-event-close').on(
+			'click', function() {
+				clearEventForm();
+	});
+	
+	function clearEventForm(){
+		$("#new-event-name").val('');
+		$("#new-event-description").val('');
+		$('#new-event-category').val('');
+		$("#new-event-time").val('');
+		$('#formEventFeedback').html('');
+	}
+	
+	function validateEventDescription(eventDescription){
+		if (eventDescription.length < 5 || eventDescription.length > 120) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	
 	$('#new-event-time').datetimepicker();
 	//$('#new-event-category').selectmenu();
