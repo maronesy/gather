@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+<meta charset="UTF-8" />
+<title>GATHER</title>
+
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous" />
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous" />
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+	<script src="scripts/jquery-1.12.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+	<!-- jQuery UI -->
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.js" type="text/javascript"></script>
+	<link href="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.css" rel="stylesheet"/>
+	<link rel="stylesheet" href="styles/main.css" />
+	<link href="styles/map.css" rel="stylesheet"/>
+	<script src="scripts/global.js" type="text/javascript"></script>
+	<script src="mapaid/sprintf.js" type="text/javascript"></script>
+	<script src="mapaid/bounce-marker.js" type="text/javascript"></script>
+	
+	<script src="scripts/jquery.datetimepicker.full.min.js" type="text/javascript"></script>
+	
+	<script src="scripts/map.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="styles/jquery.datetimepicker.css"/>
+	
+</head>
+
+<body>
+	<div  id="headerOut"><div th:replace= "header/header :: header" ></div></div>
+	<div  id="headerIn"><div th:replace= "header/headerin :: headerin" ></div></div>
+<div class="container-fluid main-pain">
+    <div th:replace="leftpane/ownedlist :: ownedlist"></div>
+    <div th:replace="rightpane/map :: map"></div> 
+</div>
+	<div th:replace="registerform :: registerform"></div>
+</body>
+
+<!-- Required for displaying the map -->
+<script type="text/javascript">
+	var mapboxAccessToken = "pk.eyJ1Ijoic291aGF5bCIsImEiOiJjaWwycmJnbTIzam5zdW1rc3d2M25tczB0In0.5zdBaay8_6OcyavirPRVXQ";
+	var mapboxMapID = "mapbox.streets";
+	var mapManager = new MapManager(mapboxAccessToken, mapboxMapID);
+</script>
+<script type="text/javascript">
+	mapManager.performAction();
+</script>
+
+<script src="scripts/global.js" type="text/javascript"></script>
+<script src="scripts/interactions.js" type="text/javascript"></script>
+<script src="scripts/event.js" type="text/javascript"></script>
+
+
+</html>

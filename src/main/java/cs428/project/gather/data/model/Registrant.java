@@ -1,17 +1,17 @@
 package cs428.project.gather.data.model;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.repo.*;
+
+import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.validation.Errors;
 
 @Entity
 public class Registrant extends Actor {
@@ -34,7 +34,7 @@ public class Registrant extends Actor {
 	@ManyToMany(mappedBy = "participants", fetch = FetchType.EAGER)
 	private Set<Event> joinedEvents = new HashSet<Event>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Category> preferences = new HashSet<Category>();
 
 	public Registrant() {
@@ -46,7 +46,7 @@ public class Registrant extends Actor {
 		this.email = email;
 		this.password = password;
 	}
-	
+
 	public Registrant(String email, String password, String displayName, long reliability,
 			int defaultTimeWindow, int defaultZip) {
 		super(ActorType.REGISTERED_USER);
@@ -57,7 +57,7 @@ public class Registrant extends Actor {
 		this.defaultTimeWindow = defaultTimeWindow;
 		this.defaultZip = defaultZip;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -66,6 +66,7 @@ public class Registrant extends Actor {
 		this.email = email;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
@@ -109,7 +110,7 @@ public class Registrant extends Actor {
 	public boolean joinEvent(Event event) {
 		return joinedEvents.add(event);
 	}
-	
+
 	@JsonIgnore
 	public Set<Event> getJoinedEvents() {
 		return Collections.unmodifiableSet(joinedEvents);
@@ -118,5 +119,65 @@ public class Registrant extends Actor {
 	@JsonIgnore
 	public Set<Event> getOwnedEvents() {
 		return Collections.unmodifiableSet(ownedEvents);
+	}
+
+	public Set<Category> getPreferences() {
+		return Collections.unmodifiableSet(preferences);
+	}
+
+	public static Registrant buildRegistrantFrom(RegistrationData registrationData) {
+		Registrant newRegistrant = new Registrant();
+		newRegistrant.setEmail(registrationData.getEmail());
+		newRegistrant.setPassword(registrationData.getPassword());
+		newRegistrant.setDisplayName(registrationData.getDisplayName());
+		return newRegistrant;
+	}
+
+	public Event joinEvent(EventIdData joinEventData, EventRepository eventRepo, Errors errors) {
+		Long eventId = joinEventData.getEventId();
+		Event joinedEvent = eventRepo.findOne(eventId);
+		joinedEvent.addParticipant(this);
+		eventRepo.save(joinedEvent);
+		return joinedEvent;
+	}
+
+	public Event removeEvent(EventIdData removeEventData, EventRepository eventRepo, Errors errors) {
+		Long eventId = removeEventData.getEventId();
+		Event targetEvent = eventRepo.findOne(eventId);
+		if (! targetEvent.containsOwner(this, errors)){
+			return targetEvent;
+		}
+
+		eventRepo.delete(targetEvent);
+		return targetEvent;
+	}
+
+	public Registrant updateUsing(RegistrationData updateInfo, CategoryRepository categoryRepo, Errors errors) {
+		if (updateInfo.getEmail() != null) {
+			System.out.println("Updating with new email:  " + updateInfo.getEmail());
+			setEmail(updateInfo.getEmail());
+		}
+
+		if (updateInfo.getPassword() != null) {
+			System.out.println("Updating with new password:  " + updateInfo.getPassword());
+			setPassword(updateInfo.getPassword());
+		}
+
+		if (updateInfo.getDisplayName() != null) {
+			System.out.println("Updating with new displayName:  " + updateInfo.getDisplayName());
+			setDisplayName(updateInfo.getDisplayName());
+		}
+
+		if (updateInfo.getDefaultTimeWindow() > 0) {
+			System.out.println("Updating with new defaultTimeWindow:  " + updateInfo.getDefaultTimeWindow());
+			setDefaultTimeWindow(updateInfo.getDefaultTimeWindow());
+		}
+
+		if (updateInfo.getDefaultZip() > 0) {
+			System.out.println("Updating with new defaultZip:  " + updateInfo.getDefaultZip());
+			setDefaultZip(updateInfo.getDefaultZip());
+		}
+
+		return this;
 	}
 }

@@ -1,7 +1,12 @@
 package cs428.project.gather.data;
 
+import cs428.project.gather.validator.*;
+import cs428.project.gather.utilities.*;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import com.google.gson.*;
+import org.springframework.validation.Errors;
 
 public class NewEventData {
 	public static final String EVENT_NAME_FIELD_NAME = "eventName";
@@ -10,7 +15,6 @@ public class NewEventData {
 	public static final String EVENT_CATEGORY_FIELD_NAME = "eventCategory";
 	public static final String EVENT_TIME_FIELD_NAME = "eventTime";
 	public static final String CALLER_COORDS_FIELD_NAME = "callerCoordinates";
-	
 
 	private String eventName;
 	private Coordinates eventCoordinates;
@@ -19,21 +23,27 @@ public class NewEventData {
 	private long eventTime;
 	private Coordinates callerCoordinates;
 
-	
+	public static NewEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
+		System.out.println("rawData: " + rawData);
+		NewEventData eventData = (new Gson()).fromJson(rawData, NewEventData.class);
+		eventData.validate(validator, errors);
+		return eventData;
+	}
+
+	public void validate(AbstractValidator validator, Errors errors) {
+		validator.validate(this, errors);
+	}
+
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder();
-
 		builder.append(eventName);
 		builder.append(eventCoordinates);
 		builder.append(eventDescription);
 		builder.append(eventCategory);
 		builder.append(eventTime);
 		builder.append(callerCoordinates);
-		
-
 		int hashCode = builder.toHashCode();
-
 		return hashCode;
 	}
 
@@ -45,7 +55,6 @@ public class NewEventData {
 			equal = true;
 		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
 			NewEventData anotherEventData = (NewEventData) anotherObject;
-
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 
 			equalsBuilder.append(this.eventName, anotherEventData.eventName);
@@ -106,5 +115,9 @@ public class NewEventData {
 
 	public void setCallerCoodinates(Coordinates callerCoodinates) {
 		this.callerCoordinates = callerCoodinates;
+	}
+
+	public double distanceFromCaller() {
+		return GeodeticHelper.getDistanceBetweenCoordinates(getCallerCoodinates(), getEventCoodinates());
 	}
 }

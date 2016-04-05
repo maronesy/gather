@@ -27,6 +27,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var newEvents = [];
 
 	var establishedEvents = [];
+	var establishedJoinedEvents = [];
+	var establishedOwnedEvents = [];
 
 	function buildMap() {
 		var mapOptions = {
@@ -134,6 +136,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				placeUserMarker(userCoordinates);
 				getNearByEvents(userCoordinates);
 				currentUserCoordinates = userCoordinates;
+				if (gather.global.session.signedIn == true){
+					joinedEvents();
+					ownedEvents();
+				}
 			}
 		}
 	}
@@ -415,7 +421,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+		
 		$("#new-event-name").val(eventData.newEventFormData.eventName);
 		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
 		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
@@ -427,23 +433,54 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-
+	
 		if(eventData !== undefined) {
 			eventData.newEventFormData.eventName = $("#new-event-name").val();
 			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
 			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
 			eventData.newEventFormData.eventTime = $("#new-event-time").val();
+			
 		}
 	}
-	
-	$("body").on("submit", "#new-event-form", function(event) {
-		event.preventDefault();
 
-		//alert("about to submit the event form!")
-		storeNewEventFormData();
-
-		submitNewEventForm();
+	$('#new-event-save').on(
+			'click', function() {
+				var eventName = $("#new-event-name").val();
+				var eventDescription = $("#new-event-description").val();
+				var eventTime = $("#new-event-time").val();
+				var eventCategory = $('#new-event-category').val();
+				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+					$('#formEventFeedback').html('All the fields are required');
+				} else if (validateEventDescription(eventDescription) == false) {
+					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
+				}else{
+					event.preventDefault();
+					storeNewEventFormData();
+					submitNewEventForm();
+					clearEventForm();
+				}
 	});
+	
+	$('#new-event-close').on(
+			'click', function() {
+				clearEventForm();
+	});
+	
+	function clearEventForm(){
+		$("#new-event-name").val('');
+		$("#new-event-description").val('');
+		$('#new-event-category').val('');
+		$("#new-event-time").val('');
+		$('#formEventFeedback').html('');
+	}
+	
+	function validateEventDescription(eventDescription){
+		if (eventDescription.length < 5 || eventDescription.length > 120) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	
 	$('#new-event-time').datetimepicker();
 	//$('#new-event-category').selectmenu();
@@ -629,6 +666,79 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			error: function(jqXHR, textStatus, errorThrown) {
 //			    alert(jqXHR.status);
 //			    alert(textStatus);
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+	function joinedEvents() {
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userJoined",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.joinedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.joinedEvents.length; i++){
+					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
+					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];	
+				}
+				loadJoinedEvents();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+			    alert(errorThrown);
+				if (errorThrown == "Found") {
+					signedIn = true;
+					alert("error")
+					updateGreeting();
+					headerSelect();
+				} else {
+					signedIn = false;
+					headerSelect();
+				}
+
+			}
+		});
+	}
+	
+//	function joinedEvents() {
+//		//alert(gather.global.email)
+//		var nEvents = gather.global.nearEvents;
+//		for (var i = 0; i < nEvents.length; i++){
+//			alert(nEvents[i].participants[0].email);
+//			if (nEvents[i].participants[i].email == gather.global.email) {
+//				gather.global.joinedEvents.push(nEvents[i]);
+//			}
+//		}
+//	}
+	
+
+
+	function ownedEvents() {
+		$.ajax({
+		 	accepts: "application/json",
+			type : "GET",
+			url : "/rest/events/userOwned",
+			contentType: "application/json; charset=UTF-8",
+			success : function(returnvalue) {
+				gather.global.ownedEvents = returnvalue.results;
+				for(var i = 0; i < gather.global.ownedEvents.length; i++){
+					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
+					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
+				}
+				loadOwnedEvents();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
 				if (errorThrown == "Found") {
 					signedIn = true;

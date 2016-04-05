@@ -1,15 +1,15 @@
 $(document).ready(function() {
+	locateMe();
+	sessionCheck();
 	resizeLayout();
 	resizeMap();
 //	tableInteractions();
-	locateMe();
 	enterZip();
 	registerBox();
 	signUp();
 	signIn();
 	signOut();
 	removeZipCodeError();
-	sessionCheck();
 	onLoadSessionCheck();
 	headerSelect();
 	loadCategories();
@@ -152,7 +152,7 @@ function signIn() {
 	$('#loginFormSubmit').on(
 			'click',
 			function() {
-				var email = $("#signInEmail").val();
+				gather.global.email = $("#signInEmail").val();
 				var password = $("#signInPassword").val();
 				$.ajax({
 				 	accepts: "application/json",
@@ -161,7 +161,7 @@ function signIn() {
 					contentType: "application/json; charset=UTF-8",
 					dataType: "json",
 					data : '{ \
-						"email" : "' + email + '", \
+						"email" : "' + gather.global.email + '", \
 						"password" : "' + password + '" \
 					}',
 					success : function(returnvalue) {
@@ -172,6 +172,7 @@ function signIn() {
 							gather.global.currentDisplayName = returnvalue.displayName;
 							updateGreeting();
 							headerSelect();
+							loadJoinedEvents()
 						} else {
 //							alert(returnvalue.status)
 //							alert(returnvalue.message)
@@ -181,7 +182,6 @@ function signIn() {
 					}
 				});
 			});
-
 }
 
 function signOut() {
@@ -294,6 +294,7 @@ function sessionCheck() {
 			if (returnvalue.status == 5) {
 				gather.global.session.signedIn = true;
 				gather.global.currentDisplayName = jqXHR.responseJSON.displayName;
+				gather.global.email = jqXHR.responseJSON.email;
 				updateGreeting();
 				headerSelect();
 			} else {
@@ -308,7 +309,6 @@ function sessionCheck() {
 		}
 	});
 }
-
 
 function updateGreeting(){
 	$("#greetings").html("Welcome "+gather.global.currentDisplayName);
@@ -370,4 +370,3 @@ function resetRegisterFields() {
 	//$("#registration").reset();
 	return;
 }
-
