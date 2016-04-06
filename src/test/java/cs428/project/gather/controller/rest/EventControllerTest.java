@@ -99,9 +99,7 @@ public class EventControllerTest {
 	@Test
 	public void testGetEvent() throws JsonProcessingException {
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
+		Coordinates eCoor = eventCoordinate();
 		
 		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10, 500);
 		
@@ -112,10 +110,8 @@ public class EventControllerTest {
 	@Test
 	public void testGetEventWrongRadius() throws JsonProcessingException {
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.341);
-		eCoor.setLongitude(111.231);
-
+		Coordinates eCoor = eventCoordinate();
+		
 		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 25, 500);
 		
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
@@ -139,13 +135,9 @@ public class EventControllerTest {
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.342);
-		eCoor.setLongitude(111.232);
+		Coordinates eCoor = eventCoordinate();
 		
-		Coordinates uCoor = new Coordinates();
-		uCoor.setLatitude(12.33);
-		uCoor.setLongitude(111.24);
+		Coordinates uCoor = userCoordinate();
 
 		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
 
@@ -156,7 +148,7 @@ public class EventControllerTest {
 		assertEquals("DescOne", anEvent.getDescription());
 
 	}
-	
+
 	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -271,13 +263,9 @@ public class EventControllerTest {
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.34);
-		eCoor.setLongitude(111.23);
+		Coordinates eCoor = eventCoordinate();
 		
-		Coordinates uCoor = new Coordinates();
-		uCoor.setLatitude(12.33);
-		uCoor.setLongitude(111.24);
+		Coordinates uCoor = userCoordinate();
 
 		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
 		Object events = apiResponse.get("events");
@@ -511,13 +499,9 @@ public class EventControllerTest {
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.34);
-		eCoor.setLongitude(111.23);
+		Coordinates eCoor = eventCoordinate();
 		
-		Coordinates uCoor = new Coordinates();
-		uCoor.setLatitude(12.33);
-		uCoor.setLongitude(111.24);
+		Coordinates uCoor = userCoordinate();
 
 		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
 
@@ -632,13 +616,9 @@ public class EventControllerTest {
 		RESTResponseData responseData = response.getBody();
 		assertTrue(responseData.getMessage().equals("Session Found"));
 		
-		Coordinates eCoor = new Coordinates();
-		eCoor.setLatitude(12.34);
-		eCoor.setLongitude(111.23);
+		Coordinates eCoor = eventCoordinate();
 		
-		Coordinates uCoor = new Coordinates();
-		uCoor.setLatitude(12.33);
-		uCoor.setLongitude(111.24);
+		Coordinates uCoor = userCoordinate();
 
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
@@ -816,5 +796,19 @@ public class EventControllerTest {
 		//Check error message
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(response.getBody());
 		assertEquals("Incorrect User State. Only registered users can request their owned event list.",resourceResponseData.getMessage());
+	}
+	
+	private Coordinates userCoordinate() {
+		Coordinates uCoor = new Coordinates();
+		uCoor.setLatitude(12.33);
+		uCoor.setLongitude(111.24);
+		return uCoor;
+	}
+
+	private Coordinates eventCoordinate() {
+		Coordinates eCoor = new Coordinates();
+		eCoor.setLatitude(12.342);
+		eCoor.setLongitude(111.232);
+		return eCoor;
 	}
 }
