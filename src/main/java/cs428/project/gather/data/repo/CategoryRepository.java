@@ -13,12 +13,12 @@ public interface CategoryRepository  extends CrudRepository<Category, Long> {
 
 	/**
 	 * Returns the {@link Category} with the given identifier.
-	 * 
+	 *
 	 * @param id the id to search for.
 	 * @return
 	 */
 	Category findOne(Long id);
-	
 	List<Category> findByName(String name);
-
+	Category findOneByName(String name);
+    List<Category> findAll();
 }

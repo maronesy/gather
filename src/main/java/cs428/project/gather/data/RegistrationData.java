@@ -2,6 +2,7 @@ package cs428.project.gather.data;
 
 import cs428.project.gather.validator.*;
 
+import java.util.*;
 import org.apache.commons.lang3.*;
 import org.apache.commons.lang3.builder.*;
 import org.springframework.validation.Errors;
@@ -17,6 +18,7 @@ public class RegistrationData {
 	private String displayName;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = -1;
+	private Set<String> preferences;
 
 	public static RegistrationData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -69,6 +71,14 @@ public class RegistrationData {
 		this.email = StringUtils.trimToNull(email);
 	}
 
+	public Set<String> getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(Set<String> preferences) {
+		this.preferences = preferences;
+	}
+
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder();
@@ -81,7 +91,7 @@ public class RegistrationData {
 		boolean equal = false;
 		if(anotherObject == this) {
 			equal = true;
-		} else if(anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
+		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
 			RegistrationData anotherUserRegistrationData = (RegistrationData)anotherObject;
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 			equalsBuilder.append(this.email, anotherUserRegistrationData.email);
