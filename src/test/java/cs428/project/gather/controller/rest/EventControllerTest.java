@@ -1,10 +1,9 @@
 package cs428.project.gather.controller.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Timestamp;
+
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import com.google.gson.reflect.TypeToken;
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.Coordinates;
 import cs428.project.gather.data.RESTPaginatedResourcesResponseData;
+import cs428.project.gather.data.RESTResourceResponseData;
 import cs428.project.gather.data.RESTResponseData;
 import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Event;
@@ -46,8 +46,6 @@ import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
-import cs428.project.gather.validator.EventsQueryDataValidator;
-import cs428.project.gather.validator.NewEventDataValidator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -58,91 +56,78 @@ public class EventControllerTest {
 
 	private RestTemplate restTemplate = new TestRestTemplate();
 
-    @Autowired
-    EventRepository eventRepo;
+	@Autowired
+	EventRepository eventRepo;
 
-    @Autowired
-    RegistrantRepository regRepo;
-    
-    @Autowired
-    CategoryRepository categoryRepo;
+	@Autowired
+	RegistrantRepository regRepo;
 
-    @Autowired
-    private EventsQueryDataValidator eventsQueryDataValidator;
-
-    @Autowired
-    private NewEventDataValidator newEventDataValidator;
+	@Autowired
+	CategoryRepository categoryRepo;
 
 	@Before
-	public void setUp() {
+	public void setup() {
+		//Event setup
 		eventRepo.deleteAll();
 		assertEquals(this.eventRepo.count(), 0);
+
+		//Registrant setup
 		regRepo.deleteAll();
 		assertEquals(this.regRepo.count(), 0);
-		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
-		Registrant participant = new Registrant("participant@email.com", "password", "participantName", 10L, 3, 10000);
-		Registrant newOwner = new Registrant("newOwner@email.com", "password", "newOwner", 10L, 3, 10000);
-		Registrant nonOwner = new Registrant("nonOwner@email.com", "password", "nonOwner", 10L, 3, 10000);
-		this.regRepo.save(participant);
-		this.regRepo.save(aUser);
-		this.regRepo.save(newOwner);
-		this.regRepo.save(nonOwner);
+		List<Registrant> users = new ArrayList<Registrant>();
+		users.add(new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000));
+		users.add(new Registrant("participant@email.com", "password", "participantName", 10L, 3, 10000));
+		users.add(new Registrant("newOwner@email.com", "password", "newOwner", 10L, 3, 10000));
+		users.add(new Registrant("nonOwner@email.com", "password", "nonOwner", 10L, 3, 10000));
+		this.regRepo.save(users);
 		assertEquals(this.regRepo.count(), 4);
+
+		//Category setup
 		this.categoryRepo.deleteAll();
-		Category swim= new Category("Swim");
+		Category swim = new Category("Swim");
 		this.categoryRepo.save(swim);
-		Category soccer= new Category("Soccer");
+		Category soccer = new Category("Soccer");
 		this.categoryRepo.save(soccer);
-		
+
 	}
-	
+
 	@Test
 	public void testGetEvent() throws JsonProcessingException {
-		
 		Coordinates eCoor = eventCoordinate();
-		
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10, 500);
-		
+		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
-	
+		// TODO: This test needs to do more, set up some events and validate the
+		// returned events
 	}
 
 	@Test
 	public void testGetEventWrongRadius() throws JsonProcessingException {
-		
 		Coordinates eCoor = eventCoordinate();
-		
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100, 500);
-
-		
+		// Using radius of 100, which is too large - Check EventsQueryData for
+		// MAX_RADIUS
+		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
+				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-
 	}
-	
+
 	@Test
 	public void testAddNewEvent() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
+		//Make sure event doesn't originally exist
+		List<Event> listEvents = this.eventRepo.findByName("EventOne");
+		assertEquals(0, listEvents.size());
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		
-		// Invoking the API
-		
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-		
+		//Setup coords
 		Coordinates eCoor = eventCoordinate();
-		
 		Coordinates uCoor = userCoordinate();
 
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
+		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L, uCoor,
+				requestEntity.getHeaders());
+		
+		//Verify that event now exists in backend
+		listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
 		Event anEvent = listEvents.get(0);
 		assertEquals("EventOne", anEvent.getName());
@@ -150,45 +135,43 @@ public class EventControllerTest {
 
 	}
 
-	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
+	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password)
+			throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("email", email);
 		requestBody.put("password", password);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		
+
 		// Creating http entity object with request body and headers
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
 
+		// Invoking the API
 		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
-				Map.class, Collections.EMPTY_MAP);
-		
+		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin",
+				HttpMethod.POST, httpEntity, Map.class, Collections.EMPTY_MAP);
+
 		assertNotNull(result);
-		// Asserting the response of the API.
-		//return apiResponse;
 		return result;
 
 	}
-	
-	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity) throws JsonProcessingException {
 
+	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity)
+			throws JsonProcessingException {
 		// Invoking the API
-		
-		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
+		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session",
+				HttpMethod.GET, requestEntity, RESTResponseData.class);
 
 		assertNotNull(response);
-		
-		// Asserting the response of the API.
 		return response;
 
 	}
-	
-	private Map<String, Object> attemptAddEvent(String name, Coordinates eCoor, String description, String category, long time, Coordinates uCoor, String session) throws JsonProcessingException {
+
+	private Map<String, Object> attemptAddEvent(String name, Coordinates eCoor, String description, String category,
+			long time, Coordinates uCoor, HttpHeaders header) throws JsonProcessingException {
 		// Building the Request body data
-		
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventName", name);
 		requestBody.put("eventCoordinates", eCoor);
@@ -197,7 +180,7 @@ public class EventControllerTest {
 		requestBody.put("eventTime", time);
 		requestBody.put("callerCoordinates", uCoor);
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
+		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -209,15 +192,13 @@ public class EventControllerTest {
 		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events", httpEntity,
 				Map.class, Collections.EMPTY_MAP);
 
-
 		assertNotNull(apiResponse);
-
-		// Asserting the response of the API.
 		return apiResponse;
 
 	}
-	
-	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour) throws JsonProcessingException {
+
+	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour)
+			throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("latitude", lat);
@@ -232,124 +213,167 @@ public class EventControllerTest {
 				requestHeaders);
 
 		// Invoking the API
-		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-				RESTResponseData.class);
-		
-//		@SuppressWarnings("unchecked")
-//		Map<String, Object> apiResponse2 = (Map<String, Object>) restTemplate.exchange("http://localhost:8888/rest/events", HttpMethod.PUT, httpEntity,
-//				Map.class, Collections.EMPTY_MAP);
+		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events",
+				HttpMethod.PUT, httpEntity, RESTResponseData.class);
 
 		assertNotNull(apiResponse);
-
-		//Asserting the response of the API.
 		return apiResponse;
 
 	}
-	
+
 	@Test
 	public void testJoinEvent() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
+		// Create event
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		
-		// Invoking the API
-		
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+		// Get user
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
 
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-		
-		Coordinates eCoor = eventCoordinate();
-		
-		Coordinates uCoor = userCoordinate();
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
 
-		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
-		Object events = apiResponse.get("events");
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event anEvent = listEvents.get(0);
-		assertEquals("EventOne", anEvent.getName());
-		assertEquals("DescOne", anEvent.getDescription());
-		
-		Long eventId = anEvent.getId();
-		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies,';'));
-		Set<Registrant> listParticipant = anEvent.getParticipants();
-		Registrant participant = null;		
-		
-		for(Registrant partic: listParticipant){
-			if (partic.getEmail().toString() == "existed@email.com"){
-				participant = partic;
-			}
-		}
-		assertEquals(true, listParticipant.contains(participant));
+		// Make sure user is not a participant
+		assertFalse(event1.getParticipants().contains(user));
+
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = attemptJoinEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.CREATED, responseStr.getStatusCode());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTResourceResponseData<Event> resourceResponseData = parseEventResponseData(responseStr.getBody());
+		Event frontendEvent = resourceResponseData.getResult();
+
+		// Make sure participant now listed in event returned to frontend
+		assertEquals(event1.getId(), frontendEvent.getId());
+		assertTrue(frontendEvent.getParticipants().contains(user));
+
+		// Make sure participant now listed in event in backend
+		Event backendEvent = this.eventRepo.findOne(event1.getId());
+		assertTrue(backendEvent.getParticipants().contains(user));
 	}
-	
-	private Map<String, Object> attemptJoinEvent(Long Id, String session) throws JsonProcessingException {
+
+	@Test
+	public void testLeaveEvent() throws JsonProcessingException {
+		// Create event
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
+
+		// Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is participant
+		assertTrue(event1.getParticipants().contains(user));
+
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTResourceResponseData<Event> resourceResponseData = parseEventResponseData(responseStr.getBody());
+		Event frontendEvent = resourceResponseData.getResult();
+
+		// Make sure participant no longer listed in event returned to frontend
+		assertEquals(event1.getId(), frontendEvent.getId());
+		assertFalse(frontendEvent.getParticipants().contains(user));
+
+		// Make sure participant no longer listed in event in backend
+		Event backendEvent = this.eventRepo.findOne(event1.getId());
+		assertFalse(backendEvent.getParticipants().contains(user));
+
+	}
+
+	private ResponseEntity<String> attemptJoinEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventId", Id);
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
+		requestHeaders.set("Cookie", headers.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
 
 		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/join", httpEntity,
-				Map.class, Collections.EMPTY_MAP);
+		ResponseEntity<String> responseStr = restTemplate.postForEntity("http://localhost:8888/rest/events/join",
+				httpEntity, String.class);
 
-
-		assertNotNull(apiResponse);
-
-		// Asserting the response of the API.
-		return apiResponse;
-
+		assertNotNull(responseStr);
+		return responseStr;
 	}
-	
-	@Test
-	public void testGetJoinedEventListSingleEvent() throws JsonProcessingException{
-				//Create events
-				Category swim = this.categoryRepo.findByName("Swim").get(0);
-				assertTrue(swim != null);
-				Event event1 = new Event("Event1");
-				event1.setCategory(swim);
-				
-				//Add user as participant in events
-				Registrant user = this.regRepo.findOneByEmail("existed@email.com");
-				event1.addParticipant(user);
-				
-				//Save events to DB
-				this.eventRepo.save(event1);
-				
-				HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-				
-				//Receive the request body as a string so that it can be parsed and validated
-				ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, String.class );
-				assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-				
-				//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-				RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-				
-				//Make sure event returned
-				List<Event> events = resourceResponseData.getResults();
-				assertEquals(1, events.size());
-				
-				//Check event
-				Event event = events.get(0);
-				assertEquals("Event1", event.getName());
+
+	private ResponseEntity<String> attemptLeaveEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
+		// Building the Request body data
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("eventId", Id);
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", headers.getFirst("Cookie"));
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		// Invoking the API
+		ResponseEntity<String> responseStr = restTemplate.postForEntity("http://localhost:8888/rest/events/leave",
+				httpEntity, String.class);
+
+		assertNotNull(responseStr);
+		return responseStr;
 	}
-	
+
 	@Test
-	public void testGetJoinedEventListMultipleEvents() throws JsonProcessingException{
-		//Create events
+	public void testGetJoinedEventListSingleEvent() throws JsonProcessingException {
+		// Create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
+
+		// Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+
+		// Save events to DB
+		this.eventRepo.save(event1);
+
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined",
+				HttpMethod.GET, requestEntity, String.class);
+		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure event returned
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(1, events.size());
+
+		// Check event
+		Event event = events.get(0);
+		assertEquals("Event1", event.getName());
+	}
+
+	@Test
+	public void testGetJoinedEventListMultipleEvents() throws JsonProcessingException {
+		// Create events
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
 		assertTrue(swim != null);
 		Event event1 = new Event("Event1");
@@ -358,209 +382,220 @@ public class EventControllerTest {
 		event2.setCategory(swim);
 		Event event3 = new Event("Event3");
 		event3.setCategory(swim);
-		
-		//Add user as participant in events
+
+		// Add user as participant in events
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
 		event1.addParticipant(user);
 		event2.addParticipant(user);
 		event3.addParticipant(user);
-		
-		//Save events to DB
+
+		// Save events to DB
 		List<Event> eventsToSave = new ArrayList<Event>();
 		eventsToSave.add(event1);
 		eventsToSave.add(event2);
 		eventsToSave.add(event3);
 		this.eventRepo.save(eventsToSave);
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-		
-		//Make sure all 3 events returned
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure all 3 events returned
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(3, events.size());
 	}
-	
+
 	@Test
-	public void testGetJoinedEventListManyEvents() throws JsonProcessingException{
+	public void testGetJoinedEventListManyEvents() throws JsonProcessingException {
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
 		assertTrue(swim != null);
-		
+
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
-		
-		//Create events, add participant
+
+		// Create events, add participant
 		List<Event> eventsToSave = new ArrayList<Event>();
-		for(int i = 0; i<35; i++){
-			Event event = new Event("Event"+i);
+		for (int i = 0; i < 35; i++) {
+			Event event = new Event("Event" + i);
 			event.setCategory(swim);
 			event.addParticipant(user);
 			eventsToSave.add(event);
 		}
-		
-		//Save events to DB
+
+		// Save events to DB
 		this.eventRepo.save(eventsToSave);
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
 		System.out.println(responseStr);
-		
-		//Make sure all events are returned
-		assertEquals(35,resourceResponseData.getCount());
-		
-		//Make sure paginated data only returns the first 20 (as indicated by RESTPaginatedResourceResponseData)
+
+		// Make sure all events are returned
+		assertEquals(35, resourceResponseData.getCount());
+
+		// Make sure paginated data only returns the first 20 (as indicated by
+		// RESTPaginatedResourceResponseData)
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(20, events.size());
-		
-		//Check second page for remaining 15
-		responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined?page=2", HttpMethod.GET, requestEntity, String.class );
+
+		// Check second page for remaining 15
+		responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined?page=2", HttpMethod.GET,
+				requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+		resourceResponseData = parsePaginatedEventResponseData(responseStr.getBody());
 		events = resourceResponseData.getResults();
 		assertEquals(15, events.size());
 	}
-	
+
 	@Test
-	public void testGetJoinedEventListZeroEvents() throws JsonProcessingException{
+	public void testGetJoinedEventListZeroEvents() throws JsonProcessingException {
 
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userJoined",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-		
-		//Make sure event returned
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure event returned
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(0, events.size());
-		
-	}
-	
-	@Test
-	public void testGetJoinedEventListNotSignedIn(){
-		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
-		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8888/rest/events/userJoined", HttpMethod.GET, requestEntity, String.class );
-		//Make sure the request is rejected since user is not signed in
-		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-		
-		//Check error message
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their joined event list.",resourceResponseData.getMessage());
-	}
-	
-	private HttpEntity<String> signInAndCheckSession(String email, String password) throws JsonProcessingException{
-				//Sign in
-				ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password);
-				List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
-				//Check session
-				HttpHeaders requestHeaders = new HttpHeaders();
-				requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
-				HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-				ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-				assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-				RESTResponseData responseData = response.getBody();
-				assertTrue(responseData.getMessage().equals("Session Found"));
-				
-				//Return validated requestEntity
-				return requestEntity;
 	}
-	
-	private RESTPaginatedResourcesResponseData<Event> parseRESTPaginatedResourcesResponseData(String json){
+
+	@Test
+	public void testGetJoinedEventListNotSignedIn() {
+		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8888/rest/events/userJoined",
+				HttpMethod.GET, requestEntity, String.class);
+		// Make sure the request is rejected since user is not signed in
+		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can request their joined event list.",
+				resourceResponseData.getMessage());
+	}
+
+	private HttpEntity<String> signInAndCheckSession(String email, String password) throws JsonProcessingException {
+		// Sign in
+		ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password);
+		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
+
+		// Check session
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
+		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
+		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
+		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
+		RESTResponseData responseData = response.getBody();
+		assertTrue(responseData.getMessage().equals("Session Found"));
+
+		// Return validated requestEntity
+		return requestEntity;
+	}
+
+	private RESTPaginatedResourcesResponseData<Event> parsePaginatedEventResponseData(String json) {
 		Gson gson = new Gson();
-		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<Event>>(){}.getType();
+		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<Event>>() {
+		}.getType();
+		return gson.fromJson(json, resourceType);
+	}
+
+	private RESTResourceResponseData<Event> parseEventResponseData(String json) {
+		Gson gson = new Gson();
+		Type resourceType = new TypeToken<RESTResourceResponseData<Event>>() {
+		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
 	
+	@Test
 	public void testUpdateEventBasic() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
+		//Setup event with owner
+		Registrant origOwner = this.regRepo.findOneByEmail("existed@email.com");
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event eventOne = new Event("EventOne");
+		eventOne.setCategory(swim);
+		eventOne.addOwner(origOwner);
+		eventOne.addParticipant(origOwner);
 		
-		// Invoking the API
-		
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-		
-		Coordinates eCoor = eventCoordinate();
-		
-		Coordinates uCoor = userCoordinate();
-
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime()+10000L, uCoor, StringUtils.join(cookies,';'));
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event eventOne = listEvents.get(0);
-		assertEquals("EventOne", eventOne.getName());
-		assertEquals("DescOne", eventOne.getDescription());
-		
-		
-		Long eventOneId = eventOne.getId();
-
-		attemptJoinEvent(eventOneId, StringUtils.join(cookies,';'));
-		Set<Registrant> listParticipant = eventOne.getParticipants();
-		Registrant participant = null;		
-		
-		for(Registrant partic: listParticipant){
-			if (partic.getEmail().toString() == "existed@email.com"){
-				participant = partic;
-			}
-		}
-		assertEquals(true, listParticipant.contains(participant));
-		
-		//Add the other participant
+		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
-		eventRepo.save(eventOne);
-		assertEquals(2,eventOne.getParticipants().size());
+		eventOne = eventRepo.save(eventOne);
+		assertEquals(2, eventOne.getParticipants().size());
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		
+		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
-		Registrant currentOwner = regRepo.findOneByEmail("existed@email.com");
+
+		//Get coords
+		Coordinates eCoor = eventCoordinate();		
+		Coordinates uCoor = userCoordinate();
 		
-		//After set up an event and join, now, modify it
-		attemptUpdateEvent(eventOneId,"EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime()+20000L, uCoor, StringUtils.join(cookies,';'), participant, newOwner);
+		//Test the conditions before the update
+		assertEquals("EventOne", eventOne.getName());
+		assertEquals("Swim", eventOne.getCategory().getName());
+		assertEquals(0, eventOne.getOccurrences().size());
+		assertEquals(1, eventOne.getOwners().size());
+		assertEquals(2, eventOne.getParticipants().size());
+		assertTrue(eventOne.getParticipants().contains(newParticipant));
+		assertFalse(eventOne.getOwners().contains(newOwner));
+		assertTrue(eventOne.getOwners().contains(origOwner));
 		
-		//Verify the event got updated
-		Event afterUpdate = eventRepo.findOne(eventOneId);
-		assertEquals("EventOneUpdated",afterUpdate.getName());
-		assertEquals("DescOneUpdated",afterUpdate.getDescription());
-		assertEquals("Soccer",afterUpdate.getCategory().getName());
-		assertEquals(2,afterUpdate.getOccurrences().size());
-		assertEquals(2,afterUpdate.getOwners().size());
-		assertEquals(1,afterUpdate.getParticipants().size());
-		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
+		// Test modifying the event
+		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
+
+		// Verify the event got updated
+		Event afterUpdate = eventRepo.findOne(eventOne.getId());
+		assertEquals("EventOneUpdated", afterUpdate.getName());
+		assertEquals("DescOneUpdated", afterUpdate.getDescription());
+		assertEquals("Soccer", afterUpdate.getCategory().getName());
+		assertEquals(1, afterUpdate.getOccurrences().size());
+		assertEquals(2, afterUpdate.getOwners().size());
+		assertEquals(1, afterUpdate.getParticipants().size());
+		assertFalse(afterUpdate.getParticipants().contains(newParticipant));
 		assertTrue(afterUpdate.getOwners().contains(newOwner));
-		assertTrue(afterUpdate.getOwners().contains(currentOwner));
+		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
 
-	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description, String category, long time, Coordinates uCoor, String session, Registrant participantToRemove, Registrant ownerToAdd) throws JsonProcessingException {
-		List<Occurrence> occurrencesToAdd =  new ArrayList<Occurrence>();
-		List<Occurrence> occurrencesToRemove =  new ArrayList<Occurrence>();
+	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description,
+			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
+			Registrant ownerToAdd) throws JsonProcessingException {
+		List<Occurrence> occurrencesToAdd = new ArrayList<Occurrence>();
+		List<Occurrence> occurrencesToRemove = new ArrayList<Occurrence>();
 		List<Registrant> ownersToAdd = new ArrayList<Registrant>();
 		List<Registrant> ownersToRemove = new ArrayList<Registrant>();
 		List<Registrant> participantsToAdd = new ArrayList<Registrant>();
 		List<Registrant> participantsToRemove = new ArrayList<Registrant>();
 		ownersToAdd.add(ownerToAdd);
 		participantsToRemove.add(participantToRemove);
-		occurrencesToAdd.add(new Occurrence("",new Timestamp(time)));
-		// Building the Request body data		
+		occurrencesToAdd.add(new Occurrence("", new Timestamp(time)));
+		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventId", eventId);
 		requestBody.put("eventName", name);
@@ -575,9 +610,9 @@ public class EventControllerTest {
 		requestBody.put("ownersToRemove", ownersToRemove);
 		requestBody.put("participantsToAdd", participantsToAdd);
 		requestBody.put("participantsToRemove", participantsToRemove);
-		
+
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
+		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -586,109 +621,107 @@ public class EventControllerTest {
 
 		// Invoking the API
 		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/update", httpEntity,
-				Map.class, Collections.EMPTY_MAP);
-
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/update",
+				httpEntity, Map.class, Collections.EMPTY_MAP);
 
 		assertNotNull(apiResponse);
 
 		// Asserting the response of the API.
 		return apiResponse;
 	}
-	
+
 	@Test
 	public void testUpdateEventNonOwner() throws JsonProcessingException {
-		//First going through join event
-		this.testJoinEvent();
+		//Setup event with owner
+		Registrant origOwner = this.regRepo.findOneByEmail("existed@email.com");
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event eventOne = new Event("EventOne");
+		eventOne.setCategory(swim);
+		eventOne.addOwner(origOwner);
+		eventOne.addParticipant(origOwner);
 		
-		//Sign in with a non-owner of original event
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("nonOwner@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		
-		// Invoking the API
-		
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-		
-		Coordinates eCoor = eventCoordinate();
-		
-		Coordinates uCoor = userCoordinate();
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event eventOne = listEvents.get(0);
-		assertEquals("EventOne", eventOne.getName());
-		assertEquals("DescOne", eventOne.getDescription());
-		
-		Long eventOneId = eventOne.getId();
-		
-		//Add the other participant
+		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
-		eventRepo.save(eventOne);
-		assertEquals(2,eventOne.getParticipants().size());
+		eventOne = eventRepo.save(eventOne);
+		assertEquals(2, eventOne.getParticipants().size());
+		
+		//Sign in as ***NON-OWNER*** - Owner of target event is existed@email.com
+		HttpEntity<String> requestEntity = signInAndCheckSession("nonOwner@email.com", "password");
+		
+		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
-		Registrant currentOwner = regRepo.findOneByEmail("existed@email.com");
+
+		//Get coords
+		Coordinates eCoor = eventCoordinate();		
+		Coordinates uCoor = userCoordinate();
 		
-		//After set up an event and join, now, modify it
-		attemptUpdateEvent(eventOneId,"EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime()+20000L, uCoor, StringUtils.join(cookies,';'), newParticipant, newOwner);
+		//Test the conditions before the update
+		assertEquals("EventOne", eventOne.getName());
+		assertEquals("Swim", eventOne.getCategory().getName());
+		assertEquals(0, eventOne.getOccurrences().size());
+		assertEquals(1, eventOne.getOwners().size());
+		assertEquals(2, eventOne.getParticipants().size());
+		assertTrue(eventOne.getParticipants().contains(newParticipant));
+		assertFalse(eventOne.getOwners().contains(newOwner));
+		assertTrue(eventOne.getOwners().contains(origOwner));
 		
-		//Verify the event is unchanged by nonowner
-		Event afterUpdate = eventRepo.findOne(eventOneId);
-		assertEquals("EventOne",afterUpdate.getName());
-		assertEquals("DescOne",afterUpdate.getDescription());
-		assertEquals("Swim",afterUpdate.getCategory().getName());
-		assertEquals(1,afterUpdate.getOccurrences().size());
-		assertEquals(1,afterUpdate.getOwners().size());
-		assertEquals(2,afterUpdate.getParticipants().size());
+		// Test modifying the event
+		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
+
+		// Verify that nothing changed
+		Event afterUpdate = eventRepo.findOne(eventOne.getId());
+		assertEquals("EventOne", afterUpdate.getName());
+		assertEquals("Swim", afterUpdate.getCategory().getName());
+		assertEquals(0, afterUpdate.getOccurrences().size());
+		assertEquals(1, afterUpdate.getOwners().size());
+		assertEquals(2, afterUpdate.getParticipants().size());
 		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
-		assertTrue(!afterUpdate.getOwners().contains(newOwner));
-		assertTrue(afterUpdate.getOwners().contains(currentOwner));
+		assertFalse(afterUpdate.getOwners().contains(newOwner));
+		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
-	
+
 	@Test
-	public void testGetOwnedEventListSingleEvent() throws JsonProcessingException{
-				//Create events
-				Category swim = this.categoryRepo.findByName("Swim").get(0);
-				assertTrue(swim != null);
-				Event event1 = new Event("Event1");
-				event1.setCategory(swim);
-				
-				//Add user as participant in events
-				Registrant user = this.regRepo.findOneByEmail("existed@email.com");
-				event1.addOwner(user);
-				
-				//Save events to DB
-				this.eventRepo.save(event1);
-				
-				HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-				
-				//Receive the request body as a string so that it can be parsed and validated
-				ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
-				assertEquals(HttpStatus.OK, responseStr.getStatusCode());
-				
-				//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-				RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-				
-				//Make sure event returned
-				List<Event> events = resourceResponseData.getResults();
-				assertEquals(1, events.size());
-				
-				//Check event
-				Event event = events.get(0);
-				assertEquals("Event1", event.getName());
+	public void testGetOwnedEventListSingleEvent() throws JsonProcessingException {
+		// Create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
+
+		// Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addOwner(user);
+
+		// Save events to DB
+		this.eventRepo.save(event1);
+
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned",
+				HttpMethod.GET, requestEntity, String.class);
+		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure event returned
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(1, events.size());
+
+		// Check event
+		Event event = events.get(0);
+		assertEquals("Event1", event.getName());
 	}
-	
+
 	@Test
-	public void testGetOwnedEventListMultipleEvents() throws JsonProcessingException{
-		//Create events
+	public void testGetOwnedEventListMultipleEvents() throws JsonProcessingException {
+		// Create events
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
 		assertTrue(swim != null);
 		Event event1 = new Event("Event1");
@@ -697,108 +730,122 @@ public class EventControllerTest {
 		event2.setCategory(swim);
 		Event event3 = new Event("Event3");
 		event3.setCategory(swim);
-		
-		//Add user as participant in events
+
+		// Add user as participant in events
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
 		event1.addOwner(user);
 		event2.addOwner(user);
 		event3.addOwner(user);
-		
-		//Save events to DB
+
+		// Save events to DB
 		List<Event> eventsToSave = new ArrayList<Event>();
 		eventsToSave.add(event1);
 		eventsToSave.add(event2);
 		eventsToSave.add(event3);
 		this.eventRepo.save(eventsToSave);
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-		
-		//Make sure all 3 events returned
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure all 3 events returned
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(3, events.size());
 	}
-	
+
 	@Test
-	public void testGetOwnedEventListManyEvents() throws JsonProcessingException{
+	public void testGetOwnedEventListManyEvents() throws JsonProcessingException {
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
 		assertTrue(swim != null);
-		
+
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
-		
-		//Create events, add participant
+
+		// Create events, add participant
 		List<Event> eventsToSave = new ArrayList<Event>();
-		for(int i = 0; i<35; i++){
-			Event event = new Event("Event"+i);
+		for (int i = 0; i < 35; i++) {
+			Event event = new Event("Event" + i);
 			event.setCategory(swim);
 			event.addOwner(user);
 			eventsToSave.add(event);
 		}
-		
-		//Save events to DB
+
+		// Save events to DB
 		this.eventRepo.save(eventsToSave);
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
 		System.out.println(responseStr);
-		
-		//Make sure all events are returned
-		assertEquals(35,resourceResponseData.getCount());
-		
-		//Make sure paginated data only returns the first 20 (as indicated by RESTPaginatedResourceResponseData)
+
+		// Make sure all events are returned
+		assertEquals(35, resourceResponseData.getCount());
+
+		// Make sure paginated data only returns the first 20 (as indicated by
+		// RESTPaginatedResourceResponseData)
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(20, events.size());
-		
-		//Check second page for remaining 15
-		responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned?page=2", HttpMethod.GET, requestEntity, String.class );
+
+		// Check second page for remaining 15
+		responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned?page=2", HttpMethod.GET,
+				requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+		resourceResponseData = parsePaginatedEventResponseData(responseStr.getBody());
 		events = resourceResponseData.getResults();
 		assertEquals(15, events.size());
 	}
-	
+
 	@Test
-	public void testGetOwnedEventListZeroEvents() throws JsonProcessingException{
+	public void testGetOwnedEventListZeroEvents() throws JsonProcessingException {
 
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
-		//Receive the request body as a string so that it can be parsed and validated
-		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/events/userOwned",
+				HttpMethod.GET, requestEntity, String.class);
 		assertTrue(responseStr.getStatusCode().equals(HttpStatus.OK));
-		
-		//Parse the data back to RESTPaginatedResourcesResponseData<Event> 
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
-		
-		//Make sure event returned
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				responseStr.getBody());
+
+		// Make sure event returned
 		List<Event> events = resourceResponseData.getResults();
 		assertEquals(0, events.size());
-		
+
 	}
-	
+
 	@Test
-	public void testGetOwnedEventListNotSignedIn(){
+	public void testGetOwnedEventListNotSignedIn() {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
-		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8888/rest/events/userOwned", HttpMethod.GET, requestEntity, String.class );
-		//Make sure the request is rejected since user is not signed in
+		ResponseEntity<String> response = restTemplate.exchange("http://localhost:8888/rest/events/userOwned",
+				HttpMethod.GET, requestEntity, String.class);
+		// Make sure the request is rejected since user is not signed in
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
-		
-		//Check error message
-		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parseRESTPaginatedResourcesResponseData(response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their owned event list.",resourceResponseData.getMessage());
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can request their owned event list.",
+				resourceResponseData.getMessage());
 	}
-	
+
 	private Coordinates userCoordinate() {
 		Coordinates uCoor = new Coordinates();
 		uCoor.setLatitude(12.33);
