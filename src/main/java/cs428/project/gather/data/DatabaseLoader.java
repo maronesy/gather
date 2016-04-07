@@ -66,6 +66,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Event newEvent = new Event("Test1");
 		Location newLoc = new Location("Test Location", "6000 Yeswhere Blvd", "Los Angeles", "CA", "90007", 32.770, -117.04);
 		newEvent.addOwner(aUser);
+		newEvent.addParticipant(aUser);
 		newEvent.setLocation(newLoc);
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);

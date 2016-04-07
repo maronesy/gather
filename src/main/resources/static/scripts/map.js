@@ -606,6 +606,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}else{
 			$('#removeEventBtn').hide();
 		}
+		
+		if (isUserParticipant(anEvent.participants)){
+			$('#leaveEventBtn').show();
+			$('#joinEventBtn').hide();
+		}else{
+			$('#leaveEventBtn').hide();
+			$('#joinEventBtn').show();
+		}
+		
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
 		
 		$(establishedEventContent).find("button").each(function(index) {
@@ -626,6 +635,16 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var result=false;
 		for(var i = 0; i < owners.length; i++){
 			if(owners[i].displayName == gather.global.currentDisplayName){
+				result = true;
+			}
+		}
+		return result;
+	}
+	
+	function isUserParticipant(participants){
+		var result=false;
+		for(var i = 0; i < participants.length; i++){
+			if(participants[i].displayName == gather.global.currentDisplayName){
 				result = true;
 			}
 		}
