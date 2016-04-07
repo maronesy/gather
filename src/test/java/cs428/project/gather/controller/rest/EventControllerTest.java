@@ -66,10 +66,12 @@ public class EventControllerTest {
 	CategoryRepository categoryRepo;
 
 	@Before
-	public void setUp() {
+	public void setup() {
+		//Event setup
 		eventRepo.deleteAll();
 		assertEquals(this.eventRepo.count(), 0);
 
+		//Registrant setup
 		regRepo.deleteAll();
 		assertEquals(this.regRepo.count(), 0);
 		List<Registrant> users = new ArrayList<Registrant>();
@@ -80,6 +82,7 @@ public class EventControllerTest {
 		this.regRepo.save(users);
 		assertEquals(this.regRepo.count(), 4);
 
+		//Category setup
 		this.categoryRepo.deleteAll();
 		Category swim = new Category("Swim");
 		this.categoryRepo.save(swim);
@@ -110,27 +113,21 @@ public class EventControllerTest {
 
 	@Test
 	public void testAddNewEvent() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
+		//Make sure event doesn't originally exist
+		List<Event> listEvents = this.eventRepo.findByName("EventOne");
+		assertEquals(0, listEvents.size());
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
+		//Setup coords
 		Coordinates eCoor = eventCoordinate();
-
 		Coordinates uCoor = userCoordinate();
 
 		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L, uCoor,
-				StringUtils.join(cookies, ';'));
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
+				requestEntity.getHeaders());
+		
+		//Verify that event now exists in backend
+		listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
 		Event anEvent = listEvents.get(0);
 		assertEquals("EventOne", anEvent.getName());
@@ -173,7 +170,7 @@ public class EventControllerTest {
 	}
 
 	private Map<String, Object> attemptAddEvent(String name, Coordinates eCoor, String description, String category,
-			long time, Coordinates uCoor, String session) throws JsonProcessingException {
+			long time, Coordinates uCoor, HttpHeaders header) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventName", name);
@@ -183,7 +180,7 @@ public class EventControllerTest {
 		requestBody.put("eventTime", time);
 		requestBody.put("callerCoordinates", uCoor);
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
+		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -299,31 +296,6 @@ public class EventControllerTest {
 		// Make sure participant no longer listed in event in backend
 		Event backendEvent = this.eventRepo.findOne(event1.getId());
 		assertFalse(backendEvent.getParticipants().contains(user));
-
-	}
-
-	// TODO: This will be removed after the testUpdateEventBasic is updated.
-	private Map<String, Object> attemptJoinEvent(Long Id, String session) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("eventId", Id);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/join",
-				httpEntity, Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(apiResponse);
-
-		// Asserting the response of the API.
-		return apiResponse;
 
 	}
 
@@ -557,76 +529,62 @@ public class EventControllerTest {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
-
+	
+	@Test
 	public void testUpdateEventBasic() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-
-		// Invoking the API
-
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
-		Coordinates eCoor = eventCoordinate();
-
-		Coordinates uCoor = userCoordinate();
-
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L, uCoor,
-				StringUtils.join(cookies, ';'));
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event eventOne = listEvents.get(0);
-		assertEquals("EventOne", eventOne.getName());
-		assertEquals("DescOne", eventOne.getDescription());
-
-		Long eventOneId = eventOne.getId();
-
-		attemptJoinEvent(eventOneId, StringUtils.join(cookies, ';'));
-		Set<Registrant> listParticipant = eventOne.getParticipants();
-		Registrant participant = null;
-
-		for (Registrant partic : listParticipant) {
-			if (partic.getEmail().toString() == "existed@email.com") {
-				participant = partic;
-			}
-		}
-		assertEquals(true, listParticipant.contains(participant));
-
+		//Setup event with owner
+		Registrant origOwner = this.regRepo.findOneByEmail("existed@email.com");
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event eventOne = new Event("EventOne");
+		eventOne.setCategory(swim);
+		eventOne.addOwner(origOwner);
+		eventOne.addParticipant(origOwner);
+		
 		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
-		eventRepo.save(eventOne);
+		eventOne = eventRepo.save(eventOne);
 		assertEquals(2, eventOne.getParticipants().size());
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		
+		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
-		Registrant currentOwner = regRepo.findOneByEmail("existed@email.com");
 
-		// After set up an event and join, now, modify it
-		attemptUpdateEvent(eventOneId, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
-				uCoor, StringUtils.join(cookies, ';'), participant, newOwner);
+		//Get coords
+		Coordinates eCoor = eventCoordinate();		
+		Coordinates uCoor = userCoordinate();
+		
+		//Test the conditions before the update
+		assertEquals("EventOne", eventOne.getName());
+		assertEquals("Swim", eventOne.getCategory().getName());
+		assertEquals(0, eventOne.getOccurrences().size());
+		assertEquals(1, eventOne.getOwners().size());
+		assertEquals(2, eventOne.getParticipants().size());
+		assertTrue(eventOne.getParticipants().contains(newParticipant));
+		assertFalse(eventOne.getOwners().contains(newOwner));
+		assertTrue(eventOne.getOwners().contains(origOwner));
+		
+		// Test modifying the event
+		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
 
 		// Verify the event got updated
-		Event afterUpdate = eventRepo.findOne(eventOneId);
+		Event afterUpdate = eventRepo.findOne(eventOne.getId());
 		assertEquals("EventOneUpdated", afterUpdate.getName());
 		assertEquals("DescOneUpdated", afterUpdate.getDescription());
 		assertEquals("Soccer", afterUpdate.getCategory().getName());
-		assertEquals(2, afterUpdate.getOccurrences().size());
+		assertEquals(1, afterUpdate.getOccurrences().size());
 		assertEquals(2, afterUpdate.getOwners().size());
 		assertEquals(1, afterUpdate.getParticipants().size());
-		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
+		assertFalse(afterUpdate.getParticipants().contains(newParticipant));
 		assertTrue(afterUpdate.getOwners().contains(newOwner));
-		assertTrue(afterUpdate.getOwners().contains(currentOwner));
+		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
 
 	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description,
-			String category, long time, Coordinates uCoor, String session, Registrant participantToRemove,
+			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
 			Registrant ownerToAdd) throws JsonProcessingException {
 		List<Occurrence> occurrencesToAdd = new ArrayList<Occurrence>();
 		List<Occurrence> occurrencesToRemove = new ArrayList<Occurrence>();
@@ -654,7 +612,7 @@ public class EventControllerTest {
 		requestBody.put("participantsToRemove", participantsToRemove);
 
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", session);
+		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -672,106 +630,57 @@ public class EventControllerTest {
 		return apiResponse;
 	}
 
-	// TODO: This will be removed after testUpdateEventNonOwner is refactored.
-	@Test
-	public void testJoinEventOld() throws JsonProcessingException {
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-
-		// Invoking the API
-
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
-		Coordinates eCoor = eventCoordinate();
-
-		Coordinates uCoor = userCoordinate();
-
-		Map<String, Object> apiResponse = attemptAddEvent("EventOne", eCoor, "DescOne", "Swim",
-				System.nanoTime() + 10000L, uCoor, StringUtils.join(cookies, ';'));
-		Object events = apiResponse.get("events");
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event anEvent = listEvents.get(0);
-		assertEquals("EventOne", anEvent.getName());
-		assertEquals("DescOne", anEvent.getDescription());
-
-		Long eventId = anEvent.getId();
-		Map<String, Object> apiResponse2 = attemptJoinEvent(eventId, StringUtils.join(cookies, ';'));
-		Set<Registrant> listParticipant = anEvent.getParticipants();
-		Registrant participant = null;
-
-		for (Registrant partic : listParticipant) {
-			if (partic.getEmail().toString() == "existed@email.com") {
-				participant = partic;
-			}
-		}
-		assertEquals(true, listParticipant.contains(participant));
-	}
-
 	@Test
 	public void testUpdateEventNonOwner() throws JsonProcessingException {
-		// First going through join event
-		this.testJoinEventOld();
-
-		// Sign in with a non-owner of original event
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("nonOwner@email.com", "password");
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-
-		// Invoking the API
-
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
-		Coordinates eCoor = eventCoordinate();
-
-		Coordinates uCoor = userCoordinate();
-
-		List<Event> listEvents = this.eventRepo.findByName("EventOne");
-		assertEquals(1, listEvents.size());
-		Event eventOne = listEvents.get(0);
-		assertEquals("EventOne", eventOne.getName());
-		assertEquals("DescOne", eventOne.getDescription());
-
-		Long eventOneId = eventOne.getId();
-
+		//Setup event with owner
+		Registrant origOwner = this.regRepo.findOneByEmail("existed@email.com");
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event eventOne = new Event("EventOne");
+		eventOne.setCategory(swim);
+		eventOne.addOwner(origOwner);
+		eventOne.addParticipant(origOwner);
+		
 		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
-		eventRepo.save(eventOne);
+		eventOne = eventRepo.save(eventOne);
 		assertEquals(2, eventOne.getParticipants().size());
+		
+		//Sign in as ***NON-OWNER*** - Owner of target event is existed@email.com
+		HttpEntity<String> requestEntity = signInAndCheckSession("nonOwner@email.com", "password");
+		
+		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
-		Registrant currentOwner = regRepo.findOneByEmail("existed@email.com");
 
-		// After set up an event and join, now, modify it
-		attemptUpdateEvent(eventOneId, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
-				uCoor, StringUtils.join(cookies, ';'), newParticipant, newOwner);
+		//Get coords
+		Coordinates eCoor = eventCoordinate();		
+		Coordinates uCoor = userCoordinate();
+		
+		//Test the conditions before the update
+		assertEquals("EventOne", eventOne.getName());
+		assertEquals("Swim", eventOne.getCategory().getName());
+		assertEquals(0, eventOne.getOccurrences().size());
+		assertEquals(1, eventOne.getOwners().size());
+		assertEquals(2, eventOne.getParticipants().size());
+		assertTrue(eventOne.getParticipants().contains(newParticipant));
+		assertFalse(eventOne.getOwners().contains(newOwner));
+		assertTrue(eventOne.getOwners().contains(origOwner));
+		
+		// Test modifying the event
+		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
 
-		// Verify the event is unchanged by nonowner
-		Event afterUpdate = eventRepo.findOne(eventOneId);
+		// Verify that nothing changed
+		Event afterUpdate = eventRepo.findOne(eventOne.getId());
 		assertEquals("EventOne", afterUpdate.getName());
-		assertEquals("DescOne", afterUpdate.getDescription());
 		assertEquals("Swim", afterUpdate.getCategory().getName());
-		assertEquals(1, afterUpdate.getOccurrences().size());
+		assertEquals(0, afterUpdate.getOccurrences().size());
 		assertEquals(1, afterUpdate.getOwners().size());
 		assertEquals(2, afterUpdate.getParticipants().size());
 		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
-		assertTrue(!afterUpdate.getOwners().contains(newOwner));
-		assertTrue(afterUpdate.getOwners().contains(currentOwner));
+		assertFalse(afterUpdate.getOwners().contains(newOwner));
+		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
 
 	@Test
