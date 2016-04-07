@@ -10,7 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import org.springframework.validation.Errors;
 
 @Entity
@@ -121,16 +121,25 @@ public class Registrant extends Actor {
 		return Collections.unmodifiableSet(ownedEvents);
 	}
 
+	public void setPreferences(Set<Category> preferences) {
+		this.preferences = preferences;
+	}
+
+	@JsonIgnore
 	public Set<Category> getPreferences() {
 		return Collections.unmodifiableSet(preferences);
 	}
 
-	public static Registrant buildRegistrantFrom(RegistrationData registrationData) {
-		Registrant newRegistrant = new Registrant();
-		newRegistrant.setEmail(registrationData.getEmail());
-		newRegistrant.setPassword(registrationData.getPassword());
-		newRegistrant.setDisplayName(registrationData.getDisplayName());
-		return newRegistrant;
+	@JsonProperty("preferences")
+	public List<String> getPreferencesList() {
+		List<String> prefs = new ArrayList<String>();
+		for (Category c : Collections.unmodifiableSet(preferences)) {
+			prefs.add(c.getName());
+		} return prefs;
+	}
+
+	public static Registrant buildRegistrantFrom(RegistrationData registrationData, CategoryRepository categoryRepo, Errors errors) {
+		return (new Registrant()).updateUsing(registrationData, categoryRepo, errors);
 	}
 
 	public Event joinEvent(EventIdData joinEventData, EventRepository eventRepo, Errors errors) {
@@ -154,28 +163,41 @@ public class Registrant extends Actor {
 
 	public Registrant updateUsing(RegistrationData updateInfo, CategoryRepository categoryRepo, Errors errors) {
 		if (updateInfo.getEmail() != null) {
-			System.out.println("Updating with new email:  " + updateInfo.getEmail());
+			System.out.println("Setting email:  " + updateInfo.getEmail());
 			setEmail(updateInfo.getEmail());
 		}
 
 		if (updateInfo.getPassword() != null) {
-			System.out.println("Updating with new password:  " + updateInfo.getPassword());
+			System.out.println("Setting password:  " + updateInfo.getPassword());
 			setPassword(updateInfo.getPassword());
 		}
 
 		if (updateInfo.getDisplayName() != null) {
-			System.out.println("Updating with new displayName:  " + updateInfo.getDisplayName());
+			System.out.println("Setting displayName:  " + updateInfo.getDisplayName());
 			setDisplayName(updateInfo.getDisplayName());
 		}
 
 		if (updateInfo.getDefaultTimeWindow() > 0) {
-			System.out.println("Updating with new defaultTimeWindow:  " + updateInfo.getDefaultTimeWindow());
+			System.out.println("Setting defaultTimeWindow:  " + updateInfo.getDefaultTimeWindow());
 			setDefaultTimeWindow(updateInfo.getDefaultTimeWindow());
 		}
 
 		if (updateInfo.getDefaultZip() > 0) {
-			System.out.println("Updating with new defaultZip:  " + updateInfo.getDefaultZip());
+			System.out.println("Setting defaultZip:  " + updateInfo.getDefaultZip());
 			setDefaultZip(updateInfo.getDefaultZip());
+		}
+
+		if (updateInfo.getPreferences() != null) {
+			Set<Category> newCategories = new HashSet<Category>();
+			for (String categoryName : updateInfo.getPreferences()) {
+				Category foundCategory = categoryRepo.findOneByName(categoryName);
+				if (foundCategory == null) {
+					errors.reject("-3", "Category '" + categoryName + "' does not exist.");
+				} else {
+					newCategories.add(foundCategory);
+				}
+			}
+			setPreferences(newCategories);
 		}
 
 		return this;

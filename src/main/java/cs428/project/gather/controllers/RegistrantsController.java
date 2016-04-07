@@ -1,7 +1,7 @@
 package cs428.project.gather.controllers;
 
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +58,9 @@ public class RegistrantsController {
 		RegistrationData registrationData = RegistrationData.parseIn(rawData, registrationDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResponseData.responseBuilder(bindingResult);
 
-		Registrant newRegistrant = Registrant.buildRegistrantFrom(registrationData);
+		Registrant newRegistrant = Registrant.buildRegistrantFrom(registrationData, categoryRepo, bindingResult);
+		if (bindingResult.hasErrors()) return RESTResponseData.responseBuilder(bindingResult);
+
 		Registrant savedRegistrantResult = this.registrantRepo.save(newRegistrant);
 		ActorStateUtility.storeActorInSession(request, savedRegistrantResult);
 
@@ -82,6 +84,8 @@ public class RegistrantsController {
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
 
 		Registrant updatedRegistrant = getUser(request).updateUsing(registrationUpdate, categoryRepo, bindingResult);
+		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
+
 		Registrant savedRegistrantResult = this.registrantRepo.save(updatedRegistrant);
 		ActorStateUtility.storeActorInSession(request, savedRegistrantResult);
 		return RESTResourceResponseData.createResponse(savedRegistrantResult, HttpStatus.CREATED);
