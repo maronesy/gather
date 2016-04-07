@@ -126,7 +126,7 @@ function removeZipCodeError() {
 
 function registerBox() {
 	$('#registerButton').on('click', function() {
-
+		$('#formFeedback').html('');
 		// Getting the variable's value from a link
 		var registerBox = $(this).attr('href');
 
