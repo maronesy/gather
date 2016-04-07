@@ -7,7 +7,7 @@ import cs428.project.gather.data.EventsQueryData;
 import cs428.project.gather.data.EventIdData;
 
 @Component
-public class JoinEventDataValidator extends AbstractValidator {
+public class EventIdDataValidator extends AbstractValidator {
 
 	@Override
 	public boolean supports(Class<?> targetClass)
