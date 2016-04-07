@@ -633,8 +633,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function getNearByEvents(userCoordinates) {
-		var radiusMi = 15;
-		var hour = 24;
+		var radiusMi = 25;
+		var hour = 730;
 
 		$.ajax({
 		 	accepts: "application/json",

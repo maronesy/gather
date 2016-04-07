@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+<!-- only include scripts that are necessary for jasmine testing
+	 as you can see, the paths are incorrect from maven perspective
+	 but they are correct from jasmine perspective -->
+
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	
+	<script src="src/main/resources/static/scripts/interactions.js" type="text/javascript"></script>
+	<script src="src/main/resources/static/scripts/map.js" type="text/javascript"></script>
+	
+</head>
+
+<body>
+
+<div id="rightPane" class="rightPane container col-lg-7 col-md-7" th:fragment="profile">
+    <div style="margin-right: -15px;">
+		<section class="content">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="container-fluid panel-container" style="padding-right: 10px;">
+						<p class="pull-left panel-title" id="profileName" style="margin-top: 5px;"></p>
+					</div>
+				</div>
+				<div class="panel-body" style="overflow-y: auto;">
+					<div class="table-container">
+						<div class="profile-card">
+							<form action="javascript:void(0);" id="registration">
+								<div class="form-group">
+								  	<label for="profileDisplayName">Display Name</label>
+								  	<input type="text" class="form-control" id="profileDisplayName" value="" placeholder="Display Name"/>
+								</div>
+								<div class="form-group">
+								  	<label for="profileChangePassword">Password</label>
+								  	<div>
+									  	<button style="margin-bottom: 5px;" type="button" id="profileChangePassword" class="btn btn-default">Change Password</button>
+									  	<button style="margin-bottom: 5px; display:none;" type="button" id="profileDoNotChangePassword" class="profilePasswordForm btn btn-default">Do Not Change Password</button>
+									  	<div class="profilePasswordForm" style="display:none;">
+									  		<input style="margin-bottom: 5px;" type="password" class="form-control" id="profileCurrentPassword" value="" placeholder="Current Password"/>
+									  		<input style="margin-bottom: 5px;" type="password" class="form-control" id="profileNewPassword1" value="" placeholder="New Password"/>
+									  		<input style="margin-bottom: 5px;" type="password" class="form-control" id="profileNewPassword2" value="" placeholder="Confirm Password"/>
+									  		<span><div class="form-group" style="color:red" id="profilePasswordFeedback"></div></span>
+									  	</div>
+								  	</div>
+								</div>
+								<div class="form-group">
+								  	<label for="profileTimeWindow">Show events within</label>
+								  	<select id="profileTimeWindow" class="form-control">
+										<option value="1">1 hour</option>
+										<option value="2">2 hours</option>
+										<option value="3">3 hours</option>
+										<option value="4">4 hours</option>
+										<option value="8">8 hours</option>
+										<option value="12">12 hours</option>
+										<option value="24">1 day</option>
+										<option value="72">3 days</option>
+										<option value="168">1 week</option>
+										<option value="336">2 weeks</option>
+										<option value="730" selected="selected">1 month</option>
+										<option value="2190">3 months</option>
+										<option value="8760">1 year</option>
+									</select>
+								</div>
+								<div class="form-group" id="profileMyCategories">
+								  	<label for="profileMyCategory1">My Categories</label>
+								  	<select id="profileMyCategory1" class="form-control">
+								  		<option value="--">Category</option>
+								  		<option value="removeCategory1">Remove this category</option>
+										<option value="swim">Swim</option>
+										<option value="soccer">Soccer</option>
+									</select>
+								</div>
+								<div class="form-group">
+								  	<label for="profileZipCode">Default Zip Code</label>
+								  	<input type="text" class="form-control" id="profileZipCode" value="" placeholder="Zip Code"/>
+								</div>
+								<span style="color:red"><div class="form-group" id="profileFeedback"></div></span>
+							  	<div align="middle">
+								  	<input type="submit" id="registerFormSubmit" href="#registerBox" value="Save" class="btn btn-default"/>
+								  	<a id="loading" style="display: none"><img src="images/ajaxLoader.gif" style="width:43px;height:11px;"/>   </a>
+									<button type="button" id="profileBack" class="btn btn-default">Back</button>
+							  	</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>		
+</div>
+</body>
+
+
+</html>
+

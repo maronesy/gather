@@ -16,11 +16,11 @@
 
 <body>
 
-<div id="rightPane" class="container col-lg-7 col-md-7" th:fragment="map">
+<div id="rightPane" class="rightPane container col-lg-7 col-md-7" th:fragment="map">
     <div style="margin-right: -15px;">
 	<div class="map-border">
 		<div class="row">
-			<div class="container col-lg-5 col-md-5 col-sm-5">
+			<div class="container col-lg-6 col-md-6 col-sm-6">
 				<div class="pull-left">
 					<button id="locateMe" type="button" class="remove-outline btn btn-default">Locate Me</button>
 				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->	
@@ -30,7 +30,7 @@
 				</div>
 			</div>
 			
-			<div class="container col-lg-7 col-md-7 col-sm-7">
+			<div class="container col-lg-6 col-md-6 col-sm-6">
 				
 				<form action="javascript:void(0);"  class="form-inline">
 					<div class="pull-right form-group">
@@ -46,7 +46,7 @@
 		<div id="zipCodeErrorBox" class="zipcode-error" align="center"></div>
 		<div class="leaflet-left leaflet-bottom">
 			<div class="map-size-control leaflet-bar leaflet-control" style="padding: 5px 5px 5px 5px;">
-				<a id="resizeLayout" href="#" class="map-glyphicon glyphicon glyphicon-resize-small"></a>
+				<a id="resizeLayout" style="cursor: pointer;" class="map-glyphicon glyphicon glyphicon-resize-small"></a>
 			</div>
 		</div>
 			

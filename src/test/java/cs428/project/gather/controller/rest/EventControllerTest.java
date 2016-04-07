@@ -112,7 +112,8 @@ public class EventControllerTest {
 		
 		Coordinates eCoor = eventCoordinate();
 		
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 25, 500);
+		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100, 500);
+
 		
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
