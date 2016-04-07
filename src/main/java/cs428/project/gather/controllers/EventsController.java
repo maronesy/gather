@@ -36,7 +36,7 @@ public class EventsController {
 	private NewEventDataValidator newEventDataValidator;
 
 	@Autowired
-	private JoinEventDataValidator joinEventDataValidator;
+	private EventIdDataValidator eventIdDataValidator;
 
 	private boolean authenticateRequest(HttpServletRequest request, Errors errors) {
 		if (! ActorTypeHelper.isRegisteredUser(request)) {
@@ -126,17 +126,35 @@ public class EventsController {
 	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		EventIdData joinEventData = EventIdData.parseIn(rawData, joinEventDataValidator, bindingResult);
+		EventIdData joinEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
-		Event joinedEvent = getUser(request).joinEvent(joinEventData, eventRepo, bindingResult);
+		Event eventToJoin = getUser(request).joinEvent(joinEventData, eventRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
-		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.CREATED);
+		return RESTResourceResponseData.createResponse(eventToJoin, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "/rest/events/leave", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<RESTResourceResponseData<Event>> leaveEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
+
+		EventIdData leaveEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
+		}
+
+		Event eventToLeave = getUser(request).leaveEvent(leaveEventData, eventRepo, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return RESTResourceResponseData.<Event>badResponse(bindingResult);
+		}
+
+		return RESTResourceResponseData.createResponse(eventToLeave, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/rest/events/remove", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
@@ -144,7 +162,7 @@ public class EventsController {
 	public ResponseEntity<RESTResourceResponseData<Event>> removeEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticateRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		EventIdData removeEventData = EventIdData.parseIn(rawData, joinEventDataValidator, bindingResult);
+		EventIdData removeEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}

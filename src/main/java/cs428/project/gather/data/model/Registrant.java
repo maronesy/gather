@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import com.fasterxml.jackson.annotation.*;
+
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 @Entity
@@ -144,10 +146,10 @@ public class Registrant extends Actor {
 
 	public Event joinEvent(EventIdData joinEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = joinEventData.getEventId();
-		Event joinedEvent = eventRepo.findOne(eventId);
-		joinedEvent.addParticipant(this);
-		eventRepo.save(joinedEvent);
-		return joinedEvent;
+		Event eventToJoin = eventRepo.findOne(eventId);
+		eventToJoin.addParticipant(this);
+		eventRepo.save(eventToJoin);
+		return eventToJoin;
 	}
 
 	public Event removeEvent(EventIdData removeEventData, EventRepository eventRepo, Errors errors) {
@@ -201,5 +203,13 @@ public class Registrant extends Actor {
 		}
 
 		return this;
+	}
+
+	public Event leaveEvent(EventIdData leaveEventData, EventRepository eventRepo, BindingResult bindingResult) {
+		Long eventId = leaveEventData.getEventId();
+		Event eventToLeave = eventRepo.findOne(eventId);
+		eventToLeave.removeParticipant(this);
+		eventRepo.save(eventToLeave);
+		return eventToLeave;
 	}
 }
