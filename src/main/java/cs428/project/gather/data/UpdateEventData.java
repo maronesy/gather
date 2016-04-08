@@ -12,10 +12,10 @@ public class UpdateEventData extends NewEventData {
 	private Long eventId;
 	private List<Occurrence> occurrencesToAdd =  new ArrayList<Occurrence>();
 	private List<Occurrence> occurrencesToRemove =  new ArrayList<Occurrence>();
-	private List<Registrant> ownersToAdd = new ArrayList<Registrant>();
-	private List<Registrant> ownersToRemove = new ArrayList<Registrant>();
-	private List<Registrant> participantsToAdd = new ArrayList<Registrant>();
-	private List<Registrant> participantsToRemove = new ArrayList<Registrant>();
+	private List<String> ownersToAdd = new ArrayList<String>();
+	private List<String> ownersToRemove = new ArrayList<String>();
+	private List<String> participantsToAdd = new ArrayList<String>();
+	private List<String> participantsToRemove = new ArrayList<String>();
 
 	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -45,19 +45,19 @@ public class UpdateEventData extends NewEventData {
 		return occurrencesToRemove;
 	}
 
-	public List<Registrant> getOwnersToAdd() {
+	public List<String> getOwnersToAdd() {
 		return ownersToAdd;
 	}
 
-	public List<Registrant> getOwnersToRemove() {
+	public List<String> getOwnersToRemove() {
 		return ownersToRemove;
 	}
 
-	public List<Registrant> getParticipantsToAdd() {
+	public List<String> getParticipantsToAdd() {
 		return participantsToAdd;
 	}
 
-	public List<Registrant> getParticipantsToRemove() {
+	public List<String> getParticipantsToRemove() {
 		return participantsToRemove;
 	}
 

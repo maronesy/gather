@@ -92,7 +92,7 @@ public class EventsController {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
-		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, categoryRepo, bindingResult);
+		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, regRepo, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
