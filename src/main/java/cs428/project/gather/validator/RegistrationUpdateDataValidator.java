@@ -32,6 +32,7 @@ public class RegistrationUpdateDataValidator extends AbstractValidator {
 			validatePassword(userRegistrationData, errors);
 			validateDisplayName(userRegistrationData, errors);
 			validateEmailAddress(userRegistrationData, errors);
+			validateOldPassword(userRegistrationData, errors);
 		}
 	}
 
@@ -74,6 +75,15 @@ public class RegistrationUpdateDataValidator extends AbstractValidator {
 		} else if (registrantDataAdapter.findOneByEmail(emailAddress)!=null) {
 			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
 			errors.reject("-4", message+":The email address already exists.  Please enter another email address.");
+		}
+	}
+
+	private void validateOldPassword(RegistrationData userRegistrationData, Errors errors) {
+		if (userRegistrationData.getPassword() == null) return; // Users only need to enter their old password when changing to a new password
+
+		if (userRegistrationData.getOldPassword() == null) {
+			String message = "Field required-" + RegistrationData.OLD_PASSWORD_FIELD_NAME;
+			errors.reject("-1", message + ":oldPassword is a required field.");
 		}
 	}
 }
