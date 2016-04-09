@@ -15,20 +15,18 @@ import cs428.project.gather.utilities.ActorStateUtility;
 import cs428.project.gather.utilities.SignOutHelper;
 
 
-@Controller("signOutController")
-public class SignOutController
-{
+@Controller("SignOutController")
+public class SignOutController {
 	@RequestMapping(value="/rest/registrants/signout", method = RequestMethod.POST)
-	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response)
-	{
+	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response) {
 		boolean isAuthed = ActorStateUtility.retrieveAuthenticatedStateInRequest(request);
 		SignOutHelper.invalidateSession(request);
 		SignOutHelper.deleteSessionCookie(request, response);
-		if(!isAuthed){
+		if (!isAuthed) {
 			return new ResponseEntity<RESTResponseData>(new RESTResponseData(-7,"User is not in authenticated state"),HttpStatus.BAD_REQUEST);
 		}else{
-			return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK); 
+			return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK);
 		}
-		
+
 	}
 }
