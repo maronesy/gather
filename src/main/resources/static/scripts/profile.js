@@ -2,7 +2,8 @@ $(document).ready(function() {
 	loadProfilePage();
 	leftPaneSelect();
 	loadProfilePasswordForm();
-}); 
+	submitProfile();
+});
 
 function leftPaneSelect() {
 	$("#profile").hide();
@@ -30,14 +31,69 @@ function loadProfilePage() {
 					$("#map").hide();
 					updateProfileHeader();
 				} else {
-					
+
 				}
 			}
 		});
 	});
-	
+
 	$('#profileBack').on('click', function() {
 		$("#profile").hide();
+		$("#map").show();
+	});
+}
+
+function submitProfile() {
+	$('#profileSubmit').on('click', function() {
+		var displayName = $("#profileDisplayName").val()
+		var oldPassword = $('#profileCurrentPassword').val()
+		var password = $("#profileNewPassword1").val()
+		var confirmPassword = $("#profileNewPassword2").val()
+		var defaultZipCode = $("#profileZipCode").val()
+		var defaultTimeWindow = $("#profileTimeWindow").val()
+		var formId = '#profileFeedback'
+		var updateData = '\'{  '  // do not remove the extra space here, because we slice later
+
+		if (displayName != '' && validateDisplayName(formId, displayName)) {
+			updateData = updateData + '"displayName":"' + displayName + '", '
+		}
+
+		if (password != '' && validatePassword(formId, password, confirmPassword)) {
+			updateData = updateData + '"password":"' + password + '", '
+			updateData = updateData + '"oldPassword":"' + oldPassword + '", '
+		}
+
+		if (defaultZipCode != '' && validateZipCode(formId, defaultZipCode) ) {
+			updateData = updateData + '"defaultZip":' + defaultZipCode + ', '
+		}
+
+		if (defaultTimeWindow != '' && defaultTimeWindow >= 1 && defaultTimeWindow <= 13) {
+			updateData = updateData + '"defaultTimeWindow":' + defaultTimeWindow + ', '
+		}
+
+		updateData = updateData.slice(0,-2) + '}\''
+
+		$.ajax({
+		 	accepts: "application/json",
+			type : "PUT",
+			url : "rest/registrants/update",
+			contentType: "application/json; charset=UTF-8",
+			dataType: "json",
+			data : updateData,
+			success : function(returnvalue) {
+				if (returnvalue.status == 0) {
+					$(formId).html('Profile update successful!').hide(1000)
+				} else {
+					$(formId).html(returnvalue.message)
+				}
+			}
+		});
+
+	});
+
+	$('#profileBack').on('click', function() {
+		$("#profile").hide();
+		$("#profileFeedback").hide();
 		$("#map").show();
 	});
 }
