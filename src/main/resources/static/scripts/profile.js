@@ -52,10 +52,12 @@ function submitProfile() {
 		var defaultZipCode = $("#profileZipCode").val()
 		var defaultTimeWindow = $("#profileTimeWindow").val()
 		var formId = '#profileFeedback'
-		var updateData = '\'{  '  // do not remove the extra space here, because we slice later
+		var updateData = '  ' // do not remove the extra space here, because we slice later
 
-		if (displayName != '' && validateDisplayName(formId, displayName)) {
-			updateData = updateData + '"displayName":"' + displayName + '", '
+		if (gather.global.currentDisplayName != displayName) {
+			if (displayName != '' && validateDisplayName(formId, displayName)) {
+				updateData = updateData + '"displayName":"' + displayName + '", '
+			}
 		}
 
 		if (password != '' && validatePassword(formId, password, confirmPassword)) {
@@ -71,7 +73,7 @@ function submitProfile() {
 			updateData = updateData + '"defaultTimeWindow":' + defaultTimeWindow + ', '
 		}
 
-		updateData = updateData.slice(0,-2) + '}\''
+		updateData = updateData.slice(0,-2)  // removing the last comma
 
 		$.ajax({
 		 	accepts: "application/json",
@@ -79,10 +81,13 @@ function submitProfile() {
 			url : "rest/registrants/update",
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
-			data : updateData,
+			data : '{'+updateData+'}',
 			success : function(returnvalue) {
 				if (returnvalue.status == 0) {
-					$(formId).html('Profile update successful!').hide(1000)
+					$(formId).html('Profile update successful!').delay(1000).hide(1000)
+					if (gather.global.currentDisplayName != displayName) {
+						sessionCheck();
+					}
 				} else {
 					$(formId).html(returnvalue.message)
 				}
