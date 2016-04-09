@@ -63,16 +63,16 @@ public class SignInControllerTest {
 		assertEquals("existedName", displayName);
 		assertEquals((Integer)0, status); //success
 	}
-	
+
 	@Test
 	public void testSignInUserWorngPassowrd() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "wrongpassword");
 		String message = apiResponse.get("message").toString();
 		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("invalid field-passwordThe password is invalid.  Please enter a valid password. ", message);
+		assertEquals("The password is incorrect.  Please enter the correct password. ", message);
 		assertEquals((Integer)(-6), status); //success
 	}
-	
+
 	@Test
 	public void testSignInInvalidEmail() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser(".Thi$IsN0TaEM@il", "password");
@@ -81,7 +81,7 @@ public class SignInControllerTest {
 		assertEquals("Field invalid-email:Please enter a valid email address. ", message);
 		assertEquals((Integer)(-3), status); //success
 	}
-	
+
 	@Test
 	public void testSignInInvalidPassword() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "ThisPasswordIsTooLongAndItShouldNotBeAnValidPasswordSoTheTestShouldFail");
@@ -90,7 +90,7 @@ public class SignInControllerTest {
 		assertEquals("Field invalid-password:The password length must be 64 characters or less. ", message);
 		assertEquals((Integer)(-2), status); //success
 	}
-	
+
 	@Test
 	public void testSignInUserNotExist() throws JsonProcessingException {
 		Map<String, Object> apiResponse = authenticateUser("notexisted@email.com", "password");
@@ -99,7 +99,7 @@ public class SignInControllerTest {
 		assertEquals("Field invalid-email:The email address doesn't exist.  Please enter another email address. ", message);
 		assertEquals((Integer)(-5), status); //success
 	}
-	
+
 	private Map<String, Object> authenticateUser(String email, String password) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();

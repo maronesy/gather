@@ -16,20 +16,18 @@ import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.utilities.ActorStateUtility;
 
 
-@Controller("sessionController")
-public class SessionController
-{
+@Controller("SessionController")
+public class SessionController {
 	@Autowired
 	private RegistrantRepository registrantDataAdapter;
-	
+
 	@RequestMapping(value="/rest/session")
-	public ResponseEntity<RESTSessionResponseData> getSession(HttpServletRequest request, HttpServletResponse response)
-	{
-		if(ActorStateUtility.retrieveAuthenticatedStateInRequest(request)){
+	public ResponseEntity<RESTSessionResponseData> getSession(HttpServletRequest request, HttpServletResponse response) {
+		if (ActorStateUtility.retrieveAuthenticatedStateInRequest(request)) {
 			Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 			String displayName = this.registrantDataAdapter.findOne(actor.getActorID()).getDisplayName();
 			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(5,"Session Found",displayName),HttpStatus.OK);
-		}else{
+		} else {
 			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(-5,"Session Not Found"),HttpStatus.OK);
 		}
 	}

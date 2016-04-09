@@ -205,11 +205,19 @@ public class Registrant extends Actor {
 		return this;
 	}
 
-	public Event leaveEvent(EventIdData leaveEventData, EventRepository eventRepo, BindingResult bindingResult) {
+	public Event leaveEvent(EventIdData leaveEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = leaveEventData.getEventId();
 		Event eventToLeave = eventRepo.findOne(eventId);
 		eventToLeave.removeParticipant(this);
 		eventRepo.save(eventToLeave);
 		return eventToLeave;
+	}
+
+	public boolean confirmForChangingPassword(RegistrationData updateInfo, Errors errors) {
+		if (updateInfo.getPassword() == null) return true;
+		if (! updateInfo.getOldPassword().equals(getPassword())) {
+			errors.reject("-3", "The old password for confirmation is incorrect; cannot update to new password.");
+			return false;
+		} return true;
 	}
 }
