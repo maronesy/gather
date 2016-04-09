@@ -1,11 +1,11 @@
 $(document).ready(function() {
 	loadProfilePage();
-	leftPaneSelect();
+	rightPaneSelect();
 	loadProfilePasswordForm();
 	submitProfile();
 });
 
-function leftPaneSelect() {
+function rightPaneSelect() {
 	$("#profile").hide();
 	$("#map").show();
 }

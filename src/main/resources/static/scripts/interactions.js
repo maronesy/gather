@@ -197,6 +197,7 @@ function signOut() {
 //                              alert(returnvalue.message)
                                 gather.global.session.signedIn = false;
                                 headerSelect()
+                                rightPaneSelect()
                             } else {
                                 if (returnvalue.status != 0) {
 //                                  alert(returnvalue.status)
