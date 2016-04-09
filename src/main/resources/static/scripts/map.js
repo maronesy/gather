@@ -886,6 +886,53 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
+	
+	this.leaveEvent = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			establishedEvent.eventMarker.closePopup();
+			
+			doLeaveEvent(eventID, function(updatedEvent) {
+				$("#event-leave-modal").modal("show");
+				//TODO remove user from participant list
+				// establishedEvents[eventID].participant
+			}, function() {
+				displayGeneralFailureModal();
+			});
+		}
+	}
+	
+	function doLeaveEvent(eventID, successCallback, failureCallback) {
+		
+		var requestOptions = {
+			type: "POST",
+			url: "/rest/events/leave",
+			contentType: "application/json; charset=UTF-8",
+			data: '{ "eventId" : ' + eventID +' }',
+			dataType: "json",
+			timeout: 10000,
+			success: function(response) {
+				if(typeof(successCallback) === "function") {
+					successCallback(response.result);
+					
+				}
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
 
 	this.removeEvent = function(eventID) {
 		var establishedEvent = establishedEvents[eventID];

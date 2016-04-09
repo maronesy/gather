@@ -588,12 +588,12 @@ public class EventControllerTest {
 			Registrant ownerToAdd) throws JsonProcessingException {
 		List<Occurrence> occurrencesToAdd = new ArrayList<Occurrence>();
 		List<Occurrence> occurrencesToRemove = new ArrayList<Occurrence>();
-		List<Registrant> ownersToAdd = new ArrayList<Registrant>();
-		List<Registrant> ownersToRemove = new ArrayList<Registrant>();
-		List<Registrant> participantsToAdd = new ArrayList<Registrant>();
-		List<Registrant> participantsToRemove = new ArrayList<Registrant>();
-		ownersToAdd.add(ownerToAdd);
-		participantsToRemove.add(participantToRemove);
+		List<String> ownersToAdd = new ArrayList<String>();
+		List<String> ownersToRemove = new ArrayList<String>();
+		List<String> participantsToAdd = new ArrayList<String>();
+		List<String> participantsToRemove = new ArrayList<String>();
+		ownersToAdd.add(ownerToAdd.getDisplayName());
+		participantsToRemove.add(participantToRemove.getDisplayName());
 		occurrencesToAdd.add(new Occurrence("", new Timestamp(time)));
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();

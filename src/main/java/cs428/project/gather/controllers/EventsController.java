@@ -1,22 +1,38 @@
 package cs428.project.gather.controllers;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
-import org.joda.time.DateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
-import com.google.gson.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import cs428.project.gather.data.*;
-import cs428.project.gather.data.model.*;
-import cs428.project.gather.data.repo.*;
-import cs428.project.gather.utilities.*;
-import cs428.project.gather.validator.*;
+import cs428.project.gather.data.EventIdData;
+import cs428.project.gather.data.EventsQueryData;
+import cs428.project.gather.data.NewEventData;
+import cs428.project.gather.data.RESTPaginatedResourcesResponseData;
+import cs428.project.gather.data.RESTResourceResponseData;
+import cs428.project.gather.data.UpdateEventData;
+import cs428.project.gather.data.model.Actor;
+import cs428.project.gather.data.model.Event;
+import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.CategoryRepository;
+import cs428.project.gather.data.repo.EventRepository;
+import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.utilities.ActorStateUtility;
+import cs428.project.gather.utilities.ActorTypeHelper;
+import cs428.project.gather.validator.EventIdDataValidator;
+import cs428.project.gather.validator.EventsQueryDataValidator;
+import cs428.project.gather.validator.NewEventDataValidator;
 
 @Controller("eventController")
 public class EventsController {
@@ -92,7 +108,7 @@ public class EventsController {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
 
-		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, categoryRepo, bindingResult);
+		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, regRepo, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return RESTResourceResponseData.<Event>badResponse(bindingResult);
 		}
