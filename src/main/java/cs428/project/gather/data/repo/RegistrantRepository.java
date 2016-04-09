@@ -1,7 +1,5 @@
 package cs428.project.gather.data.repo;
 
-import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
 
 import cs428.project.gather.data.model.Location;
@@ -15,6 +13,6 @@ public interface RegistrantRepository  extends CrudRepository<Registrant, Long> 
 	 * @return
 	 */
 	Registrant findOne(Long id);
-	List<Registrant> findByDisplayName(String displayName);
+	Registrant findByDisplayName(String displayName);
 	Registrant findOneByEmail(String email);
 }

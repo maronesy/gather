@@ -236,7 +236,7 @@ public class Event {
         if(!updateEventData.getParticipantsToAdd().isEmpty()){
             for(int i=0;i<updateEventData.getParticipantsToAdd().size();i++){
             	String displayName=updateEventData.getParticipantsToAdd().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName).get(0);
+            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
                 if (registrant==null || !targetEvent.addParticipant(registrant)){
                     String message = "Cannot update event. Failed to add a participant.";
                     errors.reject("-7", message);
@@ -246,7 +246,7 @@ public class Event {
         if(!updateEventData.getOwnersToAdd().isEmpty()){
             for(int i=0;i<updateEventData.getOwnersToAdd().size();i++){
             	String displayName=updateEventData.getOwnersToAdd().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName).get(0);
+            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
                 if (registrant==null || !targetEvent.addOwner(registrant)){
                     String message = "Cannot update event. Failed to add an owner.";
                     errors.reject("-7", message);
@@ -265,7 +265,7 @@ public class Event {
         if(!updateEventData.getParticipantsToRemove().isEmpty()){
             for(int i=0;i<updateEventData.getParticipantsToRemove().size();i++){
             	String displayName=updateEventData.getParticipantsToRemove().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName).get(0);
+            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
                 if (registrant==null || !targetEvent.removeParticipant(registrant)){
                     String message = "Cannot update event. Failed to remove a participant.";
                     errors.reject("-8", message);
@@ -275,7 +275,7 @@ public class Event {
         if(!updateEventData.getOwnersToRemove().isEmpty()){
             for(int i=0;i<updateEventData.getOwnersToRemove().size();i++){
             	String displayName=updateEventData.getOwnersToRemove().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName).get(0);
+            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
                 if (registrant==null || !targetEvent.removeOwner(registrant)){
                     String message = "Cannot update event. Failed to add an owner.";
                     errors.reject("-8", message);
