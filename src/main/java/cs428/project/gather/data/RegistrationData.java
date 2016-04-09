@@ -11,10 +11,12 @@ import com.google.gson.*;
 public class RegistrationData {
 	public static final String EMAIL_FIELD_NAME = "email";
 	public static final String PASSWORD_FIELD_NAME = "password";
+	public static final String OLD_PASSWORD_FIELD_NAME = "oldPassword";
 	public static final String DISPLAY_NAME_FIELD_NAME = "displayName";
 
 	private String email;
 	private String password;
+	private String oldPassword;
 	private String displayName;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = -1;
@@ -37,6 +39,14 @@ public class RegistrationData {
 
 	public void setPassword(String password) {
 		this.password = StringUtils.trimToNull(password);
+	}
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 
 	public String getDisplayName() {
