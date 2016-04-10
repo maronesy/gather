@@ -49,7 +49,7 @@ public class RegistrantsController extends AbstractGatherController {
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
 
 		Registrant user = getUser(request);
-		if (! user.confirmForChangingPassword(registrationUpdate, bindingResult)) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
+		if (! user.validateUserDependentFields(registrationUpdate, registrantRepo, bindingResult)) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
 
 		Registrant updatedRegistrant = user.updateUsing(registrationUpdate, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Registrant>badResponse(bindingResult);
