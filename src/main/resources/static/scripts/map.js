@@ -21,6 +21,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var userMarker = null;
 	var eventMarker = null;
 	var searchRadiusCircle = null;
+	var userCoordinates = null;
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
 
@@ -51,7 +52,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	function determineUserCoordinates(successCallback, failureCallback) {
 		navigator.geolocation.getCurrentPosition(function(currentPosition) {
-			var userCoordinates = {
+			userCoordinates = {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
@@ -829,7 +830,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	this.showPop = function(eventId) {
+		
 		var myEvent = establishedEvents[eventId];
+		
 		eMarker = myEvent.eventMarker;
 		eMarker.openPopup();
 	}
@@ -868,11 +871,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			data: '{ "eventId" : ' + eventID +' }',
 			dataType: "json",
 			timeout: 10000,
-			success: function(response) {
+			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
-					successCallback(response.result);
-					
+					successCallback(returnvalue.result);	
 				}
+				establishedEvents[eventID] = returnvalue.result;
+				placeEstablishedEventMarker(returnvalue.result, true);
 			}
 		};
 
@@ -898,8 +902,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			
 			doLeaveEvent(eventID, function(updatedEvent) {
 				$("#event-leave-modal").modal("show");
-				//TODO remove user from participant list
-				// establishedEvents[eventID].participant
 			}, function() {
 				displayGeneralFailureModal();
 			});
@@ -915,11 +917,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			data: '{ "eventId" : ' + eventID +' }',
 			dataType: "json",
 			timeout: 10000,
-			success: function(response) {
+			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
-					successCallback(response.result);
-					
+					successCallback(returnvalue.result);	
 				}
+				establishedEvents[eventID] = returnvalue.result;
+				placeEstablishedEventMarker(returnvalue.result, true);
 			}
 		};
 
