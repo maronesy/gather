@@ -84,17 +84,18 @@ function enterZip() {
                 if (zipCode == "") {
                     $(zipCodeErrorBox).fadeIn(100);
                     $('#zipCodeErrorBox').html('Zip code field is empty');
-                } else if (!validateZipCode(zipCodeErrorBox, zipCode)) {
-                    $(zipCodeErrorBox).fadeIn(100);
                 } else {
-                    var returnValue = mapManager.determineCoordByZipCode(zipCode);
-                    if (returnValue == -1) {
-                        $(zipCodeErrorBox).fadeIn(100);
-                        $('#zipCodeErrorBox').html('Zip code does not exist');
-                    } else {
-                        $(zipCodeErrorBox).hide();
-                    }
+                	validateZipCode(zipCodeErrorBox, zipCode) 
                 }
+//                } else {
+//                    var returnValue = mapManager.determineCoordByZipCode(zipCode);
+//                    if (returnValue == -1) {
+//                        $(zipCodeErrorBox).fadeIn(100);
+//                        $('#zipCodeErrorBox').html('Zip code does not exist');
+//                    } else {
+//                        $(zipCodeErrorBox).hide();
+//                    }
+//                }
                 $('#zipSearching').hide();
             }, 100);
     });
@@ -177,6 +178,10 @@ function signIn() {
 //                          alert("Sign In Unsuccessful")
                             resetSignInFields()
                         }
+                    },
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        var responseMessage = $.parseJSON(jqXHR.responseText).message;
+                        $(formId).html(responseMessage);
                     }
                 });
             });
@@ -315,7 +320,7 @@ function validateEmail(formId, email) {
     var atpos = x.indexOf("@");
     var dotpos = x.lastIndexOf(".");
     if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x.length) {
-        $(formId).html('Please enter a valid email address');
+        $(formId).html('Please enter a valid email address').show().delay(3000).hide(1000);
         return false;
     } else {
         return true;
@@ -324,10 +329,10 @@ function validateEmail(formId, email) {
 
 function validatePassword(formId, password, confirmPassword){
     if (password.length < 7 || password.length > 21) {
-        $(formId).html('Password must be between 6 and 21 characters');
+        $(formId).html('Password must be between 6 and 21 characters').show().delay(3000).hide(1000);
         return false;
     } else if (password != confirmPassword) {
-        $(formId).html('Passwords do not match');
+        $(formId).html('Passwords do not match').show().delay(3000).hide(1000);
         return false;
     } else {
         return true;
@@ -336,12 +341,12 @@ function validatePassword(formId, password, confirmPassword){
 
 function validateDisplayName(formId, displayName) {
     if ($.isNumeric(displayName)) {
-        $(formId).html('Display name cannot be numeric')
+        $(formId).html('Display name cannot be numeric').show().delay(3000).hide(1000);
     } else if (displayName.length < 5 || displayName.length > 15) {
-        $(formId).html('Display name must be between than 5 and 15 characters');
+        $(formId).html('Display name must be between than 5 and 15 characters').show().delay(3000).hide(1000);
         return false;
     } else if (displayName.indexOf(' ') >= 0) {
-        $(formId).html('Display name cannot have spaces');
+        $(formId).html('Display name cannot have spaces').show().delay(3000).hide(1000);
         return false;
     } else {
         return true;
@@ -350,14 +355,21 @@ function validateDisplayName(formId, displayName) {
 
 function validateZipCode(formId, zipCode) {
     if (zipCode.length != 5) {
-        $(formId).html('Zip code must be five digits');
+        $(formId).html('Zip code must be five digits').show().delay(3000).hide(1000);
         return false;
     } else if (!($.isNumeric(zipCode))) {
-        $(formId).html('Zip code must be five digits');
+        $(formId).html('Zip code must be five digits').show().delay(3000).hide(1000);
         return false;
     } else {
-        return true;
-    }
+        var returnValue = mapManager.determineCoordByZipCode(zipCode);
+        if (returnValue == -1) {
+            $(formId).html('Zip code does not exist').show().delay(3000).hide(1000);
+            return false;
+        } else {
+            $(formId).hide();
+            return true
+        }
+    } 
 }
 
 
