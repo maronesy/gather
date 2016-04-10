@@ -60,6 +60,10 @@ public class Registrant extends Actor {
 		this.defaultZip = defaultZip;
 	}
 
+	public boolean equals(Registrant otherUser) {
+		return (this.displayName.equals(otherUser.getDisplayName()) && this.email.equals(otherUser.getEmail()));
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -174,7 +178,7 @@ public class Registrant extends Actor {
 			setPassword(updateInfo.getPassword());
 		}
 
-		if (updateInfo.getDisplayName() != null && ! updateInfo.getDisplayName().equals(getDisplayName())) {
+		if (updateInfo.getDisplayName() != null) {
 			System.out.println("Setting displayName:  " + updateInfo.getDisplayName());
 			setDisplayName(updateInfo.getDisplayName());
 		}
@@ -213,11 +217,33 @@ public class Registrant extends Actor {
 		return eventToLeave;
 	}
 
-	public boolean confirmForChangingPassword(RegistrationData updateInfo, Errors errors) {
-		if (updateInfo.getPassword() == null) return true;
-		if (! updateInfo.getOldPassword().equals(getPassword())) {
+	public boolean validateUserDependentFields(RegistrationData updateInfo, RegistrantRepository registrantRepo, Errors errors) {
+		if (updateInfo.getPassword() != null && ! updateInfo.getOldPassword().equals(getPassword())) {
 			errors.reject("-3", "The old password for confirmation is incorrect; cannot update to new password.");
 			return false;
-		} return true;
+		}
+
+		// We can only claim this email if there is no OTHER user that also has this email already
+		if (updateInfo.getEmail() != null) {
+			Registrant otherUser = registrantRepo.findOneByEmail(updateInfo.getEmail());
+			if (otherUser != null && ! otherUser.equals(this)) {
+				String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
+				errors.reject("-4", message+":The email address already exists and claimed by another user.  Please enter another email address.");
+				return false;
+			}
+		}
+
+		// We can only claim this displayName if there is no OTHER user that also has this displayName already
+		if (updateInfo.getDisplayName() != null) {
+			for (Registrant otherUser : registrantRepo.findByDisplayName(updateInfo.getDisplayName())) {
+				if (! otherUser.equals(this)) {
+					String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
+					errors.reject("-4",message+":The display name already exists and claimed by another user.  Please enter another display name.");
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }
