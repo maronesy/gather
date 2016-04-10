@@ -13,12 +13,12 @@ function loadEventsFirstView(userCoordinates) {
 				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
 //				var rating = events[i].feedbacks.rating
-				//this.getAttribute(\'data-event-id\')
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
+				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -37,9 +37,9 @@ function loadEventsFirstView(userCoordinates) {
 									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
 									'<h4 class="list-title">'+ title +'</h4>' +
 									'<span class="pull-right"></span>' +
-									'<p id="eventId">Event ID: '+ eventId +'</p>' +
+									'<p style="display:none;" eventId="' + eventId + '"></p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +
@@ -61,7 +61,7 @@ function loadEventsFirstView(userCoordinates) {
 					'</td>' +
 				'</tr>'
 			);
-		} 
+		}
 	}
 }
 
@@ -73,19 +73,13 @@ function loadJoinedEvents() {
 			$('.joinedTable').html('');
 			for(i = 0; i < events.length; i++){
 				var eventId = events[i].id;
-//				var lat1 = events[i].location.latitude;
-//				var lon1 = events[i].location.longitude;
-//				var lat2 = parseFloat(userCoordinates.latitude);
-//				var lon2 = parseFloat(userCoordinates.longitude);
-//				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
-//				var rating = events[i].feedbacks.rating
-				//this.getAttribute(\'data-event-id\')
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
+				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -103,9 +97,9 @@ function loadJoinedEvents() {
 									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
 									'<h4 class="list-title">'+ title +'</h4>' +
 									'<span class="pull-right"></span>' +
-									'<p id="eventId">Event ID: '+ eventId +'</p>' +
+									'<p style="display:none;" eventId="' + eventId + '"></p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +
@@ -127,7 +121,7 @@ function loadJoinedEvents() {
 					'</td>' +
 				'</tr>'
 			);
-		} 
+		}
 	}
 }
 
@@ -139,19 +133,13 @@ function loadOwnedEvents() {
 			$('.ownedTable').html('');
 			for(i = 0; i < events.length; i++){
 				var eventId = events[i].id;
-//				var lat1 = events[i].location.latitude;
-//				var lon1 = events[i].location.longitude;
-//				var lat2 = parseFloat(userCoordinates.latitude);
-//				var lon2 = parseFloat(userCoordinates.longitude);
-//				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
-//				var rating = events[i].feedbacks.rating
-				//this.getAttribute(\'data-event-id\')
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
+				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -159,7 +147,7 @@ function loadOwnedEvents() {
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
 				$('.ownedTable').append(
-					'<tr href="#" onclick="mapManager.showPop('+ eventId +');">' +
+					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
 								'<a href="#" class="pull-left"> ' +
@@ -169,9 +157,9 @@ function loadOwnedEvents() {
 									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
 									'<h4 class="list-title">'+ title +'</h4>' +
 									'<span class="pull-right"></span>' +
-									'<p id="eventId">Event ID: '+ eventId +'</p>' +
+									'<p style="display:none;" id="eventId">' + eventId + '</p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +
@@ -193,6 +181,6 @@ function loadOwnedEvents() {
 					'</td>' +
 				'</tr>'
 			);
-		} 
+		}
 	}
 }
