@@ -174,7 +174,7 @@ public class Registrant extends Actor {
 			setPassword(updateInfo.getPassword());
 		}
 
-		if (updateInfo.getDisplayName() != null) {
+		if (updateInfo.getDisplayName() != null && ! updateInfo.getDisplayName().equals(getDisplayName())) {
 			System.out.println("Setting displayName:  " + updateInfo.getDisplayName());
 			setDisplayName(updateInfo.getDisplayName());
 		}
