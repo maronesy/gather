@@ -82,10 +82,10 @@ public class RegistrantRepositoryIntegrationTest {
 		this.registrantRepo.save(aDiffUser);
 		this.registrantRepo.save(fooBar);
 		
-		List<Registrant> foundUser = registrantRepo.findByDisplayName("foobar");
+		Registrant foundUser = registrantRepo.findByDisplayName("foobar");
 		
-		assertEquals(1,foundUser.size());
-		assertTrue(foundUser.get(0).getDisplayName().equals("foobar"));
+		assertTrue(foundUser!=null);
+		assertTrue(foundUser.getDisplayName().equals("foobar"));
 	}
 	
 	@Test
