@@ -1,68 +1,51 @@
 package cs428.project.gather.data;
 
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
-
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import cs428.project.gather.data.model.Category;
-import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.Location;
-import cs428.project.gather.data.model.Occurrence;
-import cs428.project.gather.data.model.Registered;
-import cs428.project.gather.data.model.Registrant;
-import cs428.project.gather.data.repo.CategoryRepository;
-import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.LocationRepository;
-import cs428.project.gather.data.repo.RegisteredRepository;
-import cs428.project.gather.data.repo.RegistrantRepository;
-
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 
-	private final RegisteredRepository registeredRepo;
 	private final EventRepository eventRepo;
-//	private final LocationRepository locationRepo;
 	private final RegistrantRepository registrantRepo;
 	private final CategoryRepository categoryRepo;
 
 	@Autowired
-	public DatabaseLoader(RegisteredRepository repository, EventRepository eventRepo, RegistrantRepository registrantRepo, CategoryRepository categoryRepo) {
-		this.registeredRepo = repository;
+	public DatabaseLoader(EventRepository eventRepo, RegistrantRepository registrantRepo, CategoryRepository categoryRepo) {
 		this.eventRepo = eventRepo;
-//		this.locationRepo = locationRepo;
 		this.registrantRepo = registrantRepo;
 		this.categoryRepo = categoryRepo;
 	}
 
 	@Override
 	public void run(String... strings) throws Exception {
-		this.registeredRepo.save(new Registered("Frodo", "Baggins", 24, "Los Angeles"));
-		
 		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 		Registrant registrantResult = this.registrantRepo.save(aUser);
-		
+
 		Event testEvent = new Event("Test Event");
 		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
 		testEvent.setLocation(location);
-		//		this.locationRepo.save(location);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		Category testCategory = new Category("testCategory");
 		this.categoryRepo.save(testCategory);
 		testEvent.addOccurrence(occur);
 		testEvent.setCategory(testCategory);
 		Event eventResult = this.eventRepo.save(testEvent);
-		
+
 		//Right now, Event owns all relationships, so Event must be saved for data to be put in DB.
 		testEvent.addParticipant(aUser);
 		//It is recommended you also add the Event to the Registrant, so that the in memory state of the objects is consistent with the DB
 		//We can make either function do the opposite add if we wish, to simplify usage elsewhere
 		aUser.joinEvent(testEvent);
 		this.eventRepo.save(testEvent);
-		
+
 		Event newEvent = new Event("Test1");
 		Location newLoc = new Location("Test Location", "6000 Yeswhere Blvd", "Los Angeles", "CA", "90007", 32.770, -117.04);
 		newEvent.addOwner(aUser);
@@ -75,20 +58,20 @@ public class DatabaseLoader implements CommandLineRunner {
 		this.categoryRepo.save(soccer);
 		newEvent.setCategory(soccer);
 		this.eventRepo.save(newEvent);
-		
+
 		Event newEventa = new Event("Test2");
 		Location newLoca = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 32.780, -117.03);
 		newEvent.addOwner(aUser);
 		newEventa.setLocation(newLoca);
 		Occurrence newOccura = new Occurrence("Second", new Timestamp(DateTime.now().plusDays(2).getMillis()));
-		newEventa.addOccurrence(newOccura);	
+		newEventa.addOccurrence(newOccura);
 		Occurrence newOccurb = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
-		newEventa.addOccurrence(newOccurb);	
+		newEventa.addOccurrence(newOccurb);
 		newEventa.setDescription("lets swim!");
 		Category swim = new Category("Swim ");
 		this.categoryRepo.save(swim);
 		newEventa.setCategory(swim);
-		
+
 		Registrant User0 = new Registrant("nweissnat@emmerich.com","password","vgusikowski",9,17,92102);
 		this.registrantRepo.save(User0);
 		Registrant User1 = new Registrant("laverne84@hotmail.com","password","idatromp",2,22,92108);
@@ -764,6 +747,5 @@ public class DatabaseLoader implements CommandLineRunner {
 		newEvent49.setDescription("Quam consequatur sequi excepturi. Assumenda ipsa reprehenderit eos sed cum itaque.");
 		newEvent49.setCategory(swim);
 		this.eventRepo.save(newEvent49);
-
 	}
 }

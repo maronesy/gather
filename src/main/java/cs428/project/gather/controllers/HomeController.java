@@ -3,7 +3,7 @@ package cs428.project.gather.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+@Controller("HomeController")
 public class HomeController {
 	@RequestMapping(value = "/")
 	public String index() {
@@ -24,12 +24,12 @@ public class HomeController {
 	public String zipcode() {
 		return "zipcode";
 	}
-	
+
 	@RequestMapping(value = "/joined")
 	public String joined() {
 		return "joined";
 	}
-	
+
 	@RequestMapping(value = "/owned")
 	public String owned() {
 		return "owned";

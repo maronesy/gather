@@ -10,9 +10,6 @@ import org.springframework.validation.Errors;
 
 @Component
 public class RegistrationUpdateDataValidator extends AbstractValidator {
-	@Autowired
-	private RegistrantRepository registrantDataAdapter;
-
 	@Override
 	public boolean supports(Class<?> targetClass) {
 		boolean supported = false;
@@ -32,6 +29,7 @@ public class RegistrationUpdateDataValidator extends AbstractValidator {
 			validatePassword(userRegistrationData, errors);
 			validateDisplayName(userRegistrationData, errors);
 			validateEmailAddress(userRegistrationData, errors);
+			validateOldPassword(userRegistrationData, errors);
 		}
 	}
 
@@ -53,9 +51,6 @@ public class RegistrationUpdateDataValidator extends AbstractValidator {
 			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
 			errors.reject("-2", message+":The display name length must be 64 characters or less.");
 
-		} else if(registrantDataAdapter.findByDisplayName(displayName).size()>=1) {
-			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-			errors.reject("-4",message+":The display name already exists.  Please enter another display name.");//, "The display name already exists.  Please enter another display name.");
 		}
 	}
 
@@ -70,10 +65,14 @@ public class RegistrationUpdateDataValidator extends AbstractValidator {
 		} else if (matchesEmailAddressPattern(emailAddress) == false) {
 			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
 			errors.reject("-3", message+":Please enter a valid email address.");
+		}
+	}
 
-		} else if (registrantDataAdapter.findOneByEmail(emailAddress)!=null) {
-			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
-			errors.reject("-4", message+":The email address already exists.  Please enter another email address.");
+	private void validateOldPassword(RegistrationData userRegistrationData, Errors errors) {
+		// Users only need to enter their old password when changing to a new password
+		if (userRegistrationData.getPassword() != null && userRegistrationData.getOldPassword() == null) {
+			String message = "Field required-" + RegistrationData.OLD_PASSWORD_FIELD_NAME;
+			errors.reject("-1", message + ":oldPassword is a required field when updating passwords.");
 		}
 	}
 }
