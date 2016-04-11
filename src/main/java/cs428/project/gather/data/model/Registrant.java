@@ -235,12 +235,11 @@ public class Registrant extends Actor {
 
 		// We can only claim this displayName if there is no OTHER user that also has this displayName already
 		if (updateInfo.getDisplayName() != null) {
-			for (Registrant otherUser : registrantRepo.findByDisplayName(updateInfo.getDisplayName())) {
-				if (! otherUser.equals(this)) {
-					String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
-					errors.reject("-4",message+":The display name already exists and claimed by another user.  Please enter another display name.");
-					return false;
-				}
+			Registrant otherUser = registrantRepo.findByDisplayName(updateInfo.getDisplayName());
+			if (! otherUser.equals(this)) {
+				String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
+				errors.reject("-4",message+":The display name already exists and claimed by another user.  Please enter another display name.");
+				return false;
 			}
 		}
 
