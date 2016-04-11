@@ -21,6 +21,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var userMarker = null;
 	var eventMarker = null;
 	var searchRadiusCircle = null;
+	var userCoordinates = null;
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
 
@@ -51,7 +52,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	function determineUserCoordinates(successCallback, failureCallback) {
 		navigator.geolocation.getCurrentPosition(function(currentPosition) {
-			var userCoordinates = {
+			userCoordinates = {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
@@ -608,6 +609,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			$('#removeEventBtn').hide();
 			$('#editEventBtn').hide();
 		}
+		
+		if (isUserParticipant(anEvent.participants)){
+			$('#leaveEventBtn').show();
+			$('#joinEventBtn').hide();
+		}else{
+			$('#leaveEventBtn').hide();
+			$('#joinEventBtn').show();
+		}
+		
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
 
 		$(establishedEventContent).find("button").each(function(index) {
@@ -639,7 +649,17 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		return result;
 	}
-
+	
+	function isUserParticipant(participants){
+		var result=false;
+		for(var i = 0; i < participants.length; i++){
+			if(participants[i].displayName == gather.global.currentDisplayName){
+				result = true;
+			}
+		}
+		return result;
+	}
+	
 	function getNearByEvents(userCoordinates) {
 		var radiusMi = 25;
 		var hour = 730;
@@ -818,7 +838,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 	this.showPop = function(eventId) {
+		
 		var myEvent = establishedEvents[eventId];
+		
 		eMarker = myEvent.eventMarker;
 		eMarker.openPopup();
 	}
@@ -857,11 +879,58 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			data: '{ "eventId" : ' + eventID +' }',
 			dataType: "json",
 			timeout: 10000,
-			success: function(response) {
+			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
-					successCallback(response.result);
-
+					successCallback(returnvalue.result);	
 				}
+				establishedEvents[eventID] = returnvalue.result;
+				placeEstablishedEventMarker(returnvalue.result, true);
+			}
+		};
+
+		var response = $.ajax(requestOptions);
+
+		response.fail(function(error) {
+			console.log(error);
+
+			if(typeof(failureCallback) === "function") {
+				failureCallback();
+			}
+		});
+	}
+	
+	this.leaveEvent = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+			establishedEvent.eventMarker.closePopup();
+			
+			doLeaveEvent(eventID, function(updatedEvent) {
+				$("#event-leave-modal").modal("show");
+			}, function() {
+				displayGeneralFailureModal();
+			});
+		}
+	}
+	
+	function doLeaveEvent(eventID, successCallback, failureCallback) {
+		
+		var requestOptions = {
+			type: "POST",
+			url: "/rest/events/leave",
+			contentType: "application/json; charset=UTF-8",
+			data: '{ "eventId" : ' + eventID +' }',
+			dataType: "json",
+			timeout: 10000,
+			success: function(returnvalue) {
+				if(typeof(successCallback) === "function") {
+					successCallback(returnvalue.result);	
+				}
+				establishedEvents[eventID] = returnvalue.result;
+				placeEstablishedEventMarker(returnvalue.result, true);
 			}
 		};
 
