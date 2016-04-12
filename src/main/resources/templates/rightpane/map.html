@@ -255,57 +255,6 @@
 			</div>
 		</div>
 
-
-	<div class="modal fade" id="edit-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form class="form-horizontal" id="event-form">
-					<div class="modal-header">
-						<h4 class="modal-title">Edit Event</h4>
-					</div>
-
-					<div class="modal-body">
-						<div class="form-group">
-							<label class="col-xs-4 control-label">Event Name</label>
-							<div class="col-xs-8">
-								<input type="text" class="form-control" name="eventName" id="new-event-name" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-xs-4 control-label">Description</label>
-							<div class="col-xs-8">
-								<input type="text" class="form-control" name="eventDescription" id="new-event-description"/>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-xs-4 control-label">Category</label>
-							<div class="col-xs-8">
-								<!--  <input type="text" class="form-control" name="eventLocation" id="new-event-category"/> -->
-								<select class="form-control" id="new-event-category">
-							    </select>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-xs-4 control-label">Time</label>
-							<div class="col-xs-8">
-								<!-- <input type="text" class="form-control" name="eventTime" id="new-event-time"/> -->
-								<input class="form-control" id="new-event-time"/>
-							</div>
-						</div>
-						<div class="form-group">
-							<span style="color:red"><div class="col-xs-10" id="formEventFeedback"></div></span>
-						</div>
-					</div>
-					<div class="modal-footer">
-                    	<button type="button" class="btn btn-default" id="new-event-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
-						<button type="button" class="btn btn-success" id="new-event-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-
 		<div class="content-template" id="established-event-content-template" aria-hidden="true">
 			<div class="established-food-location-popup">
 				<p style="display:none;" id="eventId">%s</p>
