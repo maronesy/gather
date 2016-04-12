@@ -64,9 +64,8 @@ public class RegistrantsControllerTest {
 
 		// Fetching the Registrant details directly from the DB to verify the
 		// API succeeded
-		List<Registrant> listUsers = this.registrantRepo.findByDisplayName("testingNewUser");
-		assertEquals(1, listUsers.size());
-		Registrant aUser = listUsers.get(0);
+		Registrant aUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		assertTrue(aUser!=null);
 		assertEquals("testingNewUser", aUser.getDisplayName());
 		assertEquals("newEmail@email.com", aUser.getEmail());
 		assertEquals("QWER1234", aUser.getPassword());
@@ -85,8 +84,8 @@ public class RegistrantsControllerTest {
 
 		// Fetching the Registrant details directly from the DB to verify the
 		// API succeeded
-		List<Registrant> listUsers = this.registrantRepo.findByDisplayName("testingNewUser");
-		assertEquals(0, listUsers.size());
+		Registrant testUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		assertTrue(testUser==null);
 
 	}
 
