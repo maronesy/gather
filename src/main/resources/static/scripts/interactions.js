@@ -201,8 +201,9 @@ function signOut() {
 //                              alert(returnvalue.status)
 //                              alert(returnvalue.message)
                                 gather.global.session.signedIn = false;
-                                headerSelect()
-                                rightPaneSelect()
+//                                headerSelect()
+//                                rightPaneSelect()
+                                window.location.href = "/"
                             } else {
                                 if (returnvalue.status != 0) {
 //                                  alert(returnvalue.status)
