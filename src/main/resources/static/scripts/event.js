@@ -18,7 +18,6 @@ function loadEventsFirstView(userCoordinates) {
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
-				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -26,7 +25,7 @@ function loadEventsFirstView(userCoordinates) {
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
 				$('.eventTable').append(
-					'<tr href="#" onclick="mapManager.showPop('+ eventId +');">' +
+					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
 								'<a href="#" class="pull-left"> ' +
@@ -39,7 +38,7 @@ function loadEventsFirstView(userCoordinates) {
 									'<span class="pull-right"></span>' +
 									'<p style="display:none;" eventId="' + eventId + '"></p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +
@@ -79,7 +78,6 @@ function loadJoinedEvents() {
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
-				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -87,7 +85,7 @@ function loadJoinedEvents() {
 				var address = streetAddress + ', ' + city + ', ' + state + ' ' + zipCode;
 				var description = events[i].description;
 				$('.joinedTable').append(
-					'<tr href="#" onclick="mapManager.showPop('+ eventId +');">' +
+					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
 								'<a href="#" class="pull-left"> ' +
@@ -99,7 +97,7 @@ function loadJoinedEvents() {
 									'<span class="pull-right"></span>' +
 									'<p style="display:none;" eventId="' + eventId + '"></p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time + '</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +
@@ -139,7 +137,6 @@ function loadOwnedEvents() {
 				var datetime = new Date( unixtime );
 				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = datetime.toLocaleDateString();
-				var timezone = datetime.toString().slice(-5)
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;
@@ -159,7 +156,7 @@ function loadOwnedEvents() {
 									'<span class="pull-right"></span>' +
 									'<p style="display:none;" id="eventId">' + eventId + '</p>' +
 									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time + ' ' + timezone +'</p>' +
+									'<p class="list-description">Date: '+ date + ', ' + time + '</p>' +
 									'<p class="list-description">Place: '+ address +'</p>' +
 									'<p class="list-description">Description: '+ description +'</p>' +
 								'</div>' +

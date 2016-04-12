@@ -633,8 +633,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var datetime = new Date( unixtime );
 		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 		var date = datetime.toLocaleDateString();
-		var timezone = datetime.toString().slice(-5)
-		timeDisplay = date + ', ' + time + ' ' + timezone
+		timeDisplay = date + ', ' + time 
 		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
