@@ -12,6 +12,8 @@ function rightPaneSelect() {
 
 function loadProfilePage() {
 	$('#myProfile').on('click', function() {
+		$("#profile").show();
+		$("#map").hide();
 		$.ajax({
 		 	accepts: "application/json",
 			type : "PUT",
@@ -54,10 +56,12 @@ function submitProfile() {
 		var formId = '#profileFeedback'
 		var updateData = '  ' // do not remove the extra space here, because we slice later
 
+		$('#profileSaving').show().delay(100);
 		if (gather.global.currentDisplayName != displayName && displayName != '') {
 			if (validateDisplayName(formId, displayName)) {
 				updateData = updateData + '"displayName":"' + displayName + '", '
 			} else {
+				$('#profileSaving').hide();
 				return
 			}
 		}
@@ -67,6 +71,7 @@ function submitProfile() {
 				updateData = updateData + '"password":"' + password + '", '
 				updateData = updateData + '"oldPassword":"' + oldPassword + '", '
 			} else {
+				$('#profileSaving').hide();
 				return
 			}
 		}
@@ -76,6 +81,7 @@ function submitProfile() {
 			if (validateZipCode(formId, defaultZipCode)) {
 				updateData = updateData + '"defaultZip":' + defaultZipCode + ', '
 			} else {
+				$('#profileSaving').hide();
 				return
 			}
 		}
@@ -84,6 +90,7 @@ function submitProfile() {
 			if (defaultTimeWindow >= 1 && defaultTimeWindow <= 13) {
 				updateData = updateData + '"defaultTimeWindow":' + defaultTimeWindow + ', '
 			} else {
+				$('#profileSaving').hide();
 				return
 			}
 		}
@@ -97,6 +104,9 @@ function submitProfile() {
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
 			data : '{'+updateData+'}',
+			complete: function() {
+                $('#profileSaving').hide();
+            },
 			success : function(returnvalue) {
 				if (returnvalue.status == 0) {
 					$(formId).html('Profile update successful!').show().delay(3000).hide(1000)
@@ -111,6 +121,7 @@ function submitProfile() {
 			error : function(jqXHR, textStatus, errorThrown) {
                 var responseMessage = $.parseJSON(jqXHR.responseText).message;
                 $(formId).html(responseMessage).show().delay(3000).hide(1000);
+                $("#profileDoNotChangePassword").trigger('click');
             }
 		});
 

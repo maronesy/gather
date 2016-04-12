@@ -87,15 +87,6 @@ function enterZip() {
                 } else {
                 	validateZipCode(zipCodeErrorBox, zipCode) 
                 }
-//                } else {
-//                    var returnValue = mapManager.determineCoordByZipCode(zipCode);
-//                    if (returnValue == -1) {
-//                        $(zipCodeErrorBox).fadeIn(100);
-//                        $('#zipCodeErrorBox').html('Zip code does not exist');
-//                    } else {
-//                        $(zipCodeErrorBox).hide();
-//                    }
-//                }
                 $('#zipSearching').hide();
             }, 100);
     });
@@ -201,8 +192,9 @@ function signOut() {
 //                              alert(returnvalue.status)
 //                              alert(returnvalue.message)
                                 gather.global.session.signedIn = false;
-                                headerSelect()
-                                rightPaneSelect()
+//                                headerSelect()
+//                                rightPaneSelect()
+                                window.location.href = "/"
                             } else {
                                 if (returnvalue.status != 0) {
 //                                  alert(returnvalue.status)
