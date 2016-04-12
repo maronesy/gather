@@ -946,6 +946,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 
+
+
+
+
+
+
 	this.editEvent = function(eventID) {
 		var eventData = establishedEvents[eventID];
 
@@ -958,7 +964,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 	function displayEditEventModal(eventID) {
-		var modalForm = $("#edit-new-event-modal");
+		var modalForm = $("#edit-event-modal");
 		modalForm.data("eventID", eventID);
 
 		var eventData = establishedEvents[eventID];
@@ -978,6 +984,30 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		modalForm.modal("show");
 	}
+
+		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
+
+		$(establishedEventContent).find("button").each(function(index) {
+			$(this).attr("data-event-id", anEvent.id);
+		});
+
+		//TODO: distance from caller should be calculated based on anEvent object
+		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
+		var establishedEventHTML = establishedEventContent[0].outerHTML;
+
+
+		var unixtime = anEvent.occurrences[0].timestamp;
+		var datetime = new Date( unixtime );
+		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+		var date = datetime.toLocaleDateString();
+		var timezone = datetime.toString().slice(-5)
+		timeDisplay = date + ', ' + time + ' ' + timezone
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
+
+
+
+
+
 
 
 	this.removeEvent = function(eventID) {
