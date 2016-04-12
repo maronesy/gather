@@ -1,5 +1,5 @@
 
-describe("front end email password tests", function () {
+describe("front end email/password tests", function () {
 
     it("correct email", function() {
     	var isEmail = validateEmail("#dummyFormId","hello@gmail.com");
@@ -52,6 +52,7 @@ describe("front end email password tests", function () {
     });
 
 });
+
 
 describe("zip code button click test", function() {
 	beforeEach(function () {

@@ -87,15 +87,6 @@ function enterZip() {
                 } else {
                 	validateZipCode(zipCodeErrorBox, zipCode) 
                 }
-//                } else {
-//                    var returnValue = mapManager.determineCoordByZipCode(zipCode);
-//                    if (returnValue == -1) {
-//                        $(zipCodeErrorBox).fadeIn(100);
-//                        $('#zipCodeErrorBox').html('Zip code does not exist');
-//                    } else {
-//                        $(zipCodeErrorBox).hide();
-//                    }
-//                }
                 $('#zipSearching').hide();
             }, 100);
     });
