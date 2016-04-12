@@ -224,10 +224,7 @@ public class EventControllerTest {
 	@Test
 	public void testJoinEvent() throws JsonProcessingException {
 		// Create event
-		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
+		Event event1 = createFirstEvent();
 
 		// Get user
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
@@ -259,13 +256,10 @@ public class EventControllerTest {
 		assertTrue(backendEvent.getParticipants().contains(user));
 	}
 
+	
 	@Test
 	public void testLeaveEvent() throws JsonProcessingException {
-		// Create event
-		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
+		Event event1 = createFirstEvent();
 
 		// Add user as participant in events
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
@@ -337,11 +331,7 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetJoinedEventListSingleEvent() throws JsonProcessingException {
-		// Create events
-		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
+		Event event1 = createFirstEvent();
 
 		// Add user as participant in events
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
@@ -373,11 +363,8 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetJoinedEventListMultipleEvents() throws JsonProcessingException {
-		// Create events
+		Event event1 = createFirstEvent();
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
 		Event event2 = new Event("Event2");
 		event2.setCategory(swim);
 		Event event3 = new Event("Event3");
@@ -685,11 +672,7 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetOwnedEventListSingleEvent() throws JsonProcessingException {
-		// Create events
-		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
+		Event event1 = createFirstEvent();
 
 		// Add user as participant in events
 		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
@@ -721,11 +704,8 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetOwnedEventListMultipleEvents() throws JsonProcessingException {
-		// Create events
+		Event event1 = createFirstEvent();
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
-		assertTrue(swim != null);
-		Event event1 = new Event("Event1");
-		event1.setCategory(swim);
 		Event event2 = new Event("Event2");
 		event2.setCategory(swim);
 		Event event3 = new Event("Event3");
@@ -859,4 +839,13 @@ public class EventControllerTest {
 		eCoor.setLongitude(111.232);
 		return eCoor;
 	}
+	
+	private Event createFirstEvent() {
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Event event1 = new Event("Event1");
+		event1.setCategory(swim);
+		return event1;
+	}
+
 }
