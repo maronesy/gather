@@ -76,7 +76,7 @@ public class RegistrationDataValidator extends AbstractValidator
 			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
 			errors.reject("-2", message+":The display name length must be 64 characters or less.");
 		}
-		else if(registrantDataAdapter.findByDisplayName(displayName).size()>=1)
+		else if(registrantDataAdapter.findByDisplayName(displayName)!=null)
 		{
 
 			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
