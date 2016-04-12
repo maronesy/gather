@@ -1,19 +1,19 @@
 function loadEventsFirstView(userCoordinates) {
 	var events = gather.global.nearEvents
-	appentToTable("eventTable", events, userCoordinates);
+	appentToTable("eventTable", events, userCoordinates, "around you");
 }
 
 function loadJoinedEvents(userCoordinates) {
 	var events = gather.global.joinedEvents;
-	appentToTable("joinedTable", events, userCoordinates);
+	appentToTable("joinedTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
 	var events = gather.global.ownedEvents;
-	appentToTable("ownedTable", events, userCoordinates);
+	appentToTable("ownedTable", events, userCoordinates, "that you own");
 }
 
-function appentToTable(tableClass, events, userCoordinates){
+function appentToTable(tableClass, events, userCoordinates, message){
 	if (events != null) {
 		if (events.length != 0) {
 			$('.' + tableClass).html('');
@@ -67,7 +67,7 @@ function appentToTable(tableClass, events, userCoordinates){
 					'<td colspan="3">  ' +
 						'<div class="media event-card"> ' +
 							'<div class="media-body">' +
-								'<h4 class="list-title">There is no event around you :(</h4>' +
+								'<h4 class="list-title">There are no events '+ message +' :(</h4>' +
 							'</div>' +
 						'</div>' +
 					'</td>' +
