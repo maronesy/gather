@@ -8,10 +8,10 @@
 	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.8/mapbox.js" type="text/javascript"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	
+
 	<script src="src/main/resources/static/scripts/interactions.js" type="text/javascript"></script>
 	<script src="src/main/resources/static/scripts/map.js" type="text/javascript"></script>
-	
+
 </head>
 
 <body>
@@ -23,21 +23,21 @@
 			<div class="container col-lg-6 col-md-6 col-sm-6">
 				<div class="pull-left">
 					<button id="locateMe" type="button" class="remove-outline btn btn-default">Locate Me</button>
-				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->	
+				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->
 				</div>
 				<div class="pull-left">
 					<button id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
 				</div>
 			</div>
-			
+
 			<div class="container col-lg-6 col-md-6 col-sm-6">
-				
+
 				<form action="javascript:void(0);"  class="form-inline">
 					<div class="pull-right form-group">
 		    			<input id="zipCode" type="text" style="width:85px;" class="form-control" placeholder="Zip Code"/>
-		    		    <input id="enterZip" href="#zipCodeErrorBox" value="Go" type="submit" class="remove-outline btn btn-default"/>	
+		    		    <input id="enterZip" href="#zipCodeErrorBox" value="Go" type="submit" class="remove-outline btn btn-default"/>
 		  			</div>
-		  			
+
 		  			<a class="pull-right" id="zipSearching" style=" display: none; margin: 6px;">searching...</a>
 	  			</form>
   			</div>
@@ -49,9 +49,9 @@
 				<a id="resizeLayout" style="cursor: pointer;" class="map-glyphicon glyphicon glyphicon-resize-small"></a>
 			</div>
 		</div>
-			
+
 		</div>
-	    
+
 	</div>
 	</div>
 
@@ -87,7 +87,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="modal fade" id="general-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -106,7 +106,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="event-removed-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -125,7 +125,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="event-join-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -144,7 +144,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="event-leave-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -175,7 +175,7 @@
 				<div class="modal-body">
 					<span>As an anonymous user, you are not able to to add new events of your own.</span><br></br><br></br>
 					<span>Please sign in in the front page or register with the button below.</span>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button id="failureAddEventModalRegisterBtn" type="button" class="btn btn-default" data-dismiss="modal">Register</button>
@@ -184,7 +184,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="anonymous-user-join-event-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -196,7 +196,7 @@
 				<div class="modal-body">
 					<span>As an anonymous user, you are not able to to join new events.</span><br></br><br></br>
 					<span>Please sign in in the front page or register with the button below.</span>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button id="failureJoinEventModalRegisterBtn" type="button" class="btn btn-default" data-dismiss="modal">Register</button>
@@ -257,8 +257,9 @@
 
 		<div class="content-template" id="established-event-content-template" aria-hidden="true">
 			<div class="established-food-location-popup">
+				<p style="display:none;" id="eventId">%s</p>
 				<p><b>%s</b></p>
-			
+
 				<ul>
 					<li>Event category:  %s</li>
 					<li>Event description:  %s</li>
@@ -270,6 +271,7 @@
 				Check in to rank this location and leave feedback.</p>
 
 				<div class="modal-footer" id="establishedEventFooter">
+					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
 					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
 					<button id="joinEventBtn" class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
 					<button id="leaveEventBtn" class="btn btn-default" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button>
@@ -291,21 +293,21 @@
 			<p>%s</p>
 		</div>
 	</div>
-	
+
 	<div class="content-template" id="new-event-content-template" aria-hidden="true">
 		<div class="new-event-location-popup">
 				<p><b>New Event Location</b></p>
-				
+
 				<p>Drag the marker to a more precise location.</p>
 				<p>Once the marker is positioned accurately, click the Edit New Event Detail button to provide more information about this event.</p>
 
 				<div class="modal-footer">
-					<button class="btn btn-default" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
-					<button class="btn btn-success" onclick="mapManager.editNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit New Event Location</button>
+					<button class="btn btn-danger" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
+					<button class="btn btn-success" onclick="mapManager.editNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Update Event Info</button>
 				</div>
 		</div>
 	</div>
-		
+
 </div>
 </body>
 

@@ -33,6 +33,7 @@
 	<link rel="stylesheet" href="styles/main.css" />
 	<link href="styles/map.css" rel="stylesheet"/>
 	<script src="scripts/global.js" type="text/javascript"></script>
+	<script src="scripts/profile.js" type="text/javascript"></script>
 	<script src="mapaid/sprintf.js" type="text/javascript"></script>
 	<script src="mapaid/bounce-marker.js" type="text/javascript"></script>
 	
@@ -48,7 +49,7 @@
 	<div  id="headerIn"><div th:replace= "header/headerin :: headerin" ></div></div>
 <div class="container-fluid main-pain">
     <div th:replace="leftpane/ownedlist :: ownedlist"></div>
-    <div th:replace="rightpane/map :: map"></div> 
+    <div id="map"><div th:replace="rightpane/map :: map"></div></div>
     <div style="display:none;" id="profile"><div th:replace="rightpane/profile :: profile"></div></div>
 </div>
 	<div th:replace="registerform :: registerform"></div>

@@ -37,7 +37,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			zoomControl: false
 		};
 		var map = L.mapbox.map("map-canvas", mapboxMapID, mapOptions);
-	
+
 		var zoomControlOptions = {
 			position: "topright"
 		};
@@ -56,9 +56,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
-			
+
 			map.setView([userCoordinates.latitude, userCoordinates.longitude], 10);
-			
+
 			if(typeof(successCallback) === "function") {
 				successCallback(userCoordinates);
 			}
@@ -156,7 +156,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			};
 
 			var markerOptions = {
-				icon: L.mapbox.marker.icon(iconOptions),	
+				icon: L.mapbox.marker.icon(iconOptions),
 			};
 
 			userMarker = L.marker(markerPosition, markerOptions);
@@ -285,7 +285,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
 	}
-	
+
 	$('#addEventBtn').on('click', function() {
 		if(gather.global.session.signedIn){
 			addNewEvent()
@@ -296,7 +296,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			});
 		}
 	});
-	
+
 	function addNewEvent() {
 
 		if(currentUserCoordinates === null) {
@@ -345,7 +345,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			eventMarker.bindPopup(newEventContent[0], popupOptions);
 
 			eventMarker.on("dragend", function(event) {
-				eventMarker.openPopup();	
+				eventMarker.openPopup();
 	        });
 
 			setUpCategoryOptions()
@@ -355,7 +355,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			eventMarker.openPopup();
 		}
 	}
-    
+
 	function setUpCategoryOptions(){
 
 		var newOptions={};
@@ -368,7 +368,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				     .attr("value", catArray[i].name).text(catArray[i].name));
 		}
 	}
-	
+
 	this.discardNewEvent = function(newEventDataID) {
 		var eventData = newEvents[newEventDataID];
 
@@ -394,7 +394,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			displayEditNewEventModal(newEventDataID);
 		}
 	}
-	
+
 	function displayEditNewEventModal(newEventDataID) {
 		var modalForm = $("#edit-new-event-modal");
 		modalForm.data("newEventDataID", newEventDataID);
@@ -422,7 +422,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-		
+
 		$("#new-event-name").val(eventData.newEventFormData.eventName);
 		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
 		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
@@ -434,13 +434,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
-	
+
 		if(eventData !== undefined) {
 			eventData.newEventFormData.eventName = $("#new-event-name").val();
 			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
 			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
 			eventData.newEventFormData.eventTime = $("#new-event-time").val();
-			
+
 		}
 	}
 
@@ -461,12 +461,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					clearEventForm();
 				}
 	});
-	
+
 	$('#new-event-close').on(
 			'click', function() {
 				clearEventForm();
 	});
-	
+
 	function clearEventForm(){
 		$("#new-event-name").val('');
 		$("#new-event-description").val('');
@@ -474,7 +474,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$("#new-event-time").val('');
 		$('#formEventFeedback').html('');
 	}
-	
+
 	function validateEventDescription(eventDescription){
 		if (eventDescription.length < 5 || eventDescription.length > 120) {
 			return false;
@@ -482,14 +482,14 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			return true;
 		}
 	}
-	
+
 	$('#new-event-time').datetimepicker();
 	//$('#new-event-category').selectmenu();
-	
+
 	function submitNewEventForm() {
 		var modalForm = $("#edit-new-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
-		
+
 		createNewEvent(newEventDataID, function(newEventResponse) {
 			newEvent = newEventResponse.result;
 			mapManager.discardNewEvent(newEventDataID);
@@ -500,13 +500,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			gather.global.nearEvents.push(newEvent);
 			loadEventsFirstView(currentUserCoordinates);
-			
+
 			placeEstablishedEventMarker(newEvent, true);
-			
+
 			//TODO event card not implemented, we currently have event list only
 			//addEventCard(newEvent, true);
 			//updateEventCountTitle();
-			
+
 		}, function() {
 			modalForm.modal("hide");
 			displayGeneralFailureModal();
@@ -536,7 +536,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		};
 
 		var requestData = JSON.stringify(requestObject);
-		
+
 		var requestOptions = {
 			type: "POST",
 			url: "rest/events",
@@ -560,7 +560,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-	
+
 	function placeEstablishedEventMarker(anEvent, bounceOnAdd) {
 		console.log(JSON.stringify(anEvent))
 		//var markerPosition = new L.LatLng(anEvent.coordinates.latitude, anEvent.coordinates.longitude);
@@ -604,8 +604,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		anEvent.eventMarker = eventMarker;
 		if (isCurrentUserOnwer(anEvent.owners)){
 			$('#removeEventBtn').show();
+			$('#editEventBtn').show();
 		}else{
 			$('#removeEventBtn').hide();
+			$('#editEventBtn').hide();
 		}
 		
 		if (isUserParticipant(anEvent.participants)){
@@ -617,21 +619,26 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		
 		var establishedEventContent = getContentTemplateClone("#established-event-content-template");
-		
+
 		$(establishedEventContent).find("button").each(function(index) {
 			$(this).attr("data-event-id", anEvent.id);
 		});
-		
+
 		//TODO: distance from caller should be calculated based on anEvent object
 		var distanceFromCaller=distance(eCoordinates.latitude, eCoordinates.longitude,currentUserCoordinates.latitude, currentUserCoordinates.longitude,'M');
-		var establishedEventHTML = establishedEventContent[0].outerHTML; 
+		var establishedEventHTML = establishedEventContent[0].outerHTML;
 
-		timeDisplay = new Date(anEvent.occurrences[0].timestamp);
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
+
+		var unixtime = anEvent.occurrences[0].timestamp;
+		var datetime = new Date( unixtime );
+		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+		var date = datetime.toLocaleDateString();
+		timeDisplay = date + ', ' + time 
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
-	
+
 	function isCurrentUserOnwer(owners){
 		var result=false;
 		for(var i = 0; i < owners.length; i++){
@@ -677,9 +684,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 							}
 					console.log(JSON.stringify(gather.global.nearEvents[i]));
 					placeEstablishedEventMarker(gather.global.nearEvents[i], true);
-					
+
 					establishedEvents[gather.global.nearEvents[i].id] = gather.global.nearEvents[i];
-					
+
 				}
 				loadEventsFirstView(userCoordinates);
 			},
@@ -700,7 +707,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-	
+
 	function joinedEvents() {
 		$.ajax({
 		 	accepts: "application/json",
@@ -711,7 +718,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				gather.global.joinedEvents = returnvalue.results;
 				for(var i = 0; i < gather.global.joinedEvents.length; i++){
 					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
-					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];	
+					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];
 				}
 				loadJoinedEvents();
 			},
@@ -730,7 +737,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-	
+
 //	function joinedEvents() {
 //		//alert(gather.global.email)
 //		var nEvents = gather.global.nearEvents;
@@ -741,7 +748,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 //			}
 //		}
 //	}
-	
+
 
 
 	function ownedEvents() {
@@ -754,7 +761,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				gather.global.ownedEvents = returnvalue.results;
 				for(var i = 0; i < gather.global.ownedEvents.length; i++){
 					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
-					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];			
+					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];
 				}
 				loadOwnedEvents();
 			},
@@ -773,9 +780,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-	
+
 	this.determineCoordByZipCode = function(zipCode) {
-		
+
 		console.log("The user denied the request for geolocation.");
     	var httpRequest = new XMLHttpRequest();
         httpRequest.open("GET", 'zipcode.csv', false);
@@ -789,11 +796,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 //            zipcode = prompt('Please enter your Zip','Zip Code');
 //        }
         var zipList = $.csv.toObjects(CSVContents);
-        
+
         console.log(zipList);
-        
+
         var uCoordinates = null
-        
+
 //        jQuery.grep(zipList, function( zip, i ) {
 //        	if (zip == zipCode) {
 //        		var i = zipList.index(zipCode)
@@ -801,9 +808,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 //      				latitude: zipList[i].latitude,
 //    				longitude: zipList[i].longitude
 //    				};
-//        	} 
+//        	}
 //        });
-        
+
         for (var i in zipList) {
         	if(zipList[i].zip == zipCode){
 				uCoordinates = {
@@ -820,7 +827,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         }
         //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
-	
+
 	function displayGeolocationUnsupportedModal() {
 		$("#geolocation-unsupported-modal").modal("show");
 	}
@@ -828,7 +835,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function displayGeneralFailureModal() {
 		$("#general-failure-modal").modal("show");
 	}
-	
+
 	this.showPop = function(eventId) {
 		
 		var myEvent = establishedEvents[eventId];
@@ -836,7 +843,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		eMarker = myEvent.eventMarker;
 		eMarker.openPopup();
 	}
-	
+
 	this.joinEvent = function(eventID) {
 		var establishedEvent = establishedEvents[eventID];
 
@@ -844,7 +851,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			displayGeneralFailureModal();
 		}
 		else {
-			
+
 			if (gather.global.session.signedIn == false){
 				$("#anonymous-user-join-event-failure-modal").modal("show");
 				$('#failureJoinEventModalRegisterBtn').on('click', function() {
@@ -852,7 +859,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				});
 			}else {
 				establishedEvent.eventMarker.closePopup();
-				
+
 				doJoinEvent(eventID, function(updatedEvent) {
 					$("#event-join-modal").modal("show");
 				}, function() {
@@ -861,9 +868,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}
 	}
-	
+
 	function doJoinEvent(eventID, successCallback, failureCallback) {
-		
+
 		var requestOptions = {
 			type: "POST",
 			url: "/rest/events/join",
@@ -944,13 +951,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			displayGeneralFailureModal();
 		}
 		else {
-			
+
 			if (gather.global.session.signedIn == false){
 				displayGeneralFailureModal();
 
 			}else {
 				establishedEvent.eventMarker.closePopup();
-				
+
 				doRemoveEvent(eventID, function(updatedEvent) {
 					$("#event-removed-modal").modal("show");
 					var eventMarker = establishedEvent.eventMarker;
@@ -961,9 +968,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}
 	}
-	
+
 	function doRemoveEvent(eventID, successCallback, failureCallback) {
-		
+
 		var requestOptions = {
 			type: "POST",
 			url: "/rest/events/remove",
@@ -974,7 +981,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success: function(response) {
 				if(typeof(successCallback) === "function") {
 					successCallback(response.result);
-					
+
 				}
 			}
 		};
@@ -989,7 +996,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-	
+
 	function updateEventMarker(eventMarker, coordinates, iconOptions) {
 		if(coordinates !== null && typeof(coordinates) === "object") {
 			var eventPosition = new L.LatLng(coordinates.latitude, coordinates.longitude);
@@ -1006,7 +1013,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 }
 
 function determineCoordByZipCode1(zipCode) {
-	
+
 	console.log("The user denied the request for geolocation.");
 	var httpRequest = new XMLHttpRequest();
     httpRequest.open("GET", 'zipcode.csv', false);
@@ -1014,11 +1021,11 @@ function determineCoordByZipCode1(zipCode) {
     //alert( httpRequest.responseText );
     CSVContents = httpRequest.responseText;
     var zipList = $.csv.toObjects(CSVContents);
-    
+
     console.log(zipList);
-    
+
     var uCoordinates = null
-    
+
     for (var i in zipList) {
     	if(zipList[i].zip == zipCode){
 			uCoordinates = {
