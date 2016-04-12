@@ -917,8 +917,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if(typeof(successCallback) === "function") {
 					successCallback(returnvalue.result);	
 				}
-				var index = gather.global.joinedEvents.indexOf(returnvalue.result);
-				gather.global.joinedEvents.splice(index, 1);
+				var index = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+				if (index > -1) {
+					gather.global.joinedEvents.splice(index, 1);
+				}				
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
 				loadJoinedEvents(userCoordinates);
