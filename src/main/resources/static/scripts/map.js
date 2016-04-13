@@ -720,7 +720,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
 					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];
 				}
-				loadJoinedEvents();
+				loadJoinedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
@@ -738,19 +738,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-//	function joinedEvents() {
-//		//alert(gather.global.email)
-//		var nEvents = gather.global.nearEvents;
-//		for (var i = 0; i < nEvents.length; i++){
-//			alert(nEvents[i].participants[0].email);
-//			if (nEvents[i].participants[i].email == gather.global.email) {
-//				gather.global.joinedEvents.push(nEvents[i]);
-//			}
-//		}
-//	}
-
-
-
 	function ownedEvents() {
 		$.ajax({
 		 	accepts: "application/json",
@@ -763,7 +750,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
 					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];
 				}
-				loadOwnedEvents();
+				loadOwnedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
@@ -882,8 +869,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if(typeof(successCallback) === "function") {
 					successCallback(returnvalue.result);	
 				}
+				gather.global.joinedEvents.push(returnvalue.result);
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
+				loadJoinedEvents(userCoordinates);
 			}
 		};
 
@@ -928,8 +917,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if(typeof(successCallback) === "function") {
 					successCallback(returnvalue.result);	
 				}
+				var index = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+				if (index > -1) {
+					gather.global.joinedEvents.splice(index, 1);
+				}				
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
+				loadJoinedEvents(userCoordinates);
 			}
 		};
 
