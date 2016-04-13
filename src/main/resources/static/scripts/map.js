@@ -544,9 +544,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			data: requestData,
 			dataType: "json",
 			timeout: 10000,
-			success: function(result) {
+			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
-					successCallback(result);
+					successCallback(returnvalue);
+					
+					gather.global.joinedEvents.push(returnvalue.result);
+					gather.global.ownedEvents.push(returnvalue.result);
+
+					loadJoinedEvents(userCoordinates);
+					loadOwnedEvents(userCoordinates);
 				}
 			}
 		};
@@ -972,10 +978,21 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			data: '{ "eventId" : ' + eventID +' }',
 			dataType: "json",
 			timeout: 10000,
-			success: function(response) {
+			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
-					successCallback(response.result);
-
+					successCallback(returnvalue.result);
+					var index = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					var index2 = gather.global.ownedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					if (index > -1) {
+						gather.global.joinedEvents.splice(index, 1);
+					}	
+					if (index2 > -1) {
+						gather.global.ownedEvents.splice(index2, 1);
+					}	
+					establishedEvents[eventID] = returnvalue.result;
+					placeEstablishedEventMarker(returnvalue.result, true);
+					loadJoinedEvents(userCoordinates);
+					loadOwnedEvents(userCoordinates);
 				}
 			}
 		};
