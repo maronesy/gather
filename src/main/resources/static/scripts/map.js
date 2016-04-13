@@ -551,13 +551,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					gather.global.joinedEvents.push(returnvalue.result);
 					gather.global.ownedEvents.push(returnvalue.result);
 
-					if (gather.global.flag == 1){
-						loadJoinedEvents(userCoordinates);
-					} else if(gather.global.flag == 2){
-						loadOwnedEvents(userCoordinates);
-					} else {
-						loadEventsFirstView(userCoordinates);
-					}
+					loadCorrectTable();
 				}
 			}
 		};
@@ -883,9 +877,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				gather.global.joinedEvents.push(returnvalue.result);
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
-				if( gather.global.flag == 1){
-					loadJoinedEvents(userCoordinates);
-				}
+				loadCorrectTable();
 			}
 		};
 
@@ -936,9 +928,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				}				
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
-				if( gather.global.flag == 1){
-					loadJoinedEvents(userCoordinates);
-				}
+				loadCorrectTable();
 			}
 		};
 
@@ -1008,13 +998,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					establishedEvents[eventID] = returnvalue.result;
 					placeEstablishedEventMarker(returnvalue.result, true);
 					
-					if (gather.global.flag == 1){
-						loadJoinedEvents(userCoordinates);
-					} else if(gather.global.flag == 2){
-						loadOwnedEvents(userCoordinates);
-					} else {
-						loadEventsFirstView(userCoordinates);
-					}
+					loadCorrectTable();
 				}
 			}
 		};
@@ -1042,6 +1026,16 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 
 		eventMarker.update();
+	}
+	
+	function loadCorrectTable(){		
+		if (gather.global.flag == 1){
+			loadJoinedEvents(userCoordinates);
+		} else if(gather.global.flag == 2){
+			loadOwnedEvents(userCoordinates);
+		} else {
+			loadEventsFirstView(userCoordinates);
+		}		
 	}
 	
 	$('#showNearBy').on('click', function(){
