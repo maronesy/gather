@@ -163,6 +163,7 @@ function signIn() {
                             updateGreeting();
                             headerSelect();
                             loadJoinedEvents();
+                            window.location.href = "/"
                         } else {
 //                          alert(returnvalue.status)
 //                          alert(returnvalue.message)
@@ -257,6 +258,7 @@ function signUp() {
                                     gather.global.currentDisplayName = displayName;
                                     updateGreeting();
                                     headerSelect();
+                                    window.location.href = "/"
                                 } else {
                                         $(formId).html(returnvalue.message);
                                 }
