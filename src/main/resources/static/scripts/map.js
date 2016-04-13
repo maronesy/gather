@@ -135,7 +135,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
 
 				placeUserMarker(userCoordinates);
-				getNearByEvents(userCoordinates);
+				getNearByEvents();
 				currentUserCoordinates = userCoordinates;
 				if (gather.global.session.signedIn == true){
 					joinedEvents();
@@ -551,8 +551,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					gather.global.joinedEvents.push(returnvalue.result);
 					gather.global.ownedEvents.push(returnvalue.result);
 
-					loadJoinedEvents(userCoordinates);
-					loadOwnedEvents(userCoordinates);
+					if (gather.global.flag == 1){
+						loadJoinedEvents(userCoordinates);
+					} else if(gather.global.flag == 2){
+						loadOwnedEvents(userCoordinates);
+					} else {
+						loadEventsFirstView(userCoordinates);
+					}
 				}
 			}
 		};
@@ -665,7 +670,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		return result;
 	}
 	
-	function getNearByEvents(userCoordinates) {
+	function getNearByEvents() {
 		var radiusMi = 25;
 		var hour = 730;
 
@@ -878,7 +883,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				gather.global.joinedEvents.push(returnvalue.result);
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
-				loadJoinedEvents(userCoordinates);
+				if( gather.global.flag == 1){
+					loadJoinedEvents(userCoordinates);
+				}
 			}
 		};
 
@@ -929,7 +936,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				}				
 				establishedEvents[eventID] = returnvalue.result;
 				placeEstablishedEventMarker(returnvalue.result, true);
-				loadJoinedEvents(userCoordinates);
+				if( gather.global.flag == 1){
+					loadJoinedEvents(userCoordinates);
+				}
 			}
 		};
 
@@ -981,18 +990,31 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
 					successCallback(returnvalue.result);
+
 					var index = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
 					var index2 = gather.global.ownedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					var index3 = gather.global.nearEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					
 					if (index > -1) {
 						gather.global.joinedEvents.splice(index, 1);
 					}	
 					if (index2 > -1) {
 						gather.global.ownedEvents.splice(index2, 1);
 					}	
+					if (index3 > -1) {
+						gather.global.nearEvents.splice(index3, 1);
+					}	
+					
 					establishedEvents[eventID] = returnvalue.result;
 					placeEstablishedEventMarker(returnvalue.result, true);
-					loadJoinedEvents(userCoordinates);
-					loadOwnedEvents(userCoordinates);
+					
+					if (gather.global.flag == 1){
+						loadJoinedEvents(userCoordinates);
+					} else if(gather.global.flag == 2){
+						loadOwnedEvents(userCoordinates);
+					} else {
+						loadEventsFirstView(userCoordinates);
+					}
 				}
 			}
 		};
@@ -1021,35 +1043,21 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		eventMarker.update();
 	}
-}
-
-function determineCoordByZipCode1(zipCode) {
-
-	console.log("The user denied the request for geolocation.");
-	var httpRequest = new XMLHttpRequest();
-    httpRequest.open("GET", 'zipcode.csv', false);
-    httpRequest.send(null);
-    //alert( httpRequest.responseText );
-    CSVContents = httpRequest.responseText;
-    var zipList = $.csv.toObjects(CSVContents);
-
-    console.log(zipList);
-
-    var uCoordinates = null
-
-    for (var i in zipList) {
-    	if(zipList[i].zip == zipCode){
-			uCoordinates = {
-			latitude: zipList[i].latitude,
-			longitude: zipList[i].longitude
-			}
-    	}
-    }
-    if (uCoordinates == null) {
-    	return -1;
-    } else {
-    	return 0;
-    }
+	
+	$('#showNearBy').on('click', function(){
+		gather.global.flag = 0;
+		getNearByEvents();
+	})
+	
+	$('#showJoined').on('click', function(){
+		gather.global.flag = 1;
+		joinedEvents();
+	})
+	
+	$('#showOwned').on('click', function(){
+		gather.global.flag = 2;
+		ownedEvents();
+	})
 }
 
 function distance(lat1, lon1, lat2, lon2, unit) {

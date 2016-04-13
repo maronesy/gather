@@ -12,6 +12,7 @@ $(document).ready(function() {
     removeZipCodeError();
     onLoadSessionCheck();
     headerSelect();
+    tableSelect();
     loadCategories();
 //  loadEventsFirstView();
 });
@@ -296,6 +297,10 @@ function sessionCheck() {
             alert(errorThrown);
         }
     });
+}
+
+function tableSelect(){
+
 }
 
 function updateGreeting(){

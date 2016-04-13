@@ -5,12 +5,12 @@ function loadEventsFirstView(userCoordinates) {
 
 function loadJoinedEvents(userCoordinates) {
 	var events = gather.global.joinedEvents;
-	appentToTable("joinedTable", events, userCoordinates, "that you have joined");
+	appentToTable("eventTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
 	var events = gather.global.ownedEvents;
-	appentToTable("ownedTable", events, userCoordinates, "that you own");
+	appentToTable("eventTable", events, userCoordinates, "that you own");
 }
 
 function appentToTable(tableClass, events, userCoordinates, message){

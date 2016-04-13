@@ -8,5 +8,6 @@ gather.global.ownedEvents = null;
 gather.global.email = null;
 gather.global.session = {};
 gather.global.session.signedIn = false;
+gather.global.flag = 0;
 gather.global.categories = [];
 
