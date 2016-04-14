@@ -1040,16 +1040,19 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	
 	$('#showNearBy').on('click', function(){
 		gather.global.flag = 0;
+		rightPaneSelect();
 		getNearByEvents();
 	})
 	
 	$('#showJoined').on('click', function(){
 		gather.global.flag = 1;
+		rightPaneSelect();
 		joinedEvents();
 	})
 	
 	$('#showOwned').on('click', function(){
 		gather.global.flag = 2;
+		rightPaneSelect();
 		ownedEvents();
 	})
 }
