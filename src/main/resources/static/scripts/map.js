@@ -678,26 +678,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
-
-				console.log(JSON.stringify(gather.global.nearEvents))
-				for(var i = 0; i < gather.global.nearEvents.length; i++){
-//					alert(gather.global.nearEvents[i].location.latitude);
-//					alert(gather.global.nearEvents[i].location.longitude);
-					var eCoordinates = {
-							latitude: gather.global.nearEvents[i].location.latitude,
-							longitude: gather.global.nearEvents[i].location.longitude
-							}
-					console.log(JSON.stringify(gather.global.nearEvents[i]));
-					placeEstablishedEventMarker(gather.global.nearEvents[i], true);
-
-					establishedEvents[gather.global.nearEvents[i].id] = gather.global.nearEvents[i];
-
-				}
+				refreshEventMarkers(gather.global.nearEvents);
 				loadEventsFirstView(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-//			    alert(jqXHR.status);
-//			    alert(textStatus);
 			    alert(errorThrown);
 				if (errorThrown == "Found") {
 					signedIn = true;
@@ -713,6 +697,35 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
+	function resetEventMarker(anEvent){
+		removeAnEventFrom(anEvent, establishedEvents);
+		establishedEvents[anEvent.id] = anEvent;
+		placeEstablishedEventMarker(anEvent, true);
+	}
+	
+	function addAnEventTo(anEvent, events){
+		placeEstablishedEventMarker(anEvent, true);
+		events[anEvent.id] = anEvent;
+	}
+	
+	function removeAnEventFrom(anEvent, events){
+		var eventMarker = establishedEvents[anEvent.id].eventMarker;
+		map.removeLayer(eventMarker);
+		delete events[anEvent.id];
+	}
+	
+	function refreshEventMarkers(events){
+		//Remove current establishedEvents
+		for(var eventId in establishedEvents){
+			removeAnEventFrom(establishedEvents[eventId], establishedEvents);
+		}
+		
+		//Re-Add events to map
+		for(var i = 0; i < events.length; i++){
+			addAnEventTo(events[i],establishedEvents);
+		}
+	}
+	
 	function joinedEvents() {
 		$.ajax({
 		 	accepts: "application/json",
@@ -721,10 +734,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			contentType: "application/json; charset=UTF-8",
 			success : function(returnvalue) {
 				gather.global.joinedEvents = returnvalue.results;
-				for(var i = 0; i < gather.global.joinedEvents.length; i++){
-					placeEstablishedEventMarker(gather.global.joinedEvents[i], true);
-					establishedEvents[gather.global.joinedEvents[i].id] = gather.global.joinedEvents[i];
-				}
+				refreshEventMarkers(gather.global.joinedEvents);
 				loadJoinedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
@@ -751,10 +761,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			contentType: "application/json; charset=UTF-8",
 			success : function(returnvalue) {
 				gather.global.ownedEvents = returnvalue.results;
-				for(var i = 0; i < gather.global.ownedEvents.length; i++){
-					placeEstablishedEventMarker(gather.global.ownedEvents[i], true);
-					establishedEvents[gather.global.ownedEvents[i].id] = gather.global.ownedEvents[i];
-				}
+				refreshEventMarkers(gather.global.ownedEvents);
 				loadOwnedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
@@ -817,7 +824,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
         	processUserCoordinates(uCoordinates);
         	return 0;
         }
-        //alert(uCoordinates.latitude + uCoordinates.longitude);
     }
 
 	function displayGeolocationUnsupportedModal() {
@@ -875,8 +881,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					successCallback(returnvalue.result);	
 				}
 				gather.global.joinedEvents.push(returnvalue.result);
-				establishedEvents[eventID] = returnvalue.result;
-				placeEstablishedEventMarker(returnvalue.result, true);
+				resetEventMarker(returnvalue.result);
 				loadCorrectTable();
 			}
 		};
@@ -926,8 +931,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if (index > -1) {
 					gather.global.joinedEvents.splice(index, 1);
 				}				
-				establishedEvents[eventID] = returnvalue.result;
-				placeEstablishedEventMarker(returnvalue.result, true);
+				resetEventMarker(returnvalue.result);
 				loadCorrectTable();
 			}
 		};
@@ -942,7 +946,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		});
 	}
-
+	
 	this.removeEvent = function(eventID) {
 		var establishedEvent = establishedEvents[eventID];
 
@@ -994,9 +998,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					if (index3 > -1) {
 						gather.global.nearEvents.splice(index3, 1);
 					}	
-					
-					establishedEvents[eventID] = returnvalue.result;
-					placeEstablishedEventMarker(returnvalue.result, true);
 					
 					loadCorrectTable();
 				}
