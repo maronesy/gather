@@ -1040,21 +1040,18 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	$('#showNearBy').on('click', function(){
-		$('#eventListTitle').text("Nearby Event List");
 		gather.global.flag = 0;
 		rightPaneSelect();
 		getNearByEvents();
 	})
 	
 	$('#showJoined').on('click', function(){
-		$('#eventListTitle').text("Joined Event List");
 		gather.global.flag = 1;
 		rightPaneSelect();
 		joinedEvents();
 	})
 	
 	$('#showOwned').on('click', function(){
-		$('#eventListTitle').text("Owned Event List");
 		gather.global.flag = 2;
 		rightPaneSelect();
 		ownedEvents();
