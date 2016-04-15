@@ -12,7 +12,6 @@ $(document).ready(function() {
     removeZipCodeError();
     onLoadSessionCheck();
     headerSelect();
-    tableSelect();
     loadCategories();
 //  loadEventsFirstView();
 });
@@ -163,7 +162,6 @@ function signIn() {
                             gather.global.currentDisplayName = returnvalue.displayName;
                             updateGreeting();
                             headerSelect();
-                            loadJoinedEvents();
                             window.location.href = "/"
                         } else {
 //                          alert(returnvalue.status)
@@ -297,10 +295,6 @@ function sessionCheck() {
             alert(errorThrown);
         }
     });
-}
-
-function tableSelect(){
-
 }
 
 function updateGreeting(){

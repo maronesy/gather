@@ -735,7 +735,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				gather.global.joinedEvents = returnvalue.results;
 				refreshEventMarkers(gather.global.joinedEvents);
-				loadJoinedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
@@ -762,7 +761,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				gather.global.ownedEvents = returnvalue.results;
 				refreshEventMarkers(gather.global.ownedEvents);
-				loadOwnedEvents(userCoordinates);
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 			    alert(errorThrown);
@@ -985,18 +983,18 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if(typeof(successCallback) === "function") {
 					successCallback(returnvalue.result);
 
-					var index = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
-					var index2 = gather.global.ownedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
-					var index3 = gather.global.nearEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					var indexJoined = gather.global.joinedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					var indexOwned = gather.global.ownedEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
+					var indexNearby = gather.global.nearEvents.map(function(x) {return x.id; }).indexOf(returnvalue.result.id);
 					
-					if (index > -1) {
-						gather.global.joinedEvents.splice(index, 1);
+					if (indexJoined > -1) {
+						gather.global.joinedEvents.splice(indexJoined, 1);
 					}	
-					if (index2 > -1) {
-						gather.global.ownedEvents.splice(index2, 1);
+					if (indexOwned > -1) {
+						gather.global.ownedEvents.splice(indexOwned, 1);
 					}	
-					if (index3 > -1) {
-						gather.global.nearEvents.splice(index3, 1);
+					if (indexNearby > -1) {
+						gather.global.nearEvents.splice(indexNearby, 1);
 					}	
 					
 					loadCorrectTable();
@@ -1030,31 +1028,36 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function loadCorrectTable(){		
-		if (gather.global.flag == 1){
+		if (gather.global.currentEventList == ViewingNearByEvents){
+			loadEventsFirstView(userCoordinates);
+		} else if (gather.global.currentEventList == ViewingJoinedEvents){
 			loadJoinedEvents(userCoordinates);
-		} else if(gather.global.flag == 2){
+		} else if(gather.global.currentEventList == ViewingOwnedEvents){
 			loadOwnedEvents(userCoordinates);
 		} else {
-			loadEventsFirstView(userCoordinates);
+			displayGeneralFailureModal();
 		}		
 	}
 	
 	$('#showNearBy').on('click', function(){
-		gather.global.flag = 0;
+		gather.global.currentEventList = ViewingNearByEvents;
 		rightPaneSelect();
 		getNearByEvents();
+		loadCorrectTable(gather.global.currentEventList);
 	})
 	
 	$('#showJoined').on('click', function(){
-		gather.global.flag = 1;
+		gather.global.currentEventList = ViewingJoinedEvents;
 		rightPaneSelect();
 		joinedEvents();
+		loadCorrectTable(gather.global.currentEventList);
 	})
 	
 	$('#showOwned').on('click', function(){
-		gather.global.flag = 2;
+		gather.global.currentEventList = ViewingOwnedEvents;
 		rightPaneSelect();
 		ownedEvents();
+		loadCorrectTable(gather.global.currentEventList);
 	})
 }
 
