@@ -1,14 +1,17 @@
 function loadEventsFirstView(userCoordinates) {
+	$('#eventListTitle').text("Nearby Event List");
 	var events = gather.global.nearEvents
 	appentToTable("eventTable", events, userCoordinates, "around you");
 }
 
 function loadJoinedEvents(userCoordinates) {
+	$('#eventListTitle').text("Joined Event List");
 	var events = gather.global.joinedEvents;
 	appentToTable("eventTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
+	$('#eventListTitle').text("Owned Event List");
 	var events = gather.global.ownedEvents;
 	appentToTable("eventTable", events, userCoordinates, "that you own");
 }
