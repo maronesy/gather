@@ -19,13 +19,13 @@ public class RegistrantsController extends AbstractGatherController {
 	@RequestMapping(value = "/rest/registrants", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResponseData> register(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
-		if (! nonAuthenticatedRequest(request, bindingResult)) return RESTResponseData.responseBuilder(bindingResult);
+		if (! nonAuthenticatedRequest(request, bindingResult)) return RESTResponseData.buildResponse(bindingResult);
 
 		RegistrationData registrationData = RegistrationData.parseIn(rawData, registrationDataValidator, bindingResult);
-		if (bindingResult.hasErrors()) return RESTResponseData.responseBuilder(bindingResult);
+		if (bindingResult.hasErrors()) return RESTResponseData.buildResponse(bindingResult);
 
 		Registrant newRegistrant = Registrant.buildRegistrantFrom(registrationData, categoryRepo, bindingResult);
-		if (bindingResult.hasErrors()) return RESTResponseData.responseBuilder(bindingResult);
+		if (bindingResult.hasErrors()) return RESTResponseData.buildResponse(bindingResult);
 
 		Registrant savedRegistrantResult = this.registrantRepo.save(newRegistrant);
 		ActorStateUtility.storeActorInSession(request, savedRegistrantResult);

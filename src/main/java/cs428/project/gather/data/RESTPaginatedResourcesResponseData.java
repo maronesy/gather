@@ -13,14 +13,14 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
 
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> badResponse(BindingResult bindingResult) {
         // Build the original errorResponse
-        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.responseBuilder(bindingResult);
+        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.buildResponse(bindingResult);
         // Extract the stuff out and rebuild the errorResponse
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }
 
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> badResponse(String errorCode, String message) {
         // Build the original errorResponse
-        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.responseBuilder(errorCode, message);
+        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.buildResponse(errorCode, message);
         // Extract the stuff out and rebuild the errorResponse
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }

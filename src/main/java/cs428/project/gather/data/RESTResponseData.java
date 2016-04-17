@@ -30,7 +30,7 @@ public class RESTResponseData {
         this.timestamp = timestamp;
     }
 
-    public static ResponseEntity<RESTResponseData> responseBuilder(BindingResult error) {
+    public static ResponseEntity<RESTResponseData> buildResponse(BindingResult error) {
         String message="";
         int errorCode=-1;
         for (Object object : error.getAllErrors()) {
@@ -52,7 +52,7 @@ public class RESTResponseData {
         return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
     }
 
-	public static ResponseEntity<RESTResponseData> responseBuilder(String errorCodeStr, String errorMessage) {
+	public static ResponseEntity<RESTResponseData> buildResponse(String errorCodeStr, String errorMessage) {
 		int errorCode = -1;
 		errorCode = Integer.parseInt(errorCodeStr);
 		HttpStatus httpStatus = convertErrorCodeToHttpStatus(errorCode);
