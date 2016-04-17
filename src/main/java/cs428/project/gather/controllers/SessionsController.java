@@ -3,6 +3,7 @@ package cs428.project.gather.controllers;
 import cs428.project.gather.data.*;
 import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.response.*;
 import cs428.project.gather.utilities.ActorStateUtility;
 
 import javax.servlet.http.*;
@@ -31,8 +32,8 @@ public class SessionsController extends AbstractGatherController {
 
 	@RequestMapping(value="/rest/session")
 	public ResponseEntity<RESTSessionResponseData> getSession(HttpServletRequest request, HttpServletResponse response) {
-		if (isSessionAuthenticated(request)) return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(5,"Session Found", getUser(request).getDisplayName()), HttpStatus.OK);
-		return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(-5,"Session Not Found"), HttpStatus.OK);
+		if (isSessionAuthenticated(request)) return RESTSessionResponseData.sessionResponse(5,"Session Found", getUser(request).getDisplayName(), HttpStatus.OK);
+		return RESTSessionResponseData.sessionResponse(-5, "Session Not Found", HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/rest/registrants/signin", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
@@ -45,14 +46,14 @@ public class SessionsController extends AbstractGatherController {
 		if (! authenticate(signInData, bindingResult)) return RESTResponseData.buildResponse(bindingResult);
 
 		Registrant registrant = createSession(signInData, request);
-		return new ResponseEntity<RESTResponseData>(new RESTSessionResponseData(0,"success",registrant.getDisplayName()),HttpStatus.ACCEPTED);
+		return new ResponseEntity<RESTResponseData>(new RESTSessionResponseData(0,"success",registrant.getDisplayName()), HttpStatus.ACCEPTED);
 	}
 
 	@RequestMapping(value="/rest/registrants/signout", method = RequestMethod.POST)
 	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response) {
 		boolean isAuthed = isSessionAuthenticated(request);
 		invalidateSession(request, response);
-		if (!isAuthed) return new ResponseEntity<RESTResponseData>(new RESTResponseData(-7,"User is not in authenticated state"),HttpStatus.BAD_REQUEST);
-		return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK);
+		if (!isAuthed) return RESTResponseData.response(-7, "User is not in authenticated state", HttpStatus.BAD_REQUEST);
+		return RESTResponseData.OKResponse("success");
 	}
 }

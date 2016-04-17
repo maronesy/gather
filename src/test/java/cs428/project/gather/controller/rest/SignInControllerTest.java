@@ -21,9 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cs428.project.gather.GatherApplication;
-import cs428.project.gather.data.model.Registrant;
-import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.data.response.*;
 
 import static org.junit.Assert.*;
 

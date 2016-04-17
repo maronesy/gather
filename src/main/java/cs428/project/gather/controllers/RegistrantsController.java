@@ -3,6 +3,7 @@ package cs428.project.gather.controllers;
 import cs428.project.gather.data.*;
 import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.response.*;
 import cs428.project.gather.utilities.*;
 
 import java.util.*;

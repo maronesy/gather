@@ -1,4 +1,4 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.response;
 
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;

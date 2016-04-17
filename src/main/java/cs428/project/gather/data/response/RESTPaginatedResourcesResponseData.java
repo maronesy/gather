@@ -1,4 +1,4 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.response;
 
 import java.util.List;
 import org.springframework.http.*;

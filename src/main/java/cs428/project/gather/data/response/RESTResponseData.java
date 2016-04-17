@@ -1,4 +1,4 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.response;
 
 import java.util.Date;
 import org.springframework.http.*;
@@ -28,6 +28,14 @@ public class RESTResponseData {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
+    }
+
+    public static ResponseEntity<RESTResponseData> OKResponse(String message) {
+        return new ResponseEntity<RESTResponseData>(new RESTResponseData(0, message), HttpStatus.OK);
+    }
+
+    public static ResponseEntity<RESTResponseData> response(int status, String message, HttpStatus httpStatus) {
+        return new ResponseEntity<RESTResponseData>(new RESTResponseData(status, message), httpStatus);
     }
 
     public static ResponseEntity<RESTResponseData> buildResponse(BindingResult error) {
