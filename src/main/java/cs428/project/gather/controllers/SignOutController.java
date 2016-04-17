@@ -18,9 +18,8 @@ public class SignOutController {
 		SignOutHelper.deleteSessionCookie(request, response);
 		if (!isAuthed) {
 			return new ResponseEntity<RESTResponseData>(new RESTResponseData(-7,"User is not in authenticated state"),HttpStatus.BAD_REQUEST);
-		}else{
+		} else {
 			return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK);
 		}
-
 	}
 }

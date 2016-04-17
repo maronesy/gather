@@ -36,7 +36,7 @@ public class SignInController extends AbstractGatherController {
 			Registrant registrant = this.registrantRepo.findOneByEmail(email);
 			ActorStateUtility.storeActorInSession(request, registrant);
 
-			return new ResponseEntity<RESTResponseData>(new RESTSignInResponseData(0,"success",registrant.getDisplayName()),HttpStatus.ACCEPTED);
+			return new ResponseEntity<RESTResponseData>(new RESTSessionResponseData(0,"success",registrant.getDisplayName()),HttpStatus.ACCEPTED);
 
 		} else {
 			bindingResult.reject("-6", "The password is incorrect.  Please enter the correct password.");

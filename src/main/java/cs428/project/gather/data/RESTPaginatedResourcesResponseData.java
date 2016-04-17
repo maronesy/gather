@@ -1,9 +1,9 @@
 package cs428.project.gather.data;
 
+import java.util.List;
 import org.springframework.http.*;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindingResult;
-import java.util.List;
 
 public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
     protected int count             = 0;
@@ -17,7 +17,7 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
         // Extract the stuff out and rebuild the errorResponse
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }
-    
+
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> badResponse(String errorCode, String message) {
         // Build the original errorResponse
         ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.responseBuilder(errorCode, message);

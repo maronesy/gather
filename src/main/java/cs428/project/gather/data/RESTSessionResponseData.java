@@ -20,5 +20,4 @@ public class RESTSessionResponseData extends RESTResponseData {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-
 }
