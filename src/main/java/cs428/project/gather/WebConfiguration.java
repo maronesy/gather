@@ -1,15 +1,13 @@
 package cs428.project.gather;
 
-import java.util.HashMap;
-import java.util.Map;
+import cs428.project.gather.utilities.ActorInterceptor;
+
+import java.util.*;
 import org.h2.server.web.WebServlet;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.context.annotation.*;
+import org.springframework.web.servlet.config.annotation.*;
 
-import cs428.project.gather.utilities.ActorInterceptor;
 
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
@@ -25,17 +23,12 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public ActorInterceptor actorInterceptor() {
-		ActorInterceptor actorInterceptor = new ActorInterceptor();
-
-		return actorInterceptor;
+		return new ActorInterceptor();
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		ActorInterceptor actorInterceptor = actorInterceptor();
 		registry.addInterceptor(actorInterceptor);
-
-		// BasePathInterceptor basePathInterceptor = basePathInterceptor();
-		// registry.addInterceptor(basePathInterceptor);
 	}
 }

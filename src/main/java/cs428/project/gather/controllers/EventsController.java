@@ -3,17 +3,18 @@ package cs428.project.gather.controllers;
 import cs428.project.gather.data.*;
 import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.response.*;
 import cs428.project.gather.utilities.*;
 
-import java.sql.Timestamp;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import org.joda.time.DateTime;
+import javax.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.*;
+import org.springframework.http.*;
 import com.google.gson.*;
 
 @Controller("EventsController")
