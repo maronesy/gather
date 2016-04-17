@@ -148,7 +148,7 @@ public class Registrant extends Actor {
 		return (new Registrant()).updateUsing(registrationData, categoryRepo, errors);
 	}
 
-	public Event joinEvent(EventIdData joinEventData, EventRepository eventRepo, Errors errors) {
+	public Event joinEvent(EventsQueryData joinEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = joinEventData.getEventId();
 		Event eventToJoin = eventRepo.findOne(eventId);
 		eventToJoin.addParticipant(this);
@@ -156,7 +156,7 @@ public class Registrant extends Actor {
 		return eventToJoin;
 	}
 
-	public Event removeEvent(EventIdData removeEventData, EventRepository eventRepo, Errors errors) {
+	public Event removeEvent(EventsQueryData removeEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = removeEventData.getEventId();
 		Event targetEvent = eventRepo.findOne(eventId);
 		if (! targetEvent.containsOwner(this, errors)){
@@ -209,7 +209,7 @@ public class Registrant extends Actor {
 		return this;
 	}
 
-	public Event leaveEvent(EventIdData leaveEventData, EventRepository eventRepo, Errors errors) {
+	public Event leaveEvent(EventsQueryData leaveEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = leaveEventData.getEventId();
 		Event eventToLeave = eventRepo.findOne(eventId);
 		eventToLeave.removeParticipant(this);
