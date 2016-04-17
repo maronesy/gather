@@ -1,5 +1,10 @@
 package cs428.project.gather.controllers;
 
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.utilities.*;
+import cs428.project.gather.validator.*;
+
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,11 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.*;
 import org.springframework.http.*;
-
-import cs428.project.gather.data.model.*;
-import cs428.project.gather.data.repo.*;
-import cs428.project.gather.utilities.*;
-import cs428.project.gather.validator.*;
 
 public abstract class AbstractGatherController {
 	@Autowired

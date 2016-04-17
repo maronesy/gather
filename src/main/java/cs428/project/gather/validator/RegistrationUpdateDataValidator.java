@@ -1,7 +1,7 @@
 package cs428.project.gather.validator;
 
 
-import cs428.project.gather.data.RegistrationData;
+import cs428.project.gather.data.form.RegistrationData;
 import cs428.project.gather.data.repo.RegistrantRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +12,7 @@ import org.springframework.validation.Errors;
 public class RegistrationUpdateDataValidator extends AbstractValidator {
 	@Override
 	public boolean supports(Class<?> targetClass) {
-		boolean supported = false;
-		if(RegistrationData.class.equals(targetClass)) {
-			supported = true;
-		}
-		return supported;
+		return RegistrationData.class.equals(targetClass);
 	}
 
 	@Override

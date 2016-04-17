@@ -1,7 +1,9 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.form;
+
+import cs428.project.gather.validator.*;
+
 import java.util.*;
 import com.google.gson.*;
-import cs428.project.gather.validator.*;
 import org.springframework.validation.Errors;
 
 public class EventsQueryData {
@@ -11,6 +13,7 @@ public class EventsQueryData {
 	public static final String TIME_WINDOW_FIELD_NAME = "hour";
 	public static final float MAX_RADIUS = 50f;
 
+	private Long eventId;
 	private float longitude;
 	private float latitude;
 	private float radiusMi;
@@ -26,6 +29,14 @@ public class EventsQueryData {
 
 	public void validate(AbstractValidator validator, Errors errors) {
 		validator.validate(this, errors);
+	}
+
+	public Long getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(Long id) {
+		this.eventId = id;
 	}
 
 	public float getLongitude() {

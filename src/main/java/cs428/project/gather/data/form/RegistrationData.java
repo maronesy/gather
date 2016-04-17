@@ -1,4 +1,4 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.form;
 
 import cs428.project.gather.validator.*;
 

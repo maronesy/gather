@@ -1,18 +1,18 @@
 package cs428.project.gather.controllers;
 
-import javax.servlet.http.HttpServletRequest;
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.form.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.utilities.*;
 
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.*;
-
-import cs428.project.gather.data.*;
-import cs428.project.gather.data.model.*;
-import cs428.project.gather.data.repo.*;
-import cs428.project.gather.utilities.*;
 
 @Controller("SignInController")
 public class SignInController extends AbstractGatherController {

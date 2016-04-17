@@ -1,5 +1,10 @@
 package cs428.project.gather.controllers;
 
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.form.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.utilities.*;
+
 import java.sql.Timestamp;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
@@ -10,10 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
 import com.google.gson.*;
-
-import cs428.project.gather.data.*;
-import cs428.project.gather.data.model.*;
-import cs428.project.gather.utilities.*;
 
 @Controller("EventsController")
 public class EventsController extends AbstractGatherController {
@@ -81,7 +82,7 @@ public class EventsController extends AbstractGatherController {
 	public ResponseEntity<RESTResourceResponseData<Event>> joinEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticatedRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		EventIdData joinEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
+		EventsQueryData joinEventData = EventsQueryData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event eventToJoin = getUser(request).joinEvent(joinEventData, eventRepo, bindingResult);
@@ -95,7 +96,7 @@ public class EventsController extends AbstractGatherController {
 	public ResponseEntity<RESTResourceResponseData<Event>> leaveEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticatedRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		EventIdData leaveEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
+		EventsQueryData leaveEventData = EventsQueryData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event eventToLeave = getUser(request).leaveEvent(leaveEventData, eventRepo, bindingResult);
@@ -109,7 +110,7 @@ public class EventsController extends AbstractGatherController {
 	public ResponseEntity<RESTResourceResponseData<Event>> removeEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticatedRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		EventIdData removeEventData = EventIdData.parseIn(rawData, eventIdDataValidator, bindingResult);
+		EventsQueryData removeEventData = EventsQueryData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event joinedEvent = getUser(request).removeEvent(removeEventData, eventRepo, bindingResult);

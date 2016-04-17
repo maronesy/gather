@@ -1,14 +1,10 @@
 package cs428.project.gather.validator;
 
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.springframework.validation.Validator;
 
-
-public abstract class AbstractValidator implements Validator
-{
+public abstract class AbstractValidator implements Validator {
 	// This ridiculously long regular expression conforms to the official RFC 2822 standard.
 	// See http://tools.ietf.org/html/rfc2822#section-3.4.1 and http://www.regular-expressions.info/email.html for more information.
 	private static final String INTERNET_MESSAGE_ADDRESS_REGULAR_EXPRESSION =
@@ -25,28 +21,20 @@ public abstract class AbstractValidator implements Validator
 
 	private static final Pattern URL_PATTERN = Pattern.compile(URL_REGULAR_EXPRESSION, Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
 
-	protected boolean matchesEmailAddressPattern(String emailAddress)
-	{
+	protected boolean matchesEmailAddressPattern(String emailAddress) {
 		boolean matchesEmailAddressPattern = false;
-
 		Matcher matcher = INTERNET_MESSAGE_ADDRESS_PATTERN.matcher(emailAddress);
-
-		if(matcher.matches())
-		{
+		if (matcher.matches()) {
 			matchesEmailAddressPattern = true;
 		}
 
 		return matchesEmailAddressPattern;
 	}
 
-	protected boolean matchesURLPattern(String urlValue)
-	{
+	protected boolean matchesURLPattern(String urlValue) {
 		boolean matchesURLPattern = false;
-
 		Matcher matcher = URL_PATTERN.matcher(urlValue);
-
-		if(matcher.matches())
-		{
+		if (matcher.matches()) {
 			matchesURLPattern = true;
 		}
 

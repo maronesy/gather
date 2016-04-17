@@ -1,7 +1,7 @@
 package cs428.project.gather.validator;
 
 
-import cs428.project.gather.data.RegistrationData;
+import cs428.project.gather.data.form.RegistrationData;
 import cs428.project.gather.data.repo.RegistrantRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,28 +9,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 @Component
-public class RegistrationDataValidator extends AbstractValidator
-{
+public class RegistrationDataValidator extends AbstractValidator {
 	@Autowired
 	private RegistrantRepository registrantDataAdapter;
 
 	@Override
-	public boolean supports(Class<?> targetClass)
-	{
-		boolean supported = false;
-
-		if(RegistrationData.class.equals(targetClass))
-		{
-			supported = true;
-		}
-
-		return supported;
+	public boolean supports(Class<?> targetClass) {
+		return RegistrationData.class.equals(targetClass);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors)
 	{
-		
+
 		RegistrationData userRegistrationData = (RegistrationData)target;
 
 		if(userRegistrationData == null)
@@ -81,7 +72,7 @@ public class RegistrationDataValidator extends AbstractValidator
 
 			String message = "Field invalid-" + RegistrationData.DISPLAY_NAME_FIELD_NAME;
 			errors.reject("-4",message+":The display name already exists.  Please enter another display name.");//, "The display name already exists.  Please enter another display name.");
-			
+
 		}
 	}
 
