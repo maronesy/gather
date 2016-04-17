@@ -1026,7 +1026,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 			}else {
 				//establishedEvent.eventMarker.closePopup();
-				alert(establishedEvent.id);
+				for(var i = 0; i < establishedEvent.participants.length; i++){
+					alert(establishedEvent.participants[i].displayName);
+				}
 			}
 		}
 	}
