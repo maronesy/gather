@@ -1,7 +1,8 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.form;
 
 import cs428.project.gather.validator.*;
 import cs428.project.gather.utilities.*;
+import cs428.project.gather.data.*;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

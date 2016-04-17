@@ -1,39 +1,28 @@
 package cs428.project.gather.validator;
 
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.form.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
-import cs428.project.gather.data.Coordinates;
-import cs428.project.gather.data.NewEventData;
-import cs428.project.gather.data.model.Category;
-import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.repo.CategoryRepository;
-import cs428.project.gather.data.repo.EventRepository;
-
 @Component
-public class NewEventDataValidator extends AbstractValidator{
-	
+public class NewEventDataValidator extends AbstractValidator {
 	@Autowired
     EventRepository eventRepo;
-	
+
 	@Autowired
 	CategoryRepository categoryRepo;
 
 	@Override
 	public boolean supports(Class<?> targetClass) {
-		boolean supported = false;
-
-		if(NewEventData.class.equals(targetClass))
-		{
-			supported = true;
-		}
-
-		return supported;
+		return NewEventData.class.equals(targetClass);
 	}
 
 	@Override
@@ -54,7 +43,7 @@ public class NewEventDataValidator extends AbstractValidator{
 			validateCallerCoordinates(newEventData, errors);
 			validateNotDuplicateEvent(newEventData, errors);
 		}
-		
+
 	}
 
 	private void validateEventName(NewEventData newEventData, Errors errors) {
@@ -93,7 +82,7 @@ public class NewEventDataValidator extends AbstractValidator{
 				errors.reject("-5", message+":The input category was not recognized as a valid category.");
 			}
 		}
-		
+
 	}
 
 	private void validateEventDescription(NewEventData newEventData, Errors errors) {
@@ -147,14 +136,14 @@ public class NewEventDataValidator extends AbstractValidator{
 			errors.reject("-3", message+":The longitude value is out of range.");
 		}
 	}
-	
+
 	private void validateNotDuplicateEvent(NewEventData newEventData, Errors errors) {
 		if(!errors.hasErrors()){
 			String name = newEventData.getEventName();
 			double latitude = newEventData.getEventCoodinates().getLatitude();
 			double longitude = newEventData.getEventCoodinates().getLongitude();
 			Timestamp time = new Timestamp(newEventData.getEventTime());
-			
+
 			List<Event> foundEvents = this.eventRepo.findByNameAndLocationAndTime(name, latitude, longitude, time);
 			if(!foundEvents.isEmpty()){
 				String message = "Cannot create event. An existing event with the same name, location, and time already exists!";
@@ -162,5 +151,4 @@ public class NewEventDataValidator extends AbstractValidator{
 			}
 		}
 	}
-
 }

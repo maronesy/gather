@@ -1,7 +1,9 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.form;
+
+import cs428.project.gather.validator.*;
+
 import java.util.*;
 import com.google.gson.*;
-import cs428.project.gather.validator.*;
 import org.springframework.validation.Errors;
 
 public class EventsQueryData {

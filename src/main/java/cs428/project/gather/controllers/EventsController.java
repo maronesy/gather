@@ -1,5 +1,10 @@
 package cs428.project.gather.controllers;
 
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.form.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.utilities.*;
+
 import java.sql.Timestamp;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
@@ -10,10 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
 import com.google.gson.*;
-
-import cs428.project.gather.data.*;
-import cs428.project.gather.data.model.*;
-import cs428.project.gather.utilities.*;
 
 @Controller("EventsController")
 public class EventsController extends AbstractGatherController {

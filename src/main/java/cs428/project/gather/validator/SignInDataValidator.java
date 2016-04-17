@@ -1,7 +1,6 @@
 package cs428.project.gather.validator;
 
-
-import cs428.project.gather.data.SignInData;
+import cs428.project.gather.data.form.SignInData;
 import cs428.project.gather.data.repo.RegistrantRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +14,14 @@ public class SignInDataValidator extends AbstractValidator
 	private RegistrantRepository registrantDataAdapter;
 
 	@Override
-	public boolean supports(Class<?> targetClass)
-	{
-		boolean supported = false;
-
-		if(SignInData.class.equals(targetClass))
-		{
-			supported = true;
-		}
-
-		return supported;
+	public boolean supports(Class<?> targetClass) {
+		return SignInData.class.equals(targetClass);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors)
 	{
-		
+
 		SignInData userSignInData = (SignInData)target;
 
 		if(userSignInData == null)

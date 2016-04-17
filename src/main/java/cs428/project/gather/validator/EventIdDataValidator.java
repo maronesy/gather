@@ -1,6 +1,6 @@
 package cs428.project.gather.validator;
 
-import cs428.project.gather.data.EventsQueryData;
+import cs428.project.gather.data.form.EventsQueryData;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,11 +9,7 @@ import org.springframework.validation.Errors;
 public class EventIdDataValidator extends AbstractValidator {
 	@Override
 	public boolean supports(Class<?> targetClass) {
-		boolean supported = false;
-		if(EventsQueryData.class.equals(targetClass)) {
-			supported = true;
-		}
-		return supported;
+		return EventsQueryData.class.equals(targetClass);
 	}
 
 	@Override

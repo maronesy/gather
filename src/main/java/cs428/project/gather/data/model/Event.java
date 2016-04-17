@@ -1,6 +1,6 @@
 package cs428.project.gather.data.model;
 
-import cs428.project.gather.data.*;
+import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.repo.*;
 
 import java.util.*;
