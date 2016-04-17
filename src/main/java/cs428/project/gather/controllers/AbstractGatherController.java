@@ -6,7 +6,7 @@ import cs428.project.gather.utilities.*;
 import cs428.project.gather.validator.*;
 
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +60,14 @@ public abstract class AbstractGatherController {
 	protected Registrant getUser(HttpServletRequest request) {
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 		return this.registrantRepo.findOne(actor.getActorID());
+	}
+
+	protected boolean isSessionAuthenticated(HttpServletRequest request) {
+		return ActorStateUtility.retrieveAuthenticatedStateInRequest(request);
+	}
+
+	protected void invalidateSession(HttpServletRequest request, HttpServletResponse response) {
+		SignOutHelper.invalidateSession(request);
+		SignOutHelper.deleteSessionCookie(request, response);
 	}
 }

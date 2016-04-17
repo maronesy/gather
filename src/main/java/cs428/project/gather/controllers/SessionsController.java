@@ -3,19 +3,26 @@ package cs428.project.gather.controllers;
 import cs428.project.gather.data.*;
 import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.model.*;
-import cs428.project.gather.data.repo.*;
-import cs428.project.gather.utilities.*;
+import cs428.project.gather.utilities.ActorStateUtility;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.*;
+import org.springframework.http.*;
 
-@Controller("SignInController")
-public class SignInController extends AbstractGatherController {
+@Controller("SessionsController")
+public class SessionsController extends AbstractGatherController {
+	@RequestMapping(value="/rest/session")
+	public ResponseEntity<RESTSessionResponseData> getSession(HttpServletRequest request, HttpServletResponse response) {
+		if (isSessionAuthenticated(request)) {
+			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(5,"Session Found",getUser(request).getDisplayName()), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<RESTSessionResponseData>(new RESTSessionResponseData(-5,"Session Not Found"), HttpStatus.OK);
+		}
+	}
+
 	public boolean authenticate(SignInData signInData) {
 		Registrant user = registrantRepo.findOneByEmail(signInData.getEmail());
 		return StringUtils.equals(signInData.getPassword(), user.getPassword());
@@ -41,6 +48,17 @@ public class SignInController extends AbstractGatherController {
 		} else {
 			bindingResult.reject("-6", "The password is incorrect.  Please enter the correct password.");
 			return RESTResponseData.responseBuilder(bindingResult);
+		}
+	}
+
+	@RequestMapping(value="/rest/registrants/signout", method = RequestMethod.POST)
+	public ResponseEntity<RESTResponseData> signOut(HttpServletRequest request, HttpServletResponse response) {
+		boolean isAuthed = isSessionAuthenticated(request);
+		invalidateSession(request, response);
+		if (!isAuthed) {
+			return new ResponseEntity<RESTResponseData>(new RESTResponseData(-7,"User is not in authenticated state"),HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"),HttpStatus.OK);
 		}
 	}
 }
