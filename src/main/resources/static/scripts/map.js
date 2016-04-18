@@ -114,7 +114,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var geolocationErrorCount = 0;
 
-	function processUserCoordinates(userCoordinates) {
+	function processUserCoordinates(uCoordinates) {
+		userCoordinates = uCoordinates
 		if(userCoordinates == null) {
 			geolocationErrorCount++;
 

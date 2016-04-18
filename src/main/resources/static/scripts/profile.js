@@ -111,7 +111,9 @@ function submitProfile() {
 				if (returnvalue.status == 0) {
 					$(formId).html('Profile update successful!').show().delay(3000).hide(1000)
 					if (gather.global.currentDisplayName != displayName) {
+						gather.global.currentDisplayName = displayName
 						sessionCheck();
+						updateProfileHeader();
 					}
 				} else {
 					$(formId).html(returnvalue.message)
@@ -149,7 +151,7 @@ function loadProfilePasswordForm() {
 }
 
 function updateProfileHeader(){
-	$("#profileName").html(gather.global.currentDisplayName + "'s Profile");
+	$("#profileName").html('').html(gather.global.currentDisplayName + "'s Profile");
 }
 
 function loadChangePassword() {
