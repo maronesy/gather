@@ -4,8 +4,7 @@ import cs428.project.gather.validator.*;
 import cs428.project.gather.utilities.*;
 import cs428.project.gather.data.*;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.*;
 import com.google.gson.*;
 import org.springframework.validation.Errors;
 

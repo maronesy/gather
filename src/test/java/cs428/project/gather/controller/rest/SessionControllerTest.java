@@ -22,10 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cs428.project.gather.GatherApplication;
-import cs428.project.gather.data.RESTResponseData;
-import cs428.project.gather.data.model.Registrant;
-import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.data.response.*;
 
 import static org.junit.Assert.*;
 
@@ -60,7 +60,7 @@ public class SessionControllerTest {
 		this.registrantRepo.save(aUser);
 		assertEquals(this.registrantRepo.count(), 1);
 	}
-	
+
 	@Test
 	public void testSessionFound() throws JsonProcessingException {
 
@@ -70,9 +70,9 @@ public class SessionControllerTest {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie",StringUtils.join(cookies,';'));
 		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		
+
 		// Invoking the API
-		
+
 		ResponseEntity<RESTResponseData> response = checkSesseion(requestEntity);
 		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
 
@@ -80,7 +80,7 @@ public class SessionControllerTest {
 		assertTrue(responseData.getMessage().equals("Session Found"));
 
 	}
-	
+
 	@Test
 	public void testSignOutUserFail() throws IOException {
 		HttpHeaders requestHeaders = new HttpHeaders();
@@ -92,20 +92,20 @@ public class SessionControllerTest {
 		assertTrue(responseData.getMessage().equals("Session Not Found"));
 
 	}
-	
+
 	private ResponseEntity<RESTResponseData> checkSesseion(HttpEntity<String> requestEntity) throws JsonProcessingException {
 
 		// Invoking the API
-		
+
 		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session", HttpMethod.GET, requestEntity, RESTResponseData.class);
 
 		assertNotNull(response);
-		
+
 		// Asserting the response of the API.
 		return response;
 
 	}
-	
+
 	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -113,7 +113,7 @@ public class SessionControllerTest {
 		requestBody.put("password", password);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		
+
 		// Creating http entity object with request body and headers
 		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
 				requestHeaders);
@@ -121,7 +121,7 @@ public class SessionControllerTest {
 		@SuppressWarnings("unchecked")
 		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin", HttpMethod.POST, httpEntity,
 				Map.class, Collections.EMPTY_MAP);
-		
+
 		assertNotNull(result);
 		// Asserting the response of the API.
 		//return apiResponse;

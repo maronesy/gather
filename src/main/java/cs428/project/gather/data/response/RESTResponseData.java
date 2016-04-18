@@ -1,43 +1,44 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.response;
 
 import java.util.Date;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.springframework.http.*;
+import org.springframework.validation.*;
 
 public class RESTResponseData {
-
     protected int status = -1;
     protected String message = "";
     protected long timestamp;
 
-    public RESTResponseData(){
-    }
+    public RESTResponseData() {}
 
-    public RESTResponseData(int status){
+    public RESTResponseData(int status) {
         this.status = status;
         Date now = new Date();
         this.timestamp = now.getTime();
     }
 
-    public RESTResponseData(int status, String message){
+    public RESTResponseData(int status, String message) {
         this.status = status;
         Date now = new Date();
         this.timestamp = now.getTime();
         this.message = message;
     }
 
-    public RESTResponseData(int status, String message, long timestamp){
+    public RESTResponseData(int status, String message, long timestamp) {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
     }
 
-    public static ResponseEntity<RESTResponseData> responseBuilder(BindingResult error){
+    public static ResponseEntity<RESTResponseData> OKResponse(String message) {
+        return new ResponseEntity<RESTResponseData>(new RESTResponseData(0, message), HttpStatus.OK);
+    }
+
+    public static ResponseEntity<RESTResponseData> response(int status, String message, HttpStatus httpStatus) {
+        return new ResponseEntity<RESTResponseData>(new RESTResponseData(status, message), httpStatus);
+    }
+
+    public static ResponseEntity<RESTResponseData> buildResponse(BindingResult error) {
         String message="";
         int errorCode=-1;
         for (Object object : error.getAllErrors()) {
@@ -58,8 +59,8 @@ public class RESTResponseData {
         HttpStatus httpStatus=convertErrorCodeToHttpStatus(errorCode);
         return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
     }
-    
-	public static ResponseEntity<RESTResponseData> responseBuilder(String errorCodeStr, String errorMessage) {
+
+	public static ResponseEntity<RESTResponseData> buildResponse(String errorCodeStr, String errorMessage) {
 		int errorCode = -1;
 		errorCode = Integer.parseInt(errorCodeStr);
 		HttpStatus httpStatus = convertErrorCodeToHttpStatus(errorCode);
@@ -98,38 +99,6 @@ public class RESTResponseData {
         this.status = status;
     }
 
-    @Override
-    public int hashCode() {
-        HashCodeBuilder builder = new HashCodeBuilder();
-
-        builder.append(this.status);
-        builder.append(this.message);
-
-        int hashCode = builder.toHashCode();
-
-        return hashCode;
-    }
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        boolean equal = false;
-
-        if (anotherObject == this) {
-            equal = true;
-        } else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
-            RESTResponseData anotherSignInData = (RESTResponseData) anotherObject;
-
-            EqualsBuilder equalsBuilder = new EqualsBuilder();
-
-            equalsBuilder.append(this.status, anotherSignInData.status);
-            equalsBuilder.append(this.message, anotherSignInData.message);
-
-
-            equal = equalsBuilder.isEquals();
-        }
-        return equal;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -145,5 +114,4 @@ public class RESTResponseData {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-
 }

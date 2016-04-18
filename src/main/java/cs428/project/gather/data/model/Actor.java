@@ -1,18 +1,12 @@
 package cs428.project.gather.data.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
+import javax.persistence.*;
 import org.apache.commons.lang3.builder.*;
 
 @Entity
 public class Actor {
 	protected @Id @Column(name = "ID") @GeneratedValue long actorID;
-	
+
 	@Enumerated(EnumType.STRING)
 	protected final ActorType actorType;
 

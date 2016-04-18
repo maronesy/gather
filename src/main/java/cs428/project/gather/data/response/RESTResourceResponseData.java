@@ -1,4 +1,4 @@
-package cs428.project.gather.data;
+package cs428.project.gather.data.response;
 
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
@@ -13,7 +13,7 @@ public class RESTResourceResponseData<T> extends RESTResponseData {
         */
 
         // Build the original errorResponse
-        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.responseBuilder(bindingResult);
+        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.buildResponse(bindingResult);
         // Extract the stuff out and rebuild the errorResponse
         return new ResponseEntity<RESTResourceResponseData<T>>(new RESTResourceResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }

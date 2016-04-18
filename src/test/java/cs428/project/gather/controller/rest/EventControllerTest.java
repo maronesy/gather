@@ -35,17 +35,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import cs428.project.gather.GatherApplication;
-import cs428.project.gather.data.Coordinates;
-import cs428.project.gather.data.RESTPaginatedResourcesResponseData;
-import cs428.project.gather.data.RESTResourceResponseData;
-import cs428.project.gather.data.RESTResponseData;
-import cs428.project.gather.data.model.Category;
-import cs428.project.gather.data.model.Event;
-import cs428.project.gather.data.model.Occurrence;
-import cs428.project.gather.data.model.Registrant;
-import cs428.project.gather.data.repo.CategoryRepository;
-import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.*;
+import cs428.project.gather.data.model.*;
+import cs428.project.gather.data.repo.*;
+import cs428.project.gather.data.response.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -116,7 +109,7 @@ public class EventControllerTest {
 		//Make sure event doesn't originally exist
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(0, listEvents.size());
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 
 		//Setup coords
@@ -125,7 +118,7 @@ public class EventControllerTest {
 
 		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L, uCoor,
 				requestEntity.getHeaders());
-		
+
 		//Verify that event now exists in backend
 		listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(1, listEvents.size());
@@ -256,7 +249,7 @@ public class EventControllerTest {
 		assertTrue(backendEvent.getParticipants().contains(user));
 	}
 
-	
+
 	@Test
 	public void testLeaveEvent() throws JsonProcessingException {
 		Event event1 = createFirstEvent();
@@ -516,7 +509,7 @@ public class EventControllerTest {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
-	
+
 	@Test
 	public void testUpdateEventBasic() throws JsonProcessingException {
 		//Setup event with owner
@@ -527,22 +520,22 @@ public class EventControllerTest {
 		eventOne.setCategory(swim);
 		eventOne.addOwner(origOwner);
 		eventOne.addParticipant(origOwner);
-		
+
 		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
 		eventOne = eventRepo.save(eventOne);
 		assertEquals(2, eventOne.getParticipants().size());
-		
+
 		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
-		
+
 		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
 
 		//Get coords
-		Coordinates eCoor = eventCoordinate();		
+		Coordinates eCoor = eventCoordinate();
 		Coordinates uCoor = userCoordinate();
-		
+
 		//Test the conditions before the update
 		assertEquals("EventOne", eventOne.getName());
 		assertEquals("Swim", eventOne.getCategory().getName());
@@ -552,7 +545,7 @@ public class EventControllerTest {
 		assertTrue(eventOne.getParticipants().contains(newParticipant));
 		assertFalse(eventOne.getOwners().contains(newOwner));
 		assertTrue(eventOne.getOwners().contains(origOwner));
-		
+
 		// Test modifying the event
 		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
 				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
@@ -627,23 +620,23 @@ public class EventControllerTest {
 		eventOne.setCategory(swim);
 		eventOne.addOwner(origOwner);
 		eventOne.addParticipant(origOwner);
-		
+
 		// Add the other participant
 		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
 		eventOne.addParticipant(newParticipant);
 		eventOne = eventRepo.save(eventOne);
 		assertEquals(2, eventOne.getParticipants().size());
-		
+
 		//Sign in as ***NON-OWNER*** - Owner of target event is existed@email.com
 		HttpEntity<String> requestEntity = signInAndCheckSession("nonOwner@email.com", "password");
-		
+
 		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
 
 		//Get coords
-		Coordinates eCoor = eventCoordinate();		
+		Coordinates eCoor = eventCoordinate();
 		Coordinates uCoor = userCoordinate();
-		
+
 		//Test the conditions before the update
 		assertEquals("EventOne", eventOne.getName());
 		assertEquals("Swim", eventOne.getCategory().getName());
@@ -653,7 +646,7 @@ public class EventControllerTest {
 		assertTrue(eventOne.getParticipants().contains(newParticipant));
 		assertFalse(eventOne.getOwners().contains(newOwner));
 		assertTrue(eventOne.getOwners().contains(origOwner));
-		
+
 		// Test modifying the event
 		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
 				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
@@ -839,7 +832,7 @@ public class EventControllerTest {
 		eCoor.setLongitude(111.232);
 		return eCoor;
 	}
-	
+
 	private Event createFirstEvent() {
 		Category swim = this.categoryRepo.findByName("Swim").get(0);
 		assertTrue(swim != null);
