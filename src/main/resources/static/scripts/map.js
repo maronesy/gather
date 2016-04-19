@@ -11,7 +11,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var mapManager = this;
 
 	L.mapbox.accessToken = mapboxAccessToken;
-
+	
 	var map = buildMap();
 
 	var eventSearchRadiusInMiles = 10.0;
@@ -108,13 +108,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		else {
 			displayGeolocationUnsupportedModal();
-			//determineCoordByZipCode();
 		}
 	}
 
 	var geolocationErrorCount = 0;
 
-	function processUserCoordinates(userCoordinates) {
+	function processUserCoordinates(uCoordinates) {
+		userCoordinates = uCoordinates
 		if(userCoordinates == null) {
 			geolocationErrorCount++;
 
@@ -778,51 +778,88 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-	this.determineCoordByZipCode = function(zipCode) {
-
-		console.log("The user denied the request for geolocation.");
-    	var httpRequest = new XMLHttpRequest();
-        httpRequest.open("GET", 'zipcode.csv', false);
-        httpRequest.send(null);
-        //alert( httpRequest.responseText );
-        CSVContents = httpRequest.responseText;
-        //console.log($.csv.toObjects(CSVContents));
-//        var zipcode = prompt('Please enter your Zip','Zip Code');
-//        if (zipcode == null || zipcode == "") {
-//            alert("you did not enter a zip please try again");
-//            zipcode = prompt('Please enter your Zip','Zip Code');
-//        }
-        var zipList = $.csv.toObjects(CSVContents);
-
-        console.log(zipList);
-
-        var uCoordinates = null
-
-//        jQuery.grep(zipList, function( zip, i ) {
-//        	if (zip == zipCode) {
-//        		var i = zipList.index(zipCode)
-//        		uCoordinates = {
-//      				latitude: zipList[i].latitude,
-//    				longitude: zipList[i].longitude
-//    				};
-//        	}
-//        });
-
-        for (var i in zipList) {
-        	if(zipList[i].zip == zipCode){
+	this.determineCoordByZipCode = function(zipCode){
+		// using Google API for zip search because mapbox is awfully inaccurate.
+		// What Souhayl had was great but this is 100 times faster.
+		var url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&components=country:US|postal_code:"+zipCode
+		$.get(url, function (data){
+			if (data.status == 'ZERO_RESULTS') {
+				return -1;
+			} else if (data.status == 'OK') {
 				uCoordinates = {
-				latitude: zipList[i].latitude,
-				longitude: zipList[i].longitude
+					latitude: data.results[0].geometry.location.lat,
+					longitude: data.results[0].geometry.location.lng
 				}
-        	}
-        }
-        if (uCoordinates == null) {
-        	return -1;
-        } else {
-        	processUserCoordinates(uCoordinates);
-        	return 0;
-        }
-    }
+				processUserCoordinates(uCoordinates);
+				return 0;
+			}
+		});
+	}
+	
+	this.determineAddressByCoord = function(lat, lng){
+		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
+		var full_address = ''
+		$.ajax({
+			  async: false,
+			  url: url,
+			  dataType: "json",
+			  success: function(data) {
+				  if (data.status == 'ZERO_RESULTS') {
+						full_address = 'Address not found'
+					} else if (data.status == 'OK') {
+						// always return the first result which is most relevant.
+						full_address = data.results[0].formatted_address;
+					}
+				}
+			});	
+		return full_address;
+	}
+	
+// 	this.determineCoordByZipCode = function(zipCode) {
+
+// 		console.log("The user denied the request for geolocation.");
+//     	var httpRequest = new XMLHttpRequest();
+//         httpRequest.open("GET", 'zipcode.csv', false);
+//         httpRequest.send(null);
+//         //alert( httpRequest.responseText );
+//         CSVContents = httpRequest.responseText;
+//         //console.log($.csv.toObjects(CSVContents));
+// //        var zipcode = prompt('Please enter your Zip','Zip Code');
+// //        if (zipcode == null || zipcode == "") {
+// //            alert("you did not enter a zip please try again");
+// //            zipcode = prompt('Please enter your Zip','Zip Code');
+// //        }
+//         var zipList = $.csv.toObjects(CSVContents);
+
+//         console.log(zipList);
+
+//         var uCoordinates = null
+
+// //        jQuery.grep(zipList, function( zip, i ) {
+// //        	if (zip == zipCode) {
+// //        		var i = zipList.index(zipCode)
+// //        		uCoordinates = {
+// //      				latitude: zipList[i].latitude,
+// //    				longitude: zipList[i].longitude
+// //    				};
+// //        	}
+// //        });
+
+//         for (var i in zipList) {
+//         	if(zipList[i].zip == zipCode){
+// 				uCoordinates = {
+// 				latitude: zipList[i].latitude,
+// 				longitude: zipList[i].longitude
+// 				}
+//         	}
+//         }
+//         if (uCoordinates == null) {
+//         	return -1;
+//         } else {
+//         	processUserCoordinates(uCoordinates);
+//         	return 0;
+//         }
+//     }
 
 	function displayGeolocationUnsupportedModal() {
 		$("#geolocation-unsupported-modal").modal("show");
