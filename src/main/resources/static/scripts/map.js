@@ -1013,6 +1013,26 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
+	this.listPart = function(eventID) {
+		var establishedEvent = establishedEvents[eventID];
+
+		if(typeof(establishedEvent) === "undefined") {
+			displayGeneralFailureModal();
+		}
+		else {
+
+			if (gather.global.session.signedIn == false){
+				displayGeneralFailureModal();
+
+			}else {
+				//establishedEvent.eventMarker.closePopup();
+				for(var i = 0; i < establishedEvent.participants.length; i++){
+					alert(establishedEvent.participants[i].displayName);
+				}
+			}
+		}
+	}
+	
 	function updateEventMarker(eventMarker, coordinates, iconOptions) {
 		if(coordinates !== null && typeof(coordinates) === "object") {
 			var eventPosition = new L.LatLng(coordinates.latitude, coordinates.longitude);
