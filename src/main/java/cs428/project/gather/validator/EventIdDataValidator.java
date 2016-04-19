@@ -28,5 +28,6 @@ public class EventIdDataValidator extends AbstractValidator {
 			String message = "Field invalid-" + "id";
 			errors.reject("-3",message+":The id must be number greater than 0.");
 		}
+		//TODO: Check existence of event here?
 	}
 }

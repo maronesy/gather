@@ -212,6 +212,20 @@ public class Registrant extends Actor {
 	public Event leaveEvent(EventsQueryData leaveEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = leaveEventData.getEventId();
 		Event eventToLeave = eventRepo.findOne(eventId);
+		if(eventToLeave == null){
+			errors.reject("-5", "Event not found. Perhaps the event was removed by the owner.");
+			return null;
+		}
+		Set<Registrant> owners = eventToLeave.getOwners();
+		if(owners.contains(this)){
+			if(owners.size() < 2){
+				errors.reject("-3", "Cannot leave event. You are the sole owner. Add a co-owner or remove the event.");
+				return null;
+			}
+			else{
+				eventToLeave.removeOwner(this);
+			}
+		}
 		eventToLeave.removeParticipant(this);
 		eventRepo.save(eventToLeave);
 		return eventToLeave;

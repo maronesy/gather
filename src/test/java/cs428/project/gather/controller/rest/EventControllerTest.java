@@ -285,6 +285,104 @@ public class EventControllerTest {
 		assertFalse(backendEvent.getParticipants().contains(user));
 
 	}
+	
+	@Test
+	public void testLeaveEventNotSignedIn() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+		
+		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+		ResponseEntity<String> response = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		// Make sure the request is rejected since user is not signed in
+		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/leave ",
+				resourceResponseData.getMessage());
+	}
+	
+	@Test
+	public void testLeaveEventSoleOwner() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as owner & participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+		event1.addOwner(user);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is participant and owner
+		assertTrue(event1.getParticipants().contains(user));
+		assertTrue(event1.getOwners().contains(user));
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> response = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Cannot leave event. You are the sole owner. Add a co-owner or remove the event. ",
+				resourceResponseData.getMessage());
+		
+	}
+	
+	@Test
+	public void testLeaveEventOtherOwners() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as owner & participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		Registrant otherOwner = this.regRepo.findOneByEmail("newOwner@email.com");
+		event1.addParticipant(user);
+		event1.addOwner(user);
+		event1.addParticipant(otherOwner);
+		event1.addOwner(otherOwner);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is participant
+		assertTrue(event1.getParticipants().contains(user));
+		assertTrue(event1.getOwners().contains(user));
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTResourceResponseData<Event> resourceResponseData = parseEventResponseData(responseStr.getBody());
+		Event frontendEvent = resourceResponseData.getResult();
+
+		// Make sure participant no longer listed in event returned to frontend
+		assertEquals(event1.getId(), frontendEvent.getId());
+		assertFalse(frontendEvent.getParticipants().contains(user));
+		assertFalse(frontendEvent.getOwners().contains(user));
+
+		// Make sure participant no longer listed in event in backend
+		Event backendEvent = this.eventRepo.findOne(event1.getId());
+		assertFalse(backendEvent.getParticipants().contains(user));
+		assertFalse(backendEvent.getOwners().contains(user));
+	}
 
 	private ResponseEntity<String> attemptJoinEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
 		// Building the Request body data
@@ -474,7 +572,7 @@ public class EventControllerTest {
 		// Check error message
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their joined event list.",
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/userJoined ",
 				resourceResponseData.getMessage());
 	}
 
@@ -815,7 +913,7 @@ public class EventControllerTest {
 		// Check error message
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their owned event list.",
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/userOwned ",
 				resourceResponseData.getMessage());
 	}
 
