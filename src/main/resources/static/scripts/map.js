@@ -781,11 +781,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	this.determineCoordByZipCode = function(zipCode){
 		// using Google API for zip search because mapbox is awfully inaccurate.
 		// What Souhayl had was great but this is 100 times faster.
-		$.get("http://maps.googleapis.com/maps/api/geocode/json?sensor=true&components=country:US|postal_code:"+zipCode, function (data){
+		var url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&components=country:US|postal_code:"+zipCode
+		$.get(url, function (data){
 			if (data.status == 'ZERO_RESULTS') {
 				return -1;
 			} else if (data.status == 'OK') {
-
 				uCoordinates = {
 					latitude: data.results[0].geometry.location.lat,
 					longitude: data.results[0].geometry.location.lng
@@ -794,6 +794,25 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				return 0;
 			}
 		});
+	}
+	
+	this.determineAddressByCoord = function(lat, lng){
+		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
+		var full_address = ''
+		$.ajax({
+			  async: false,
+			  url: url,
+			  dataType: "json",
+			  success: function(data) {
+				  if (data.status == 'ZERO_RESULTS') {
+						full_address = 'Address not found'
+					} else if (data.status == 'OK') {
+						// always return the first result which is most relevant.
+						full_address = data.results[0].formatted_address;
+					}
+				}
+			});	
+		return full_address;
 	}
 	
 // 	this.determineCoordByZipCode = function(zipCode) {

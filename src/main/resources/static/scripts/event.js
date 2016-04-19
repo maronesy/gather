@@ -52,7 +52,8 @@ function appentToTable(tableClass, events, userCoordinates, message){
 					address = address + zipCode
 				}
 				if (address == '') {
-					address = 'Specific address not provided.'
+					// if the user has not provided the address, the approximate address is generated
+					address = mapManager.determineAddressByCoord(lat1, lon1)
 				}
 				var description = events[i].description;
 				$('.' + tableClass).append(
