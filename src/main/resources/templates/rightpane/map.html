@@ -164,6 +164,26 @@
 		</div>
 	</div>
 	
+	<div class="modal fade" id="new-event-not-nearby" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">New Event is Not Nearby</h4>
+				</div>
+
+				<div class="modal-body">
+					<span>The new event you have created is not nearby.</span>
+					<span>You can check it by clicking "Joined Events" or "Owned Events". </span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<div class="modal fade" id="anonymous-user-add-event-failure-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -271,6 +291,7 @@
 				Check in to rank this location and leave feedback.</p>
 
 				<div class="modal-footer" id="establishedEventFooter">
+					<button id="participantBtn" class="pull-left btn" onclick="mapManager.listPart(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-user"></span></button>				
 					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
 					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
 					<button id="joinEventBtn" class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
