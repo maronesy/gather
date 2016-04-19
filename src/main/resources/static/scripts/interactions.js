@@ -169,7 +169,7 @@ function signIn() {
                         error : function(jqXHR, textStatus, errorThrown) {
                             var responseMessage = $.parseJSON(jqXHR.responseText).message;
                             $(errorBox).slideDown().delay(3000).slideUp();
-                            $(errorBox).html(responseMessage);
+                            $(errorBox).html('Your Email/Passowrd is incorrect.');
                         }
                     });
                 }
