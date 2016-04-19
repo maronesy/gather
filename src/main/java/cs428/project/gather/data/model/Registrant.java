@@ -151,7 +151,14 @@ public class Registrant extends Actor {
 	public Event joinEvent(EventsQueryData joinEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = joinEventData.getEventId();
 		Event eventToJoin = eventRepo.findOne(eventId);
-		eventToJoin.addParticipant(this);
+		if(eventToJoin == null){
+			errors.reject("-5", "Event not found. Perhaps the event was removed by the owner.");
+			return null;
+		}
+		if(!eventToJoin.addParticipant(this)){
+			errors.reject("-8", "Server error. Failed to join event.");
+			return null;
+		}
 		eventRepo.save(eventToJoin);
 		return eventToJoin;
 	}

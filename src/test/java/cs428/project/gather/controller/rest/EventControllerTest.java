@@ -249,6 +249,32 @@ public class EventControllerTest {
 		assertTrue(backendEvent.getParticipants().contains(user));
 	}
 
+	@Test
+	public void testJoinEventNotSignedIn() throws JsonProcessingException {
+		// Create event
+		Event event1 = createFirstEvent();
+
+		// Get user
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is not a participant
+		assertFalse(event1.getParticipants().contains(user));
+
+		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+		ResponseEntity<String> response = attemptJoinEvent(eventId, requestEntity.getHeaders());
+		// Make sure the request is rejected since user is not signed in
+		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/join ",
+				resourceResponseData.getMessage());
+	}
 
 	@Test
 	public void testLeaveEvent() throws JsonProcessingException {
