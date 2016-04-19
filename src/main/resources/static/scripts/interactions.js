@@ -3,17 +3,14 @@ $(document).ready(function() {
     sessionCheck();
     resizeLayout();
     resizeMap();
-//  tableInteractions();
     enterZip();
     registerBox();
     signUp();
     signIn();
     signOut();
-    removeZipCodeError();
     onLoadSessionCheck();
     headerSelect();
     loadCategories();
-//  loadEventsFirstView();
 });
 
 function loadCategories(){
@@ -90,9 +87,6 @@ function enterZip() {
                 $('#zipSearching').hide();
             }, 100);
     });
-}
-
-function removeZipCodeError() {
     $('#zipCode').on('focus', function() {
         $(zipCodeErrorBox).fadeOut(100);
     });
@@ -139,44 +133,56 @@ function registerBox() {
 }
 
 function signIn() {
+    errorBox = '#loginErrorBox'
     $('#loginFormSubmit').on(
             'click',
             function() {
                 gather.global.email = $("#signInEmail").val();
                 var password = $("#signInPassword").val();
-                $.ajax({
-                    accepts: "application/json",
-                    type : "POST",
-                    url : "rest/registrants/signin",
-                    contentType: "application/json; charset=UTF-8",
-                    dataType: "json",
-                    data : '{ \
-                        "email" : "' + gather.global.email + '", \
-                        "password" : "' + password + '" \
-                    }',
-                    success : function(returnvalue) {
-                        if (returnvalue.status == 0) {
-//                          alert("Sign In Successful");
-                            resetSignInFields();
-                            gather.global.session.signedIn = true
-                            gather.global.currentDisplayName = returnvalue.displayName;
-                            updateGreeting();
-                            headerSelect();
-                            window.location.href = "/"
-                        } else {
-//                          alert(returnvalue.status)
-//                          alert(returnvalue.message)
-//                          alert("Sign In Unsuccessful")
-                            resetSignInFields()
+                emailStatus = validateEmail("#loginErrorBox", gather.global.email)
+                
+                if (emailStatus) {
+                    $.ajax({
+                        accepts: "application/json",
+                        type : "POST",
+                        url : "rest/registrants/signin",
+                        contentType: "application/json; charset=UTF-8",
+                        dataType: "json",
+                        data : '{ \
+                            "email" : "' + gather.global.email + '", \
+                            "password" : "' + password + '" \
+                        }',
+                        success : function(returnvalue) {
+                            if (returnvalue.status == 0) {
+                                resetSignInFields();
+                                gather.global.session.signedIn = true
+                                gather.global.currentDisplayName = returnvalue.displayName;
+                                updateGreeting();
+                                headerSelect();
+                                window.location.href = "/"
+                            } else {
+                                $(errorBox).slideDown().delay(3000).slideUp();
+                                $(errorBox).html(returnvalue.message);
+                                resetSignInFields()
+                            }
+                        },
+                        error : function(jqXHR, textStatus, errorThrown) {
+                            var responseMessage = $.parseJSON(jqXHR.responseText).message;
+                            $(errorBox).slideDown().delay(3000).slideUp();
+                            $(errorBox).html(responseMessage);
                         }
-                    },
-                    error : function(jqXHR, textStatus, errorThrown) {
-                        var responseMessage = $.parseJSON(jqXHR.responseText).message;
-                        $(formId).html(responseMessage);
-                    }
-                });
+                    });
+                }
             });
+    $('#signInEmail').on('focus', function() {
+        $(errorBox).slideUp();
+    });
+    $('#signInPassword').on('focus', function() {
+        $(errorBox).slideUp();
+    });
 }
+
+
 
 function signOut() {
     $('#signOutButton').on(
@@ -189,16 +195,11 @@ function signOut() {
                         contentType: "application/json; charset=UTF-8",
                         success : function(returnvalue) {
                             if (returnvalue.status == 0) {
-//                              alert(returnvalue.status)
-//                              alert(returnvalue.message)
                                 gather.global.session.signedIn = false;
-//                                headerSelect()
-//                                rightPaneSelect()
                                 window.location.href = "/"
                             } else {
                                 if (returnvalue.status != 0) {
-//                                  alert(returnvalue.status)
-//                                  alert(returnvalue.message)
+                                    alert(returnvalue.message)
                                 }
                             }
                         }
@@ -313,7 +314,7 @@ function validateEmail(formId, email) {
     var atpos = x.indexOf("@");
     var dotpos = x.lastIndexOf(".");
     if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x.length) {
-        $(formId).html('Please enter a valid email address').show().delay(3000).hide(1000);
+        $(formId).html('Please enter a valid email address').slideDown().delay(3000).slideUp();
         return false;
     } else {
         return true;
@@ -322,10 +323,10 @@ function validateEmail(formId, email) {
 
 function validatePassword(formId, password, confirmPassword){
     if (password.length < 7 || password.length > 21) {
-        $(formId).html('Password must be between 6 and 21 characters').show().delay(3000).hide(1000);
+        $(formId).html('Password must be between 6 and 21 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (password != confirmPassword) {
-        $(formId).html('Passwords do not match').show().delay(3000).hide(1000);
+        $(formId).html('Passwords do not match').slideDown().delay(3000).slideUp();
         return false;
     } else {
         return true;
@@ -334,12 +335,12 @@ function validatePassword(formId, password, confirmPassword){
 
 function validateDisplayName(formId, displayName) {
     if ($.isNumeric(displayName)) {
-        $(formId).html('Display name cannot be numeric').show().delay(3000).hide(1000);
+        $(formId).html('Display name cannot be numeric').slideDown().delay(3000).slideUp();
     } else if (displayName.length < 5 || displayName.length > 15) {
-        $(formId).html('Display name must be between than 5 and 15 characters').show().delay(3000).hide(1000);
+        $(formId).html('Display name must be between than 5 and 15 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (displayName.indexOf(' ') >= 0) {
-        $(formId).html('Display name cannot have spaces').show().delay(3000).hide(1000);
+        $(formId).html('Display name cannot have spaces').slideDown().delay(3000).slideUp();
         return false;
     } else {
         return true;
@@ -348,15 +349,15 @@ function validateDisplayName(formId, displayName) {
 
 function validateZipCode(formId, zipCode) {
     if (zipCode.length != 5) {
-        $(formId).html('Zip code must be five digits').show().delay(3000).hide(1000);
+        $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else if (!($.isNumeric(zipCode))) {
-        $(formId).html('Zip code must be five digits').show().delay(3000).hide(1000);
+        $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else {
         var returnValue = mapManager.determineCoordByZipCode(zipCode);
         if (returnValue == -1) {
-            $(formId).html('Zip code does not exist').show().delay(3000).hide(1000);
+            $(formId).html('Zip code does not exist').slideDown().delay(3000).slideUp();
             return false;
         } else {
             $(formId).hide();
