@@ -348,8 +348,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventMarker.openPopup();
 	        });
 
-			setUpCategoryOptions()
-
 			eventMarker.addTo(map);
 
 			eventMarker.openPopup();
@@ -360,7 +358,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var newOptions={};
 		var catArray = gather.global.categories;
-		var $categories = $( "#new-event-category" );
+		var $categories = $( "#event-category" );
 		$categories.empty();
 		for (var i = 0; i < catArray.length; i++) {
 			newOptions[catArray[i].name] = catArray[i].name;
@@ -384,94 +382,116 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	}
 
-	this.editNewEvent = function(newEventDataID) {
-		var eventData = newEvents[newEventDataID];
+	this.editEvent = function(eventDataID, newFlag) {
+
+		setUpCategoryOptions()
+
+		if (newFlag) {
+			var eventData = newEvents[eventDataID];
+		} else {
+			var eventData = establishedEvents[eventDataID];
+		}
+		
 
 		if(typeof(eventData) === "undefined") {
 			displayGeneralFailureModal();
 		}
 		else {
-			displayEditNewEventModal(newEventDataID);
+			var modalForm = $("#edit-event-modal");
+			modalForm.data("eventDataID", eventDataID);
+			if (typeof(eventData.id) === "undefined") {
+				modalForm.modal("show");
+				$('#edit-event-modal').attr('new', newFlag)
+				eventData.newEventFormData = {};
+			} else if (typeof(eventData.id) === "number") {
+				modalForm.modal("show");
+				$('#edit-event-modal').attr('new', newFlag)
+				$('#event-name').val(eventData.name)
+				$('#event-description').val(eventData.description)
+				$('#event-category').val(eventData.category.name)
+
+				var allDateTime = ''
+				for(i = 0; i < eventData.occurrences.length; i++){
+					var dateTime = new Date( eventData.occurrences[i].timestamp );
+					var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+					var date = dateTime.toLocaleDateString();
+					allDateTime = allDateTime + date + " " + time
+				}
+				$('#event-time').val(allDateTime)
+			}
 		}
 	}
 
-	function displayEditNewEventModal(newEventDataID) {
-		var modalForm = $("#edit-new-event-modal");
-		modalForm.data("newEventDataID", newEventDataID);
+	function loadEventFormWithData() {
+		var eventForm = getContentTemplateClone("#edit-event-modal");
 
-		var eventData = newEvents[newEventDataID];
-		if(typeof(eventData.newEventFormData) === "undefined") {
-			eventData.newEventFormData = {};
-		}
 
-		modalForm.on("show.bs.modal", function(event) {
-			//alert("lord");
-			//loadNewEventFormData();
-		});
-
-		modalForm.on("hidden.bs.modal", function(event) {
-			//alert("store")
-			//storeNewEventFormData();
-		});
-
-		modalForm.modal("show");
 	}
 
 	function loadNewEventFormData() {
-		var modalForm = $("#edit-new-event-modal");
+		var modalForm = $("#edit-event-modal");
 		var newEventDataID = modalForm.data("newEventDataID");
 
 		var eventData = newEvents[newEventDataID];
 
-		$("#new-event-name").val(eventData.newEventFormData.eventName);
-		$("#new-event-description").val(eventData.newEventFormData.eventDescription);
-		$("#new-event-category").val(eventData.newEventFormData.eventCategory);
-		$("#new-event-time").val(eventData.newEventFormData.eventTime);
+		$("#event-name").val(eventData.newEventFormData.eventName);
+		$("#event-description").val(eventData.newEventFormData.eventDescription);
+		$("#event-category").val(eventData.newEventFormData.eventCategory);
+		$("#event-time").val(eventData.newEventFormData.eventTime);
 	}
 
-	function storeNewEventFormData() {
-		var modalForm = $("#edit-new-event-modal");
-		var newEventDataID = modalForm.data("newEventDataID");
+	function storeEventFormData() {
+		var modalForm = $("#edit-event-modal");
+		var eventDataID = modalForm.data("eventDataID");
+		var newFlag = $("#edit-event-modal").attr('new')
 
-		var eventData = newEvents[newEventDataID];
+		if (newFlag == 'false') {
+			var eventData = establishedEvents[eventDataID];
+		} else {
+			var eventData = newEvents[eventDataID];
+		}
 
-		if(eventData !== undefined) {
-			eventData.newEventFormData.eventName = $("#new-event-name").val();
-			eventData.newEventFormData.eventDescription = $("#new-event-description").val();
-			eventData.newEventFormData.eventCategory = $("#new-event-category").val();
-			eventData.newEventFormData.eventTime = $("#new-event-time").val();
-
+		if (eventData !== undefined && typeof(eventData.newEventFormData) !== "undefined") {
+			eventData.newEventFormData.eventName = $("#event-name").val();
+			eventData.newEventFormData.eventDescription = $("#event-description").val();
+			eventData.newEventFormData.eventCategory = $("#event-category").val();
+			eventData.newEventFormData.eventTime = $("#event-time").val();
+		} else {
+			eventData.name = $("#event-name").val();
+			eventData.description = $("#event-description").val();
+			eventData.category.name = $("#event-category").val();
+			eventData.occurrences.timestamp = $("#event-time").val();
 		}
 	}
 
-	$('#new-event-save').on(
+	$('#event-save').on(
 			'click', function() {
-				var eventName = $("#new-event-name").val();
-				var eventDescription = $("#new-event-description").val();
-				var eventTime = $("#new-event-time").val();
-				var eventCategory = $('#new-event-category').val();
+				var eventName = $("#event-name").val();
+				var eventDescription = $("#event-description").val();
+				var eventTime = $("#event-time").val();
+				var eventCategory = $('#event-category').val();
 				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
 					$('#formEventFeedback').html('All the fields are required');
 				} else if (validateEventDescription(eventDescription) == false) {
 					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
-				}else{
+				} else {
 					event.preventDefault();
-					storeNewEventFormData();
-					submitNewEventForm();
+					storeEventFormData();
+					submitEventForm();
 					clearEventForm();
 				}
 	});
 
-	$('#new-event-close').on(
+	$('#event-close').on(
 			'click', function() {
 				clearEventForm();
 	});
 
 	function clearEventForm(){
-		$("#new-event-name").val('');
-		$("#new-event-description").val('');
-		$('#new-event-category').val('');
-		$("#new-event-time").val('');
+		$("#event-name").val('');
+		$("#event-description").val('');
+		$('#event-category').val('');
+		$("#event-time").val('');
 		$('#formEventFeedback').html('');
 	}
 
@@ -483,42 +503,56 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
 
-	$('#new-event-time').datetimepicker();
-	//$('#new-event-category').selectmenu();
+	$('#event-time').datetimepicker({startDate:new Date().toLocaleDateString()});
+	//$('#event-category').selectmenu();
 
-	function submitNewEventForm() {
-		var modalForm = $("#edit-new-event-modal");
-		var newEventDataID = modalForm.data("newEventDataID");
+	function submitEventForm() {
+		var modalForm = $("#edit-event-modal");
+		var eventDataID = modalForm.data("eventDataID");
+		var newFlag = $("#edit-event-modal").attr('new')
 
-		createNewEvent(newEventDataID, function(newEvent) {
-			
-			mapManager.discardNewEvent(newEventDataID);
+		if (newFlag == 'true') {
+			updateEvent(eventDataID, newFlag, function(event) {
+				
+				mapManager.discardNewEvent(eventDataID);
 
-			modalForm.modal("hide");
+				modalForm.modal("hide");
 
-			establishedEvents[newEvent.id] = newEvent;
-			
-			//TODO: Added check if the new event is indeed nearby
-			if(isNearby(newEvent)){
-				gather.global.nearEvents.push(newEvent);	
-			}else{
-				displayNewEventNotNearbyModal();
-			}
-			
-			//loadEventsFirstView(currentUserCoordinates);
+				establishedEvents[event.id] = event;
+				
+				//TODO: Added check if the new event is indeed nearby
+				if (isNearby(event)) {
+					gather.global.nearEvents.push(event);	
+				} else {
+					displayNewEventNotNearbyModal();
+				}
+				
+				//loadEventsFirstView(currentUserCoordinates);
 
-			placeEstablishedEventMarker(newEvent, true);
+				placeEstablishedEventMarker(event, true);
 
-			
-			gather.global.joinedEvents.push(newEvent);
-			gather.global.ownedEvents.push(newEvent);
+				
+				gather.global.joinedEvents.push(event);
+				gather.global.ownedEvents.push(event);
 
-			refreshEventListAndMarkers();
+				refreshEventListAndMarkers();
 
-		}, function() {
-			modalForm.modal("hide");
-			displayGeneralFailureModal();
-		});
+			}, function() {
+				modalForm.modal("hide");
+				displayGeneralFailureModal();
+			});
+		} else {
+			updateEvent(eventDataID, newFlag, function(event) {
+				refreshEventListAndMarkers();
+				modalForm.modal("hide");
+			}, function() {
+				modalForm.modal("hide");
+				displayGeneralFailureModal();
+			});
+		}
+		
+
+		
 	}
 	
 	function isNearby(anEvent){
@@ -531,10 +565,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 /**
- * REST call to create the event
+ * REST call to update/create the event
  */
-	function createNewEvent(newEventDataID, successCallback, failureCallback) {
-		var eventData = newEvents[newEventDataID];
+	function updateEvent(eventDataID, newFlag, successCallback, failureCallback) {
+		if (newFlag == 'true') {
+			var eventData = newEvents[eventDataID];
+		} else {
+			var eventData = establishedEvents[eventDataID];
+		}
+		
 
 		var eventMarker = eventData.eventMarker;
 		var markerPosition = eventMarker.getLatLng();
@@ -543,21 +582,37 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			longitude: markerPosition.lng
 		};
 
-		var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
-		var requestObject = {
-			eventName: eventData.newEventFormData.eventName,
-			eventCoordinates: markerCoordinates,
-			eventDescription: eventData.newEventFormData.eventDescription,
-			eventCategory: eventData.newEventFormData.eventCategory,
-			eventTime: utc,
-			callerCoordinates: currentUserCoordinates
-		};
+		if (newFlag == 'true') {
+			var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
+			var requestObject = {
+				eventName: eventData.newEventFormData.eventName,
+				eventCoordinates: markerCoordinates,
+				eventDescription: eventData.newEventFormData.eventDescription,
+				eventCategory: eventData.newEventFormData.eventCategory,
+				eventTime: utc,
+				callerCoordinates: currentUserCoordinates
+			};
+			var url = "rest/events"
+		} else {
+			var utc = (new Date(eventData.occurrences.timestamp).getTime());
+	 		var requestObject = {
+	 			eventId: eventData.id,
+				eventName: eventData.name,
+				eventCoordinates: markerCoordinates,
+				eventDescription: eventData.description,
+				eventCategory: eventData.category.name,
+				eventTime: utc,
+				callerCoordinates: currentUserCoordinates
+			};
+			var url = "rest/events/update"
+		}
 
 		var requestData = JSON.stringify(requestObject);
 
 		var requestOptions = {
 			type: "POST",
-			url: "rest/events",
+			async: false,
+			url: url,
 			contentType: "application/json; charset=UTF-8",
 			data: requestData,
 			dataType: "json",
