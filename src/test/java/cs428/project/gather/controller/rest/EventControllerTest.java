@@ -46,6 +46,7 @@ import cs428.project.gather.data.*;
 import cs428.project.gather.data.model.*;
 import cs428.project.gather.data.repo.*;
 import cs428.project.gather.data.response.*;
+import cs428.project.gather.utilities.GsonHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -566,30 +567,17 @@ public class EventControllerTest {
 	}
 
 	private RESTPaginatedResourcesResponseData<Event> parsePaginatedEventResponseData(String json) {
-		Gson gson = buildGson();
+		Gson gson = GsonHelper.getGson();
 		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
 
 	private RESTResourceResponseData<Event> parseEventResponseData(String json) {
-		Gson gson = buildGson();
+		Gson gson = GsonHelper.getGson();
 		Type resourceType = new TypeToken<RESTResourceResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
-	}
-	
-	//TODO: Build and place this Gson object in a place that is accessible throughout the app & tests
-	private Gson buildGson(){
-		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-			// Register an adapter to manage the date types as long values
-			@Override
-			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-				return new Date(json.getAsJsonPrimitive().getAsLong());
-			}
-		});
-		return builder.create();
 	}
 
 	@Test
