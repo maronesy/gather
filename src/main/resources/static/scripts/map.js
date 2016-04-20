@@ -589,7 +589,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventCoordinates: markerCoordinates,
 				eventDescription: eventData.newEventFormData.eventDescription,
 				eventCategory: eventData.newEventFormData.eventCategory,
-				eventTime: utc,
+				eventOccurrences: [utc],
 				callerCoordinates: currentUserCoordinates
 			};
 			var url = "rest/events"
@@ -601,10 +601,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventCoordinates: markerCoordinates,
 				eventDescription: eventData.description,
 				eventCategory: eventData.category.name,
-				eventTime: utc,
+				eventOccurrences: [utc],
 				callerCoordinates: currentUserCoordinates,
-				occurrencesToAdd: [],
-				occurrencesToRemove: [],
 				ownersToAdd: [],
 				ownersToRemove: [],
 				participantsToAdd: [],

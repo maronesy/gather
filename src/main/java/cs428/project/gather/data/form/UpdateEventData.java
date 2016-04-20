@@ -10,8 +10,6 @@ import org.springframework.validation.Errors;
 
 public class UpdateEventData extends NewEventData {
 	private Long eventId;
-	private List<Occurrence> occurrencesToAdd =  new ArrayList<Occurrence>();
-	private List<Occurrence> occurrencesToRemove =  new ArrayList<Occurrence>();
 	private List<String> ownersToAdd = new ArrayList<String>();
 	private List<String> ownersToRemove = new ArrayList<String>();
 	private List<String> participantsToAdd = new ArrayList<String>();
@@ -35,14 +33,6 @@ public class UpdateEventData extends NewEventData {
 
 	public void validate(AbstractValidator validator, Errors errors) {
 		validator.validate(this, errors);
-	}
-
-	public List<Occurrence> getOccurrencesToAdd() {
-		return occurrencesToAdd;
-	}
-
-	public List<Occurrence> getOccurrencesToRemove() {
-		return occurrencesToRemove;
 	}
 
 	public List<String> getOwnersToAdd() {
