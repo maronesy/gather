@@ -568,15 +568,14 @@ public class EventControllerTest {
 	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description,
 			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
 			Registrant ownerToAdd) throws JsonProcessingException {
-		List<Occurrence> occurrencesToAdd = new ArrayList<Occurrence>();
-		List<Occurrence> occurrencesToRemove = new ArrayList<Occurrence>();
+		List<Long> occurrences= new ArrayList<Long>();
 		List<String> ownersToAdd = new ArrayList<String>();
 		List<String> ownersToRemove = new ArrayList<String>();
 		List<String> participantsToAdd = new ArrayList<String>();
 		List<String> participantsToRemove = new ArrayList<String>();
 		ownersToAdd.add(ownerToAdd.getDisplayName());
 		participantsToRemove.add(participantToRemove.getDisplayName());
-		occurrencesToAdd.add(new Occurrence("", new Timestamp(time)));
+		occurrences.add(time);
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventId", eventId);
@@ -584,10 +583,8 @@ public class EventControllerTest {
 		requestBody.put("eventCoordinates", eCoor);
 		requestBody.put("eventDescription", description);
 		requestBody.put("eventCategory", category);
-		requestBody.put("eventTime", time);
 		requestBody.put("callerCoordinates", uCoor);
-		requestBody.put("occurrencesToAdd", occurrencesToAdd);
-		requestBody.put("occurrencesToRemove", occurrencesToRemove);
+		requestBody.put("eventOccurrences", occurrences);
 		requestBody.put("ownersToAdd", ownersToAdd);
 		requestBody.put("ownersToRemove", ownersToRemove);
 		requestBody.put("participantsToAdd", participantsToAdd);

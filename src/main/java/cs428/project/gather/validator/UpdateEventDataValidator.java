@@ -44,15 +44,12 @@ public class UpdateEventDataValidator extends AbstractEventDataValidator {
 
 	private void validateNonNullRemoveAndAddLists(UpdateEventData updateEventData, Errors errors) {
 		if(!errors.hasErrors()){
-			List<Occurrence> occurrencesToAdd = updateEventData.getOccurrencesToAdd();
-			List<Occurrence> occurrencesToRemove =  updateEventData.getOccurrencesToRemove();
 			List<String> ownersToAdd = updateEventData.getOwnersToAdd();
 			List<String> ownersToRemove = updateEventData.getOwnersToRemove();
 			List<String> participantsToAdd = updateEventData.getParticipantsToAdd();
 			List<String> participantsToRemove = updateEventData.getOwnersToRemove();
 
-			if(occurrencesToAdd==null||occurrencesToRemove==null ||
-					ownersToAdd==null||ownersToRemove==null ||
+			if(ownersToAdd==null||ownersToRemove==null ||
 					participantsToAdd==null||participantsToRemove==null){
 				String message = "Cannot update event. Some remove and add lists for occurrence, owners or particpants are not defined in JSON";
 				errors.reject("-7", message);

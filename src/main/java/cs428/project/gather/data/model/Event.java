@@ -253,14 +253,11 @@ public class Event {
         targetEvent.setName(updateEventData.getEventName());
         targetEvent.setDescription(updateEventData.getEventDescription());
         targetEvent.setLocation(new Location(updateEventData.getEventCoodinates()));
-        if(!updateEventData.getOccurrencesToAdd().isEmpty()){
-            for(int i=0;i<updateEventData.getOccurrencesToAdd().size();i++){
-                if (!targetEvent.addOccurrence(updateEventData.getOccurrencesToAdd().get(i))){
-                    String message = "Cannot update event. Failed to add a coccurrence.";
-                    errors.reject("-7", message);
-                }
-            }
+        if (!targetEvent.setOccurrencesFrom(updateEventData.getOccurrences())) {
+            String message = "Cannot create event. Failed to add occurrences to event.";
+            errors.reject("-7", message);
         }
+        
         if(!updateEventData.getParticipantsToAdd().isEmpty()){
             for(int i=0;i<updateEventData.getParticipantsToAdd().size();i++){
             	String displayName=updateEventData.getParticipantsToAdd().get(i);
@@ -282,14 +279,6 @@ public class Event {
             }
         }
 
-        if(!updateEventData.getOccurrencesToRemove().isEmpty()){
-            for(int i=0;i<updateEventData.getOccurrencesToRemove().size();i++){
-                if (!targetEvent.removeOccurrence(updateEventData.getOccurrencesToRemove().get(i))){
-                    String message = "Cannot update event. Failed to remove a coccurrence.";
-                    errors.reject("-8", message);
-                }
-            }
-        }
         if(!updateEventData.getParticipantsToRemove().isEmpty()){
             for(int i=0;i<updateEventData.getParticipantsToRemove().size();i++){
             	String displayName=updateEventData.getParticipantsToRemove().get(i);
