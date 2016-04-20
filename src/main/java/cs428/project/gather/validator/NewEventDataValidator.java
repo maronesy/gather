@@ -37,7 +37,7 @@ public class NewEventDataValidator extends AbstractEventDataValidator {
 			validateEventCoords(newEventData, errors);
 			validateEventDescription(newEventData, errors);
 			validateEventCategory(newEventData, errors);
-			validateEventTime(newEventData, errors);
+			validateEventOccurrences(newEventData, errors);
 			validateCallerCoordinates(newEventData, errors);
 			validateNotDuplicateEvent(newEventData, errors);
 		}
@@ -49,7 +49,7 @@ public class NewEventDataValidator extends AbstractEventDataValidator {
 			String name = newEventData.getEventName();
 			double latitude = newEventData.getEventCoodinates().getLatitude();
 			double longitude = newEventData.getEventCoodinates().getLongitude();
-			Timestamp time = new Timestamp(newEventData.getEventTime());
+			Timestamp time = new Timestamp(newEventData.getOccurrences().get(0));
 
 			List<Event> foundEvents = this.eventRepo.findByNameAndLocationAndTime(name, latitude, longitude, time);
 			if(!foundEvents.isEmpty()){

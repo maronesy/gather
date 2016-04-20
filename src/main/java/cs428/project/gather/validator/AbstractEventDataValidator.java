@@ -32,12 +32,20 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 			errors.reject("-2", message+":The event name must be between 2 and 128 characters.");
 		}
 	}
-
-	protected void validateEventTime(NewEventData newEventData, Errors errors) {
-		long eventTime = newEventData.getEventTime();
-		if(eventTime < DateTime.now().getMillis()){
-			String message = "Field invalid-" + NewEventData.EVENT_TIME_FIELD_NAME;
-			errors.reject("-3", message+":Event time must be a valid time in the future.");
+	
+	protected void validateEventOccurrences(NewEventData newEventData, Errors errors) {
+		List<Long> eventOccurrences = newEventData.getOccurrences();
+		if (eventOccurrences == null){
+			String message = "Cannot update event. Occurrence list is not defined in JSON";
+			errors.reject("-7", message);
+			return;
+		}
+		for(int i=0; i<eventOccurrences.size(); i++){
+			long eventTime = eventOccurrences.get(i);
+			if(eventTime < DateTime.now().getMillis()){
+				String message = "Field invalid-" + NewEventData.EVENT_TIME_FIELD_NAME;
+				errors.reject("-3", message+":Event time must be a valid time in the future.");
+			}
 		}
 	}
 

@@ -166,11 +166,13 @@ public class EventControllerTest {
 			long time, Coordinates uCoor, HttpHeaders header) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
+		List<Long> occurrences = new ArrayList<Long>();
 		requestBody.put("eventName", name);
 		requestBody.put("eventCoordinates", eCoor);
 		requestBody.put("eventDescription", description);
 		requestBody.put("eventCategory", category);
-		requestBody.put("eventTime", time);
+		occurrences.add(time);
+		requestBody.put("eventOccurrences", occurrences);
 		requestBody.put("callerCoordinates", uCoor);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", header.getFirst("Cookie"));

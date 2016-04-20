@@ -3,6 +3,10 @@ package cs428.project.gather.data.form;
 import cs428.project.gather.validator.*;
 import cs428.project.gather.utilities.*;
 import cs428.project.gather.data.*;
+import cs428.project.gather.data.model.Occurrence;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.*;
 import com.google.gson.*;
@@ -20,7 +24,8 @@ public class NewEventData {
 	private Coordinates eventCoordinates;
 	private String eventDescription;
 	private String eventCategory;
-	private long eventTime;
+	//private long eventTime;
+	private List<Long> eventOccurrences =  new ArrayList<Long>();
 	private Coordinates callerCoordinates;
 
 	public static NewEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
@@ -41,7 +46,6 @@ public class NewEventData {
 		builder.append(eventCoordinates);
 		builder.append(eventDescription);
 		builder.append(eventCategory);
-		builder.append(eventTime);
 		builder.append(callerCoordinates);
 		int hashCode = builder.toHashCode();
 		return hashCode;
@@ -62,7 +66,6 @@ public class NewEventData {
 			equalsBuilder.append(this.eventDescription, anotherEventData.eventDescription);
 			equalsBuilder.append(this.callerCoordinates, anotherEventData.callerCoordinates);
 			equalsBuilder.append(this.eventCoordinates, anotherEventData.eventCoordinates);
-			equalsBuilder.append(this.eventTime, anotherEventData.eventTime);
 
 			equal = equalsBuilder.isEquals();
 		}
@@ -101,14 +104,6 @@ public class NewEventData {
 		this.eventCategory = eventCategory;
 	}
 
-	public long getEventTime() {
-		return eventTime;
-	}
-
-	public void setEventTime(long eventTime) {
-		this.eventTime = eventTime;
-	}
-
 	public Coordinates getCallerCoodinates() {
 		return callerCoordinates;
 	}
@@ -120,4 +115,9 @@ public class NewEventData {
 	public double distanceFromCaller() {
 		return GeodeticHelper.getDistanceBetweenCoordinates(getCallerCoodinates(), getEventCoodinates());
 	}
+
+	public List<Long> getOccurrences() {
+		return eventOccurrences;
+	}
+
 }

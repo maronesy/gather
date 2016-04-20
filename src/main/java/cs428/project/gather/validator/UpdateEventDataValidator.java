@@ -36,7 +36,6 @@ public class UpdateEventDataValidator extends AbstractEventDataValidator {
 			validateEventCoords(updateEventData, errors);
 			validateEventDescription(updateEventData, errors);
 			validateEventCategory(updateEventData, errors);
-			validateEventTime(updateEventData, errors);
 			validateCallerCoordinates(updateEventData, errors);
 			validateNonNullRemoveAndAddLists(updateEventData, errors);
 		}

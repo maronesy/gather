@@ -70,6 +70,28 @@ public class Event {
         Assert.notNull(occurrence);
         return this.occurrences.add(occurrence);
     }
+    
+    public boolean setOccurrences(List<Occurrence> newOccurrences) {
+        Assert.notNull(newOccurrences);
+        this.removeAllOccurrence();
+        for(int i=0; i<newOccurrences.size(); i++){
+        	if(!this.occurrences.add(newOccurrences.get(i))){
+        		return false;
+        	}
+        }
+        return true;
+    }
+
+    public boolean setOccurrencesFrom(List<Long> newTimestamps) {
+        Assert.notNull(newTimestamps);
+        this.removeAllOccurrence();
+        for(int i=0; i<newTimestamps.size(); i++){
+        	if(!this.occurrences.add(new Occurrence("",new Timestamp(newTimestamps.get(i))))){
+        		return false;
+        	}
+        }
+        return true;
+    }
 
     public boolean addFeedback(Feedback feedback) {
         Assert.notNull(feedback);
@@ -149,6 +171,13 @@ public class Event {
     public boolean removeOccurrence(Occurrence occurrence){
         return occurrences.remove(occurrence);
     }
+    
+    public void removeAllOccurrence(){
+    	int length=occurrences.size();
+    	for(int i=0; i<length; i++){
+    		occurrences.remove(i);
+    	}
+    }
 
     public boolean containsOwner(Registrant owner, Errors errors) {
         if (! getOwners().contains(owner)) {
@@ -193,7 +222,7 @@ public class Event {
         Event newEvent = new Event(newEventData.getEventName());
         newEvent.setDescription(newEventData.getEventDescription());
         newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
-
+        
         if (!newEvent.addParticipant(owner)) {
             String message = "Cannot create event. Failed to add creator as participant.";
             errors.reject("-7", message);
@@ -203,13 +232,12 @@ public class Event {
             String message = "Cannot create event. Failed to add creator as owner.";
             errors.reject("-7", message);
         }
-
-        Occurrence occurrence = new Occurrence("", new Timestamp(newEventData.getEventTime()));
-        if (!newEvent.addOccurrence(occurrence)) {
-            String message = "Cannot create event. Failed to add first occurrence to event.";
+        
+        if (!newEvent.setOccurrencesFrom(newEventData.getOccurrences())) {
+            String message = "Cannot create event. Failed to add occurrences to event.";
             errors.reject("-7", message);
         }
-
+        
         Category category = categoryRepo.findByName(newEventData.getEventCategory()).get(0);
         newEvent.setCategory(category);
         return newEvent;
