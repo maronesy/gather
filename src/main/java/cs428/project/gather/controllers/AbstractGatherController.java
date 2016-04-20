@@ -36,6 +36,9 @@ public abstract class AbstractGatherController {
 	protected NewEventDataValidator newEventDataValidator;
 
 	@Autowired
+	protected UpdateEventDataValidator updateEventDataValidator;
+	
+	@Autowired
 	protected EventIdDataValidator eventIdDataValidator;
 
 	@Autowired

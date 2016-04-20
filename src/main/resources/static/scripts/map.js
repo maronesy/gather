@@ -602,7 +602,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventDescription: eventData.description,
 				eventCategory: eventData.category.name,
 				eventTime: utc,
-				callerCoordinates: currentUserCoordinates
+				callerCoordinates: currentUserCoordinates,
+				occurrencesToAdd: [],
+				occurrencesToRemove: [],
+				ownersToAdd: [],
+				ownersToRemove: [],
+				participantsToAdd: [],
+				participantsToRemove: []
 			};
 			var url = "rest/events/update"
 		}
@@ -619,6 +625,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			timeout: 10000,
 			success: function(returnvalue) {
 				if(typeof(successCallback) === "function") {
+					console.log(JSON.stringify(returnvalue.result));
 					successCallback(returnvalue.result);
 				}
 			}
