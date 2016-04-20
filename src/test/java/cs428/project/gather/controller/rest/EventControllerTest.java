@@ -7,12 +7,14 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,11 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import cs428.project.gather.GatherApplication;
@@ -86,12 +93,37 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetEvent() throws JsonProcessingException {
+		//Get info to create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
 		Coordinates eCoor = eventCoordinate();
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+		
+		// Create events, add location and occurrences
+		List<Event> eventsToSave = new ArrayList<Event>();
+		for (int i = 0; i < 10; i++) {
+			Event event = new Event("Event" + i);
+			event.setCategory(swim);
+			event.setLocation(new Location(eCoor));
+			event.addOccurrence(new Occurrence("Single Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis())));
+			eventsToSave.add(event);
+		}
+
+		// Save events to DB
+		this.eventRepo.save(eventsToSave);
+		
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
 				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
-		// TODO: This test needs to do more, set up some events and validate the
-		// returned events
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				apiResponse.getBody());
+
+		// Make sure all events are returned
+		assertEquals(10, resourceResponseData.getCount());
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(10, events.size());
+		assertEquals("Single Occurrence", events.get(0).getOccurrences().get(0).getDescription());
 	}
 
 	@Test
@@ -99,9 +131,47 @@ public class EventControllerTest {
 		Coordinates eCoor = eventCoordinate();
 		// Using radius of 100, which is too large - Check EventsQueryData for
 		// MAX_RADIUS
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
 				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+	}
+	
+	@Test
+	public void testGetEventManyEvents() throws JsonProcessingException {
+		//Get info to create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Coordinates eCoor = eventCoordinate();
+		
+		// Create events, add location and occurrences
+		List<Event> eventsToSave = new ArrayList<Event>();
+		for (int i = 0; i < 35; i++) {
+			Event event = new Event("Event" + i);
+			event.setCategory(swim);
+			event.setLocation(new Location(eCoor));
+			event.addOccurrence(new Occurrence("Single Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis())));
+			eventsToSave.add(event);
+		}
+
+		// Save events to DB
+		this.eventRepo.save(eventsToSave);
+		
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+				500);
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				apiResponse.getBody());
+
+		// Make sure all events are returned
+		assertEquals(35, resourceResponseData.getCount());
+		
+		// Make sure paginated data only returns the first 20 (as indicated by
+		// RESTPaginatedResourceResponseData)
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(20, events.size());
+		assertEquals("Single Occurrence", events.get(0).getOccurrences().get(0).getDescription());
 	}
 
 	@Test
@@ -190,7 +260,7 @@ public class EventControllerTest {
 
 	}
 
-	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour)
+	private ResponseEntity<String> attemptGetEvent(double lat, double lon, float radius, int hour)
 			throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -206,8 +276,8 @@ public class EventControllerTest {
 				requestHeaders);
 
 		// Invoking the API
-		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events",
-				HttpMethod.PUT, httpEntity, RESTResponseData.class);
+		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events",
+				HttpMethod.PUT, httpEntity, String.class);
 
 		assertNotNull(apiResponse);
 		return apiResponse;
@@ -423,7 +493,6 @@ public class EventControllerTest {
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				responseStr.getBody());
-		System.out.println(responseStr);
 
 		// Make sure all events are returned
 		assertEquals(35, resourceResponseData.getCount());
@@ -497,17 +566,30 @@ public class EventControllerTest {
 	}
 
 	private RESTPaginatedResourcesResponseData<Event> parsePaginatedEventResponseData(String json) {
-		Gson gson = new Gson();
+		Gson gson = buildGson();
 		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
 
 	private RESTResourceResponseData<Event> parseEventResponseData(String json) {
-		Gson gson = new Gson();
+		Gson gson = buildGson();
 		Type resourceType = new TypeToken<RESTResourceResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
+	}
+	
+	//TODO: Build and place this Gson object in a place that is accessible throughout the app & tests
+	private Gson buildGson(){
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+			// Register an adapter to manage the date types as long values
+			@Override
+			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+				return new Date(json.getAsJsonPrimitive().getAsLong());
+			}
+		});
+		return builder.create();
 	}
 
 	@Test
@@ -764,7 +846,6 @@ public class EventControllerTest {
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				responseStr.getBody());
-		System.out.println(responseStr);
 
 		// Make sure all events are returned
 		assertEquals(35, resourceResponseData.getCount());

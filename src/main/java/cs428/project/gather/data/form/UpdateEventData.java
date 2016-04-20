@@ -19,6 +19,7 @@ public class UpdateEventData extends NewEventData {
 
 	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
+		//TODO: Build and place this Gson object in a place that is accessible throughout the app & tests
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
 			// Register an adapter to manage the date types as long values
