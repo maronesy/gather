@@ -1,4 +1,11 @@
 
+.participant-buttons {
+	position: relative;
+    top: -10px;
+    margin-bottom: 10px;
+    left: -5px;
+}
+
 .occurrence-button {
 	position: relative;
 	margin-left: 5px; 
