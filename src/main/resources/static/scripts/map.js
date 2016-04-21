@@ -367,29 +367,36 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
 
+	var occurrenceIndex = 1
+
+	$('#addOccurrence').on('click', occurrenceIndex, function() {
+		occurrenceIndex += 1
+		if (occurrenceIndex <= 4) {
+			displayOccurrenceField(occurrenceIndex)
+			$('#removeOccurrence').prop("disabled",false);
+		}
+		if (occurrenceIndex == 4) {
+			$('#addOccurrence').prop("disabled",true);
+		}		
+	});
+	$('#removeOccurrence').on('click', occurrenceIndex, function() {
+		if (occurrenceIndex >= 1) {
+			removeOccurrenceField(occurrenceIndex)
+			$('#addOccurrence').prop("disabled",false);
+			occurrenceIndex -= 1
+		} 
+		if (occurrenceIndex == 1) {
+			$('#removeOccurrence').prop("disabled",true);
+		}
+	});
+
 	function setUpOccurrence() {
-		var id_index = 1;
-		displayOccurrenceField(id_index)
-		$('#addOccurrence').on('click', function() {
-			id_index += 1
-			if (id_index <= 4) {
-				displayOccurrenceField(id_index)
-				$('#removeOccurrence').prop("disabled",false);
-			}
-			if (id_index == 4) {
-				$('#addOccurrence').prop("disabled",true);
-			}		
-		});
-		$('#removeOccurrence').on('click', function() {
-			if (id_index >= 1) {
-				removeOccurrenceField(id_index)
-				$('#addOccurrence').prop("disabled",false);
-				id_index -= 1
-			} 
-			if (id_index == 1) {
-				$('#removeOccurrence').prop("disabled",true);
-			}
-		});
+		// reset the field 
+		occurrenceIndex = 1
+		$('#event-occurrence').html('')
+		$('#removeOccurrence').prop("disabled",true);
+		$('#addOccurrence').prop("disabled",false)
+		displayOccurrenceField(occurrenceIndex)
 	}
 
 	function removeOccurrenceField(index) {
@@ -398,11 +405,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 	function displayOccurrenceField(index) {
-		var html_id = 'event-occurrence' + index
-		var js_id = '#event-occurrence' + index
-		var occurrence_field = '<input style="margin-top:5px;" class="form-control" id="' + html_id + '"/>'
-		$('#event-occurrence').append(occurrence_field)
-		$(js_id).datetimepicker({startDate:new Date().toLocaleDateString()});
+		var htmlID = 'event-occurrence' + index
+		var jsID = '#event-occurrence' + index
+		var occurrenceField = '<input style="margin-top:5px;" class="form-control" id="' + htmlID + '"/>'
+		$('#event-occurrence').append(occurrenceField)
+		$(jsID).datetimepicker({startDate:new Date().toLocaleDateString()});
 	}
 
 		
