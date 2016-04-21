@@ -459,13 +459,16 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				$('#event-category').val(eventData.category.name)
 
 				var allDateTime = ''
-				for(i = 0; i < eventData.occurrences.length; i++){
+				removeOccurrenceField(1);
+				for(i = 0; i < Math.min(eventData.occurrences.length,4); i++){
 					var dateTime = new Date( eventData.occurrences[i].timestamp );
 					var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 					var date = dateTime.toLocaleDateString();
 					allDateTime = allDateTime + date + " " + time
+					var index=i+1;
+					displayOccurrenceField(index);
+					$('#event-occurrence'+index).val(allDateTime)
 				}
-				$('#event-time').val(allDateTime)
 			}
 		}
 	}
@@ -474,18 +477,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var eventForm = getContentTemplateClone("#edit-event-modal");
 
 
-	}
-
-	function loadNewEventFormData() {
-		var modalForm = $("#edit-event-modal");
-		var newEventDataID = modalForm.data("newEventDataID");
-
-		var eventData = newEvents[newEventDataID];
-
-		$("#event-name").val(eventData.newEventFormData.eventName);
-		$("#event-description").val(eventData.newEventFormData.eventDescription);
-		$("#event-category").val(eventData.newEventFormData.eventCategory);
-		$("#event-time").val(eventData.newEventFormData.eventTime);
 	}
 
 	function storeEventFormData() {
@@ -515,7 +506,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			eventData.name = $("#event-name").val();
 			eventData.description = $("#event-description").val();
 			eventData.category.name = $("#event-category").val();	
-			eventData.occurrences = occurrences;
+			eventData.occurrenceTimestamps = occurrences;
 		}
 	}
 
@@ -523,9 +514,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			'click', function() {
 				var eventName = $("#event-name").val();
 				var eventDescription = $("#event-description").val();
-				var eventTime = $("#event-time").val();
+				var occurrences=[];
+				for(var i=1; i<=4; i++){
+					var occurrence=$("#event-occurrence"+i).val();
+					if(occurrence!=""&& typeof occurrence != "undefined" && occurrence != null){
+						occurrences.push((new Date(occurrence).getTime()));
+					}
+				}
 				var eventCategory = $('#event-category').val();
-				if (eventName == "" || eventDescription == "" || eventTime == "" || eventCategory == "") {
+				if (eventName == "" || eventDescription == "" || eventCategory == "" || occurrences.length==0) {
 					$('#formEventFeedback').html('All the fields are required');
 				} else if (validateEventDescription(eventDescription) == false) {
 					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
@@ -546,8 +543,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$("#event-name").val('');
 		$("#event-description").val('');
 		$('#event-category').val('');
-		$("#event-time").val('');
 		$('#formEventFeedback').html('');
+		for(var i=1; i<=4; i++){
+			var occurrence=$("#event-occurrence"+i).val();
+			if(occurrence!=""&& typeof occurrence != "undefined" && occurrence != null){
+				$("#event-occurrence"+i).val('');
+			}
+		}
 	}
 
 	function validateEventDescription(eventDescription){
@@ -654,7 +656,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventCoordinates: markerCoordinates,
 				eventDescription: eventData.description,
 				eventCategory: eventData.category.name,
-				eventOccurrences: eventData.occurrences,
+				eventOccurrences: eventData.occurrenceTimestamps,
 				callerCoordinates: currentUserCoordinates,
 				ownersToAdd: [],
 				ownersToRemove: [],
