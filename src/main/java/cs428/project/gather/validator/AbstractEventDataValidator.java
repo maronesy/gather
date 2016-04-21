@@ -19,12 +19,18 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 	@Autowired
 	CategoryRepository categoryRepo;
 	
+	abstract boolean nullNameCheck(String eventName, Errors errors);
+	abstract boolean nullOccurrencesCheck(List<Long> eventOccurrences, Errors errors);
+	abstract boolean nullCategoryCheck(String category, Errors errors);
+	abstract boolean nullDescriptionCheck(String description, Errors errors);
+	abstract boolean nullEventCoordinatesCheck(Coordinates eventCoords, Errors errors);
+	abstract boolean nullCallerCoordinatesCheck(Coordinates callerCoords, Errors errors);
+	
 	protected void validateEventName(NewEventData newEventData, Errors errors) {
 		String eventName = newEventData.getEventName();
-		if(eventName == null)
+		if(this.nullNameCheck(eventName, errors))
 		{
-			String message = "Field required-" + NewEventData.EVENT_NAME_FIELD_NAME;
-			errors.reject("-1", message+":Event name is a required field.");
+			return;
 		}
 		else if(eventName.length() < 2 || eventName.length() > 128)
 		{
@@ -35,9 +41,8 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 	
 	protected void validateEventOccurrences(NewEventData newEventData, Errors errors) {
 		List<Long> eventOccurrences = newEventData.getOccurrences();
-		if (eventOccurrences == null){
-			String message = "Cannot update event. Occurrence list is not defined in JSON";
-			errors.reject("-7", message);
+		if(this.nullOccurrencesCheck(eventOccurrences, errors))
+		{
 			return;
 		}
 		for(int i=0; i<eventOccurrences.size(); i++){
@@ -51,10 +56,9 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 
 	protected void validateEventCategory(NewEventData newEventData, Errors errors) {
 		String categoryStr = newEventData.getEventCategory();
-		if(categoryStr == null)
+		if(this.nullCategoryCheck(categoryStr, errors))
 		{
-			String message = "Field required-" + NewEventData.EVENT_CATEGORY_FIELD_NAME;
-			errors.reject("-1", message+":Event category is a required field.");
+			return;
 		}
 		else{
 			List<Category> results  = this.categoryRepo.findByName(categoryStr);
@@ -68,10 +72,9 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 
 	protected void validateEventDescription(NewEventData newEventData, Errors errors) {
 		String eventDescription = newEventData.getEventDescription();
-		if(eventDescription == null)
+		if(this.nullDescriptionCheck(eventDescription, errors))
 		{
-			String message = "Field required-" + NewEventData.EVENT_DESCRIPTION_FIELD_NAME;
-			errors.reject("-1", message+":Event description is a required field.");
+			return;
 		}
 		else if(eventDescription.length() < 2 || eventDescription.length() > 500)
 		{
@@ -82,10 +85,9 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 
 	protected void validateEventCoords(NewEventData newEventData, Errors errors) {
 		Coordinates eventCoords = newEventData.getEventCoodinates();
-		if(eventCoords == null)
+		if(this.nullEventCoordinatesCheck(eventCoords, errors))
 		{
-			String message = "Field required-" + NewEventData.EVENT_COORDS_FIELD_NAME;
-			errors.reject("-1", message+":Event coordinates is a required field.");
+			return;
 		}
 		else if(eventCoords.getLatitude() < -90 || eventCoords.getLatitude() > 90)
 		{
@@ -101,10 +103,9 @@ public abstract class AbstractEventDataValidator extends AbstractValidator {
 
 	protected void validateCallerCoordinates(NewEventData newEventData, Errors errors) {
 		Coordinates callerCoords = newEventData.getCallerCoodinates();
-		if(callerCoords == null)
+		if(this.nullEventCoordinatesCheck(callerCoords, errors))
 		{
-			String message = "Field required-" + NewEventData.CALLER_COORDS_FIELD_NAME;
-			errors.reject("-1", message+":User coordinates is a required field.");
+			return;
 		}
 		else if(callerCoords.getLatitude() < -90 || callerCoords.getLatitude() > 90)
 		{

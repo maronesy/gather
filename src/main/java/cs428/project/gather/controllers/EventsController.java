@@ -52,7 +52,9 @@ public class EventsController extends AbstractGatherController {
 		UpdateEventData updateEventData = UpdateEventData.parseIn(rawData, updateEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, registrantRepo, categoryRepo, bindingResult);
+		Event targetEvent = eventRepo.findOne(updateEventData.getEventId());
+
+		Event updatedResult = targetEvent.updateEventUsing(updateEventData, getUser(request), registrantRepo, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event savedEventResult = this.eventRepo.save(updatedResult);

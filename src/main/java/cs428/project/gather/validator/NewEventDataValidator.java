@@ -1,5 +1,6 @@
 package cs428.project.gather.validator;
 
+import cs428.project.gather.data.Coordinates;
 import cs428.project.gather.data.form.*;
 import cs428.project.gather.data.model.*;
 import cs428.project.gather.data.repo.*;
@@ -57,5 +58,70 @@ public class NewEventDataValidator extends AbstractEventDataValidator {
 				errors.reject("-4", message);
 			}
 		}
+	}
+
+	@Override
+	boolean nullNameCheck(String eventName, Errors errors) {
+		if(eventName == null)
+		{
+			String message = "Field required-" + NewEventData.EVENT_NAME_FIELD_NAME;
+			errors.reject("-1", message+":Event name is a required field.");
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	boolean nullOccurrencesCheck(List<Long> eventOccurrences, Errors errors) {
+		if (eventOccurrences == null){
+			String message = "Cannot update event. Occurrence list is not defined in JSON";
+			errors.reject("-7", message);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	boolean nullCategoryCheck(String category, Errors errors) {
+		if(category == null)
+		{
+			String message = "Field required-" + NewEventData.EVENT_CATEGORY_FIELD_NAME;
+			errors.reject("-1", message+":Event category is a required field.");
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	boolean nullDescriptionCheck(String description, Errors errors) {
+		if(description == null)
+		{
+			String message = "Field required-" + NewEventData.EVENT_DESCRIPTION_FIELD_NAME;
+			errors.reject("-1", message+":Event description is a required field.");
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	boolean nullEventCoordinatesCheck(Coordinates eventCoords, Errors errors) {
+		if(eventCoords == null)
+		{
+			String message = "Field required-" + NewEventData.EVENT_COORDS_FIELD_NAME;
+			errors.reject("-1", message+":Event coordinates is a required field.");
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	boolean nullCallerCoordinatesCheck(Coordinates callerCoords, Errors errors) {
+		if(callerCoords == null)
+		{
+			String message = "Field required-" + NewEventData.CALLER_COORDS_FIELD_NAME;
+			errors.reject("-1", message+":User coordinates is a required field.");
+			return true;
+		}
+		return false;
 	}
 }
