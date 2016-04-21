@@ -73,7 +73,7 @@ public class Event {
     
     public boolean setOccurrences(List<Occurrence> newOccurrences) {
         Assert.notNull(newOccurrences);
-        this.removeAllOccurrence();
+        this.occurrences.clear();
         for(int i=0; i<newOccurrences.size(); i++){
         	if(!this.occurrences.add(newOccurrences.get(i))){
         		return false;
@@ -84,7 +84,7 @@ public class Event {
 
     public boolean setOccurrencesFrom(List<Long> newTimestamps) {
         Assert.notNull(newTimestamps);
-        this.removeAllOccurrence();
+        this.occurrences.clear();
         for(int i=0; i<newTimestamps.size(); i++){
         	if(!this.occurrences.add(new Occurrence("",new Timestamp(newTimestamps.get(i))))){
         		return false;

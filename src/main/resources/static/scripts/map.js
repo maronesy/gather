@@ -498,17 +498,24 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		} else {
 			var eventData = newEvents[eventDataID];
 		}
-
+		
+		var occurrences=[];
+		for(var i=1; i<=4; i++){
+			var occurrence=$("#event-occurrence"+i).val();
+			if(occurrence!=""&& typeof occurrence != "undefined" && occurrence != null){
+				occurrences.push((new Date(occurrence).getTime()));
+			}
+		}
 		if (eventData !== undefined && typeof(eventData.newEventFormData) !== "undefined") {
 			eventData.newEventFormData.eventName = $("#event-name").val();
 			eventData.newEventFormData.eventDescription = $("#event-description").val();
 			eventData.newEventFormData.eventCategory = $("#event-category").val();
-			eventData.newEventFormData.eventTime = $("#event-time").val();
+			eventData.newEventFormData.eventOccurrences = occurrences;
 		} else {
 			eventData.name = $("#event-name").val();
 			eventData.description = $("#event-description").val();
-			eventData.category.name = $("#event-category").val();
-			eventData.occurrences.timestamp = $("#event-time").val();
+			eventData.category.name = $("#event-category").val();	
+			eventData.occurrences = occurrences;
 		}
 	}
 
@@ -631,25 +638,23 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		};
 
 		if (newFlag == 'true') {
-			var utc = (new Date(eventData.newEventFormData.eventTime).getTime());
 			var requestObject = {
 				eventName: eventData.newEventFormData.eventName,
 				eventCoordinates: markerCoordinates,
 				eventDescription: eventData.newEventFormData.eventDescription,
 				eventCategory: eventData.newEventFormData.eventCategory,
-				eventOccurrences: [utc],
+				eventOccurrences: eventData.newEventFormData.eventOccurrences,
 				callerCoordinates: currentUserCoordinates
 			};
 			var url = "rest/events"
 		} else {
-			var utc = (new Date(eventData.occurrences.timestamp).getTime());
 	 		var requestObject = {
 	 			eventId: eventData.id,
 				eventName: eventData.name,
 				eventCoordinates: markerCoordinates,
 				eventDescription: eventData.description,
 				eventCategory: eventData.category.name,
-				eventOccurrences: [utc],
+				eventOccurrences: eventData.occurrences,
 				callerCoordinates: currentUserCoordinates,
 				ownersToAdd: [],
 				ownersToRemove: [],
