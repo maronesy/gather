@@ -10,10 +10,8 @@ import org.springframework.validation.Errors;
 
 public class UpdateEventData extends NewEventData {
 	private Long eventId;
-	private List<String> ownersToAdd = new ArrayList<String>();
-	private List<String> ownersToRemove = new ArrayList<String>();
-	private List<String> participantsToAdd = new ArrayList<String>();
-	private List<String> participantsToRemove = new ArrayList<String>();
+	private List<String> owners = new ArrayList<String>();
+	private List<String> participants= new ArrayList<String>();
 
 	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -27,20 +25,12 @@ public class UpdateEventData extends NewEventData {
 		validator.validate(this, errors);
 	}
 
-	public List<String> getOwnersToAdd() {
-		return ownersToAdd;
+	public List<String> getOwners() {
+		return owners;
 	}
 
-	public List<String> getOwnersToRemove() {
-		return ownersToRemove;
-	}
-
-	public List<String> getParticipantsToAdd() {
-		return participantsToAdd;
-	}
-
-	public List<String> getParticipantsToRemove() {
-		return participantsToRemove;
+	public List<String> getParticipants() {
+		return participants;
 	}
 
 	public Long getEventId() {

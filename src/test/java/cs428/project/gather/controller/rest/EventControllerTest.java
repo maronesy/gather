@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -736,7 +737,7 @@ public class EventControllerTest {
 		assertTrue(eventOne.getOwners().contains(origOwner));
 
 		// Test modifying the event
-		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+		attemptUpdateEvent(eventOne, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
 				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
 
 		// Verify the event got updated
@@ -752,16 +753,23 @@ public class EventControllerTest {
 		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
 
-	private Map<String, Object> attemptUpdateEvent(Long eventId, String name, Coordinates eCoor, String description,
+	private Map<String, Object> attemptUpdateEvent(Event event, String name, Coordinates eCoor, String description,
 			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
 			Registrant ownerToAdd) throws JsonProcessingException {
+		long eventId=event.getId();
 		List<Long> occurrences= new ArrayList<Long>();
-		List<String> ownersToAdd = new ArrayList<String>();
-		List<String> ownersToRemove = new ArrayList<String>();
-		List<String> participantsToAdd = new ArrayList<String>();
-		List<String> participantsToRemove = new ArrayList<String>();
-		ownersToAdd.add(ownerToAdd.getDisplayName());
-		participantsToRemove.add(participantToRemove.getDisplayName());
+		List<String> owners = new ArrayList<String>();;
+		List<String> participants = new ArrayList<String>();
+		Iterator<Registrant> ownerIter = event.getOwners().iterator();
+		while (ownerIter.hasNext()){
+			owners.add(ownerIter.next().getDisplayName());
+		}
+		Iterator<Registrant> partIter = event.getOwners().iterator();
+		while (partIter.hasNext()){
+			participants.add(partIter.next().getDisplayName());
+		}
+		owners.add(ownerToAdd.getDisplayName());
+		participants.remove(participantToRemove.getDisplayName());
 		occurrences.add(time);
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -772,10 +780,8 @@ public class EventControllerTest {
 		requestBody.put("eventCategory", category);
 		requestBody.put("callerCoordinates", uCoor);
 		requestBody.put("eventOccurrences", occurrences);
-		requestBody.put("ownersToAdd", ownersToAdd);
-		requestBody.put("ownersToRemove", ownersToRemove);
-		requestBody.put("participantsToAdd", participantsToAdd);
-		requestBody.put("participantsToRemove", participantsToRemove);
+		requestBody.put("owners", owners);
+		requestBody.put("participants", participants);
 
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", header.getFirst("Cookie"));
@@ -834,7 +840,7 @@ public class EventControllerTest {
 		assertTrue(eventOne.getOwners().contains(origOwner));
 
 		// Test modifying the event
-		attemptUpdateEvent(eventOne.getId(), "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
+		attemptUpdateEvent(eventOne, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
 				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
 
 		// Verify that nothing changed
