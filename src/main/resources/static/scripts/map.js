@@ -412,8 +412,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		$(jsID).datetimepicker({startDate:new Date().toLocaleDateString()});
 	}
 
-		
-
 	this.discardNewEvent = function(newEventDataID) {
 		var eventData = newEvents[newEventDataID];
 
@@ -1170,22 +1168,36 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-	this.listPart = function(eventID) {
-		var establishedEvent = establishedEvents[eventID];
-
-		if(typeof(establishedEvent) === "undefined") {
-			displayGeneralFailureModal();
+	function createCommaList(arrayUserObj) {
+		user_list = ''
+		for(i = 0; i < arrayUserObj.length; i++){
+			user_list = user_list + arrayUserObj[i].displayName + ', '
 		}
-		else {
+		if(i > 1) {
+			// removing comma at the end
+			user_list = user_list.slice(0, -2)
+		}
+		return user_list
+	}
 
-			if (gather.global.session.signedIn == false){
+	this.listPart = function(eventID) {
+
+		var eventData = establishedEvents[eventID];
+
+		if (typeof(eventData) === "undefined") {
+			displayGeneralFailureModal();
+		} else {
+			var modalForm = $("#edit-participant-modal");
+			modalForm.data("eventDataID", eventID);
+			owner_list = createCommaList(eventData.owners);
+			participant_list = createCommaList(eventData.participants);
+
+			if (typeof(eventData.id) === "number") {
+				modalForm.modal("show");
+				$('#event-participants').val(participant_list)
+				$('#event-owners').val(owner_list)
+			} else {
 				displayGeneralFailureModal();
-
-			}else {
-				//establishedEvent.eventMarker.closePopup();
-				for(var i = 0; i < establishedEvent.participants.length; i++){
-					alert(establishedEvent.participants[i].displayName);
-				}
 			}
 		}
 	}
