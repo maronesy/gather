@@ -1,4 +1,11 @@
 
+.occurrence-button {
+	position: relative;
+	margin-left: 5px; 
+	top: 5px;
+}
+
+
 .leaflet-popup-content-wrapper {
 	width: 500px;
 	height: 250px;

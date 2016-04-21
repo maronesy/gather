@@ -367,6 +367,46 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
 
+	function setUpOccurrence() {
+		var id_index = 1;
+		displayOccurrenceField(id_index)
+		$('#addOccurrence').on('click', function() {
+			id_index += 1
+			if (id_index <= 4) {
+				displayOccurrenceField(id_index)
+				$('#removeOccurrence').prop("disabled",false);
+			}
+			if (id_index == 4) {
+				$('#addOccurrence').prop("disabled",true);
+			}		
+		});
+		$('#removeOccurrence').on('click', function() {
+			if (id_index >= 1) {
+				removeOccurrenceField(id_index)
+				$('#addOccurrence').prop("disabled",false);
+				id_index -= 1
+			} 
+			if (id_index == 1) {
+				$('#removeOccurrence').prop("disabled",true);
+			}
+		});
+	}
+
+	function removeOccurrenceField(index) {
+		var js_id = '#event-occurrence' + index
+		$(js_id).remove()
+	}
+
+	function displayOccurrenceField(index) {
+		var html_id = 'event-occurrence' + index
+		var js_id = '#event-occurrence' + index
+		var occurrence_field = '<input style="margin-top:5px;" class="form-control" id="' + html_id + '"/>'
+		$('#event-occurrence').append(occurrence_field)
+		$(js_id).datetimepicker({startDate:new Date().toLocaleDateString()});
+	}
+
+		
+
 	this.discardNewEvent = function(newEventDataID) {
 		var eventData = newEvents[newEventDataID];
 
@@ -385,6 +425,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	this.editEvent = function(eventDataID, newFlag) {
 
 		setUpCategoryOptions()
+		setUpOccurrence()
 
 		if (newFlag) {
 			var eventData = newEvents[eventDataID];
@@ -503,7 +544,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
 
-	$('#event-time').datetimepicker({startDate:new Date().toLocaleDateString()});
+
 	//$('#event-category').selectmenu();
 
 	function submitEventForm() {
