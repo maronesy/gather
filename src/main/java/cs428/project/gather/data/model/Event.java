@@ -273,27 +273,44 @@ public class Event {
             return this;
         }
 
-        this.setName(updateEventData.getEventName());
-        this.setDescription(updateEventData.getEventDescription());
-        this.setLocation(new Location(updateEventData.getEventCoodinates()));
-        
-        if (!this.setOccurrencesFrom(updateEventData.getOccurrences())) {
-            String message = "Cannot create event. Failed to add occurrences to event.";
-            errors.reject("-7", message);
+        if(updateEventData.getEventName()!=null){
+        	this.setName(updateEventData.getEventName());
         }
         
-        if (!this.setParticipantsFrom(updateEventData.getParticipants(),registrantRepo)) {
-            String message = "Cannot create event. Failed to add participants to event.";
-            errors.reject("-7", message);
+        if(updateEventData.getEventDescription()!=null){
+        	this.setDescription(updateEventData.getEventDescription());
         }
         
-        if (!this.setOwnersFrom(updateEventData.getOwners(),registrantRepo)) {
-            String message = "Cannot create event. Failed to add owners to event.";
-            errors.reject("-7", message);
+        if(updateEventData.getEventCoodinates()!=null){
+        	this.setLocation(new Location(updateEventData.getEventCoodinates()));
         }
-
-        Category category = categoryRepo.findByName(updateEventData.getEventCategory()).get(0);
-        this.setCategory(category);
+        
+        if(updateEventData.getOccurrences()!=null){
+        	if (!this.setOccurrencesFrom(updateEventData.getOccurrences())) {
+        		String message = "Cannot create event. Failed to add occurrences to event.";
+        		errors.reject("-7", message);
+        	}
+        }
+        
+        if(updateEventData.getParticipants()!=null){
+        	System.out.println("not null participants");
+	        if (!this.setParticipantsFrom(updateEventData.getParticipants(),registrantRepo)) {
+	            String message = "Cannot create event. Failed to add participants to event.";
+	            errors.reject("-7", message);
+	        }
+        }
+        
+        if(updateEventData.getOwners()!=null){
+	        if (!this.setOwnersFrom(updateEventData.getOwners(),registrantRepo)) {
+	            String message = "Cannot create event. Failed to add owners to event.";
+	            errors.reject("-7", message);
+	        }
+        }
+        
+        if(updateEventData.getEventCategory()!=null){
+        	Category category = categoryRepo.findByName(updateEventData.getEventCategory()).get(0);
+        	this.setCategory(category);
+        }
         return this;
     }
 

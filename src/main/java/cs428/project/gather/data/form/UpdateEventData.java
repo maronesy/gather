@@ -10,8 +10,8 @@ import org.springframework.validation.Errors;
 
 public class UpdateEventData extends NewEventData {
 	private Long eventId;
-	private List<String> owners = new ArrayList<String>();
-	private List<String> participants= new ArrayList<String>();
+	private List<String> owners = null;
+	private List<String> participants= null;
 
 	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);

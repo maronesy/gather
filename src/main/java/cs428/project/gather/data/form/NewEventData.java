@@ -25,7 +25,7 @@ public class NewEventData {
 	private String eventDescription;
 	private String eventCategory;
 	//private long eventTime;
-	private List<Long> eventOccurrences =  new ArrayList<Long>();
+	private List<Long> eventOccurrences = null;
 	private Coordinates callerCoordinates;
 
 	public static NewEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
