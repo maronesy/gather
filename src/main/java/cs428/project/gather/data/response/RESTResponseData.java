@@ -68,25 +68,42 @@ public class RESTResponseData {
 	}
 
     private static HttpStatus convertErrorCodeToHttpStatus(int errorCode) {
-        HttpStatus result = HttpStatus.BAD_REQUEST;
+        HttpStatus result;
         switch(errorCode){
         case 0:
             result = HttpStatus.OK;
+            break;
         case -1:
             result = HttpStatus.UNPROCESSABLE_ENTITY;
+            break;
         case -2:
             result = HttpStatus.LENGTH_REQUIRED;
+            break;
         case -3:
             result = HttpStatus.BAD_REQUEST;
+            break;
         case -4:
             result = HttpStatus.CONFLICT;
+            break;
         case -5:
             result = HttpStatus.NOT_FOUND;
+            break;
         case -6:
-            result = HttpStatus.UNAUTHORIZED;
+        	//TODO: If we wish to change this back to UNAUTHORIZED, we need to fix SignInControllerTest.testSignInUserWrongPassword()
+        	//HttpStatus.UNAUTHORIZED causes test to fail since it seems the RestTemplate automatically attempts to retry when this status 
+        	//is received and the retry throws an exception
+//            result = HttpStatus.UNAUTHORIZED;
+        	result = HttpStatus.BAD_REQUEST;
+            break;
         case -7:
             result = HttpStatus.BAD_REQUEST;
-
+            break;
+        case -8:
+        	result = HttpStatus.INTERNAL_SERVER_ERROR;
+        	break;
+        default:
+        	result = HttpStatus.BAD_REQUEST;
+            break;
         }
         return result;
     }

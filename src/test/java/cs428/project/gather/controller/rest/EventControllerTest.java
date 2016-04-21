@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +39,7 @@ import cs428.project.gather.data.*;
 import cs428.project.gather.data.model.*;
 import cs428.project.gather.data.repo.*;
 import cs428.project.gather.data.response.*;
+import cs428.project.gather.utilities.GsonHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
@@ -86,12 +87,37 @@ public class EventControllerTest {
 
 	@Test
 	public void testGetEvent() throws JsonProcessingException {
+		//Get info to create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
 		Coordinates eCoor = eventCoordinate();
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+		
+		// Create events, add location and occurrences
+		List<Event> eventsToSave = new ArrayList<Event>();
+		for (int i = 0; i < 10; i++) {
+			Event event = new Event("Event" + i);
+			event.setCategory(swim);
+			event.setLocation(new Location(eCoor));
+			event.addOccurrence(new Occurrence("Single Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis())));
+			eventsToSave.add(event);
+		}
+
+		// Save events to DB
+		this.eventRepo.save(eventsToSave);
+		
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
 				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
-		// TODO: This test needs to do more, set up some events and validate the
-		// returned events
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				apiResponse.getBody());
+
+		// Make sure all events are returned
+		assertEquals(10, resourceResponseData.getCount());
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(10, events.size());
+		assertEquals("Single Occurrence", events.get(0).getOccurrences().get(0).getDescription());
 	}
 
 	@Test
@@ -99,9 +125,47 @@ public class EventControllerTest {
 		Coordinates eCoor = eventCoordinate();
 		// Using radius of 100, which is too large - Check EventsQueryData for
 		// MAX_RADIUS
-		ResponseEntity<RESTResponseData> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
 				500);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+	}
+	
+	@Test
+	public void testGetEventManyEvents() throws JsonProcessingException {
+		//Get info to create events
+		Category swim = this.categoryRepo.findByName("Swim").get(0);
+		assertTrue(swim != null);
+		Coordinates eCoor = eventCoordinate();
+		
+		// Create events, add location and occurrences
+		List<Event> eventsToSave = new ArrayList<Event>();
+		for (int i = 0; i < 35; i++) {
+			Event event = new Event("Event" + i);
+			event.setCategory(swim);
+			event.setLocation(new Location(eCoor));
+			event.addOccurrence(new Occurrence("Single Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis())));
+			eventsToSave.add(event);
+		}
+
+		// Save events to DB
+		this.eventRepo.save(eventsToSave);
+		
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+				500);
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				apiResponse.getBody());
+
+		// Make sure all events are returned
+		assertEquals(35, resourceResponseData.getCount());
+		
+		// Make sure paginated data only returns the first 20 (as indicated by
+		// RESTPaginatedResourceResponseData)
+		List<Event> events = resourceResponseData.getResults();
+		assertEquals(20, events.size());
+		assertEquals("Single Occurrence", events.get(0).getOccurrences().get(0).getDescription());
 	}
 
 	@Test
@@ -192,7 +256,7 @@ public class EventControllerTest {
 
 	}
 
-	private ResponseEntity<RESTResponseData> attemptGetEvent(double lat, double lon, float radius, int hour)
+	private ResponseEntity<String> attemptGetEvent(double lat, double lon, float radius, int hour)
 			throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -208,8 +272,8 @@ public class EventControllerTest {
 				requestHeaders);
 
 		// Invoking the API
-		ResponseEntity<RESTResponseData> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events",
-				HttpMethod.PUT, httpEntity, RESTResponseData.class);
+		ResponseEntity<String> apiResponse = restTemplate.exchange("http://localhost:8888/rest/events",
+				HttpMethod.PUT, httpEntity, String.class);
 
 		assertNotNull(apiResponse);
 		return apiResponse;
@@ -251,6 +315,32 @@ public class EventControllerTest {
 		assertTrue(backendEvent.getParticipants().contains(user));
 	}
 
+	@Test
+	public void testJoinEventNotSignedIn() throws JsonProcessingException {
+		// Create event
+		Event event1 = createFirstEvent();
+
+		// Get user
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is not a participant
+		assertFalse(event1.getParticipants().contains(user));
+
+		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+		ResponseEntity<String> response = attemptJoinEvent(eventId, requestEntity.getHeaders());
+		// Make sure the request is rejected since user is not signed in
+		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/join ",
+				resourceResponseData.getMessage());
+	}
 
 	@Test
 	public void testLeaveEvent() throws JsonProcessingException {
@@ -286,6 +376,104 @@ public class EventControllerTest {
 		Event backendEvent = this.eventRepo.findOne(event1.getId());
 		assertFalse(backendEvent.getParticipants().contains(user));
 
+	}
+	
+	@Test
+	public void testLeaveEventNotSignedIn() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+		
+		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+		ResponseEntity<String> response = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		// Make sure the request is rejected since user is not signed in
+		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
+
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/leave ",
+				resourceResponseData.getMessage());
+	}
+	
+	@Test
+	public void testLeaveEventSoleOwner() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as owner & participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		event1.addParticipant(user);
+		event1.addOwner(user);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is participant and owner
+		assertTrue(event1.getParticipants().contains(user));
+		assertTrue(event1.getOwners().contains(user));
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> response = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		
+		// Check error message
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				response.getBody());
+		assertEquals("Cannot leave event. You are the sole owner. Add a co-owner or remove the event. ",
+				resourceResponseData.getMessage());
+		
+	}
+	
+	@Test
+	public void testLeaveEventOtherOwners() throws JsonProcessingException{
+		Event event1 = createFirstEvent();
+
+		// Add user as owner & participant in events
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		Registrant otherOwner = this.regRepo.findOneByEmail("newOwner@email.com");
+		event1.addParticipant(user);
+		event1.addOwner(user);
+		event1.addParticipant(otherOwner);
+		event1.addOwner(otherOwner);
+
+		// Save events to DB
+		event1 = this.eventRepo.save(event1);
+		long eventId = event1.getId();
+
+		// Make sure user is participant
+		assertTrue(event1.getParticipants().contains(user));
+		assertTrue(event1.getOwners().contains(user));
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = attemptLeaveEvent(eventId, requestEntity.getHeaders());
+		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
+
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTResourceResponseData<Event> resourceResponseData = parseEventResponseData(responseStr.getBody());
+		Event frontendEvent = resourceResponseData.getResult();
+
+		// Make sure participant no longer listed in event returned to frontend
+		assertEquals(event1.getId(), frontendEvent.getId());
+		assertFalse(frontendEvent.getParticipants().contains(user));
+		assertFalse(frontendEvent.getOwners().contains(user));
+
+		// Make sure participant no longer listed in event in backend
+		Event backendEvent = this.eventRepo.findOne(event1.getId());
+		assertFalse(backendEvent.getParticipants().contains(user));
+		assertFalse(backendEvent.getOwners().contains(user));
 	}
 
 	private ResponseEntity<String> attemptJoinEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
@@ -425,7 +613,6 @@ public class EventControllerTest {
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				responseStr.getBody());
-		System.out.println(responseStr);
 
 		// Make sure all events are returned
 		assertEquals(35, resourceResponseData.getCount());
@@ -476,7 +663,7 @@ public class EventControllerTest {
 		// Check error message
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their joined event list.",
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/userJoined ",
 				resourceResponseData.getMessage());
 	}
 
@@ -499,14 +686,14 @@ public class EventControllerTest {
 	}
 
 	private RESTPaginatedResourcesResponseData<Event> parsePaginatedEventResponseData(String json) {
-		Gson gson = new Gson();
+		Gson gson = GsonHelper.getGson();
 		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}
 
 	private RESTResourceResponseData<Event> parseEventResponseData(String json) {
-		Gson gson = new Gson();
+		Gson gson = GsonHelper.getGson();
 		Type resourceType = new TypeToken<RESTResourceResponseData<Event>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
@@ -763,7 +950,6 @@ public class EventControllerTest {
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				responseStr.getBody());
-		System.out.println(responseStr);
 
 		// Make sure all events are returned
 		assertEquals(35, resourceResponseData.getCount());
@@ -814,7 +1000,7 @@ public class EventControllerTest {
 		// Check error message
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
 				response.getBody());
-		assertEquals("Incorrect User State. Only registered users can request their owned event list.",
+		assertEquals("Incorrect User State. Only registered users can access /rest/events/userOwned ",
 				resourceResponseData.getMessage());
 	}
 
