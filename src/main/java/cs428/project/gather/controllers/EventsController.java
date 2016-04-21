@@ -62,18 +62,16 @@ public class EventsController extends AbstractGatherController {
 
 	@RequestMapping(value = "/rest/events/userJoined")
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request) {
-		if (!ActorTypeHelper.isRegisteredUser(request)) {
-			return RESTPaginatedResourcesResponseData.badResponse("-7", "Incorrect User State. Only registered users can request their joined event list.");
-		}
+		BindingResult errors = new BindException(this, "errors");
+		if (! authenticatedRequest(request, errors)) return RESTPaginatedResourcesResponseData.<Event>badResponse(errors);
 		List<Event> events = new ArrayList<Event>(getUser(request).getJoinedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
 
 	@RequestMapping(value = "/rest/events/userOwned")
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request){
-		if (!ActorTypeHelper.isRegisteredUser(request)) {
-			return RESTPaginatedResourcesResponseData.badResponse("-7", "Incorrect User State. Only registered users can request their owned event list.");
-		}
+		BindingResult errors = new BindException(this, "errors");
+		if (! authenticatedRequest(request, errors)) return RESTPaginatedResourcesResponseData.<Event>badResponse(errors);
 		List<Event> events = new ArrayList<Event>(getUser(request).getOwnedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
