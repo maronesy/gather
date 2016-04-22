@@ -1141,7 +1141,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 
 	this.listPart = function(eventID) {
-
+		
 		var eventData = establishedEvents[eventID];
 
 		if (typeof(eventData) === "undefined") {
@@ -1159,7 +1159,21 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			} else {
 				displayGeneralFailureModal();
 			}
+			if(!gather.global.session.signedIn || !isCurrentUserOnwer(eventData.owners)){
+				setParticipantsForm(true);
+			}else{
+				setParticipantsForm(false);
+			}
 		}
+	}
+	
+	function setParticipantsForm(enable){
+		$("#addParticipant").prop("disabled",enable);
+		$("#addOwner").prop("disabled",enable);
+		$('#event-participants').prop("disabled",enable);
+		$('#event-owners').prop("disabled",enable);
+		$('#search-display-name').prop("disabled",enable);
+		$('#participant-save').prop("disabled",enable);
 	}
 	
 	function setupDisplayNamesAutocomplete(){	
@@ -1282,7 +1296,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	
 	function updateParticipantsAndOwners(eventDataID, ownerArray, participantArray, successCallback, failureCallback) {
 		var eventData = establishedEvents[eventDataID];
-			alert(eventDataID);
 	 		var requestObject = {
 	 			eventId: eventData.id,
 				participants: participantArray,
