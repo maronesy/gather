@@ -480,6 +480,91 @@ public class EventControllerTest {
 		assertTrue(afterUpdate.getOwners().contains(newOwner));
 		assertTrue(afterUpdate.getOwners().contains(origOwner));
 	}
+	
+	@Test
+	public void testUpdateEventOwnersOnly() throws JsonProcessingException {
+		//Setup event with owner
+		Registrant origOwner = this.regRepo.findOneByEmail("existed@email.com");
+		Registrant newParticipant = regRepo.findOneByEmail("participant@email.com");
+		
+		Event event1 = createSingleTestEvent();
+		event1.addOwner(origOwner);
+		event1.addParticipant(origOwner);
+		event1.addParticipant(newParticipant);
+		event1 = eventRepo.save(event1);
+		
+		assertEquals(2, event1.getParticipants().size());
+
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+
+		//Get new owner
+		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
+
+		//Get coords
+		Coordinates eCoor = getTestCoordinates();
+		Coordinates uCoor = getTestCoordinates();
+
+		//Test the conditions before the update
+		assertEquals("Event1", event1.getName());
+		assertEquals("Test", event1.getCategory().getName());
+		assertEquals(1, event1.getOccurrences().size());
+		assertEquals(1, event1.getOwners().size());
+		assertEquals(2, event1.getParticipants().size());
+		assertTrue(event1.getParticipants().contains(newParticipant));
+		assertFalse(event1.getOwners().contains(newOwner));
+		assertTrue(event1.getOwners().contains(origOwner));
+
+		// Test modifying the event
+		attemptUpdateEventOnwersOnly(event1, requestEntity.getHeaders(), newOwner);
+
+		// Verify the event got updated
+		Event afterUpdate = eventRepo.findOne(event1.getId());
+		assertEquals("Event1", afterUpdate.getName());
+		assertEquals("Test", afterUpdate.getCategory().getName());
+		assertEquals(1, afterUpdate.getOccurrences().size());
+		assertEquals(2, afterUpdate.getOwners().size());
+		assertEquals(2, afterUpdate.getParticipants().size());
+		assertTrue(afterUpdate.getParticipants().contains(newParticipant));
+		assertTrue(afterUpdate.getOwners().contains(newOwner));
+		assertTrue(afterUpdate.getOwners().contains(origOwner));
+	}
+	
+	private Map<String, Object> attemptUpdateEventOnwersOnly(Event event, HttpHeaders header, Registrant ownerToAdd) throws JsonProcessingException {
+		long eventId=event.getId();
+		
+		List<String> owners = new ArrayList<String>();
+		Iterator<Registrant> ownerIter = event.getOwners().iterator();
+		while (ownerIter.hasNext()){
+			owners.add(ownerIter.next().getDisplayName());
+		}
+
+		owners.add(ownerToAdd.getDisplayName());
+
+		// Building the Request body data
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		requestBody.put("eventId", eventId);
+		requestBody.put("owners", owners);
+
+
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", header.getFirst("Cookie"));
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Creating http entity object with request body and headers
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+
+		// Invoking the API
+		@SuppressWarnings("unchecked")
+		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/events/update",
+				httpEntity, Map.class, Collections.EMPTY_MAP);
+
+		assertNotNull(apiResponse);
+
+		// Asserting the response of the API.
+		return apiResponse;
+	}
+
 
 	private Map<String, Object> attemptUpdateEvent(Event event, String name, Coordinates eCoor, String description,
 			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
@@ -495,7 +580,7 @@ public class EventControllerTest {
 		while (ownerIter.hasNext()){
 			owners.add(ownerIter.next().getDisplayName());
 		}
-		Iterator<Registrant> partIter = event.getOwners().iterator();
+		Iterator<Registrant> partIter = event.getParticipants().iterator();
 		while (partIter.hasNext()){
 			participants.add(partIter.next().getDisplayName());
 		}
