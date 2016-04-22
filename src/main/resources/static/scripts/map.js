@@ -1027,10 +1027,20 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				}		
 				refreshEventGlobalVariables();
 				refreshEventListAndMarkers();
-			}, function() {
-				displayGeneralFailureModal();
+			}, function(jqXHR, textStatus, errorThrown){
+				var responseMessage = $.parseJSON(jqXHR.responseText).message;
+				if(responseMessage != ""){
+					
+					displayEventLeaveErrorModal(responseMessage);
+				}else{
+					displayGeneralFailureModal();
+				}
 			});
 		}
+	}
+	function displayEventLeaveErrorModal(message){
+		$("#eventLeaveErrorMessage").html(message);
+		$("#event-leave-error-modal").modal("show");
 	}
 	
 	function doLeaveEvent(eventID, successCallback, failureCallback) {
@@ -1051,11 +1061,11 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var response = $.ajax(requestOptions);
 
-		response.fail(function(error) {
-			console.log(error);
+		response.fail(function(jqXHR, textStatus, errorThrown) {
+			console.log(textStatus);
 
 			if(typeof(failureCallback) === "function") {
-				failureCallback();
+				failureCallback(jqXHR, textStatus, errorThrown);
 			}
 		});
 	}
@@ -1284,16 +1294,22 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				var eventDataID = modalForm.data("eventDataID");
 				updateParticipantsAndOwners(eventDataID, ownerArray, participantArray,
 						function(event){
-							alert(event.name+" updated!");
+							$("#formParticipantFeedback").html("<b><u>"+event.name+"</u></b> updated successfully.");
 							refreshEventGlobalVariables();
 							refreshEventListAndMarkers();
 						},
-						function(error){
-							alert("error");
+						function(jqXHR, textStatus, errorThrown){
+							var responseMessage = $.parseJSON(jqXHR.responseText).message;
+                            $('#formParticipantFeedback').html(responseMessage);
 						});
 				
 	});
 	
+	$('#participant-close').on(
+			'click', function() {
+				$("#formParticipantFeedback").html("");
+			});
+			
 	function updateParticipantsAndOwners(eventDataID, ownerArray, participantArray, successCallback, failureCallback) {
 		var eventData = establishedEvents[eventDataID];
 	 		var requestObject = {
@@ -1323,10 +1339,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var response = $.ajax(requestOptions);
 
-		response.fail(function(error) {
-			console.log(error);
+		response.fail(function(jqXHR, textStatus, errorThrown) {
+			console.log(textStatus);
 			if(typeof(failureCallback) === "function") {
-				failureCallback(error);
+				failureCallback(jqXHR, textStatus, errorThrown);
 			}
 		});
 	}
