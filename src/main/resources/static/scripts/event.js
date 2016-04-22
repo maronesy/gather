@@ -31,9 +31,9 @@ function appentToTable(tableClass, events, userCoordinates, message){
 //				var rating = events[i].feedbacks.rating
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
-				var datetime = new Date( unixtime );
-				var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
-				var date = datetime.toLocaleDateString();
+				var dateTime = new Date( unixtime );
+				var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+				var date = dateTime.toLocaleDateString();
 				var city = events[i].location.city;
 				var streetAddress = events[i].location.streetAddr;
 				var state = events[i].location.state;

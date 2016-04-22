@@ -49,10 +49,12 @@ public class EventsController extends AbstractGatherController {
 	public ResponseEntity<RESTResourceResponseData<Event>> updateEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		if (! authenticatedRequest(request, bindingResult)) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		UpdateEventData updateEventData = UpdateEventData.parseIn(rawData, newEventDataValidator, bindingResult);
+		UpdateEventData updateEventData = UpdateEventData.parseIn(rawData, updateEventDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		Event updatedResult = Event.updateEventUsing(updateEventData, getUser(request), eventRepo, registrantRepo, categoryRepo, bindingResult);
+		Event targetEvent = eventRepo.findOne(updateEventData.getEventId());
+
+		Event updatedResult = targetEvent.updateEventUsing(updateEventData, getUser(request), registrantRepo, categoryRepo, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event savedEventResult = this.eventRepo.save(updatedResult);

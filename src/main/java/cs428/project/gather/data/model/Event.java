@@ -70,6 +70,52 @@ public class Event {
         Assert.notNull(occurrence);
         return this.occurrences.add(occurrence);
     }
+    
+    public boolean setOccurrences(List<Occurrence> newOccurrences) {
+        Assert.notNull(newOccurrences);
+        this.occurrences.clear();
+        for(int i=0; i<newOccurrences.size(); i++){
+        	if(!this.occurrences.add(newOccurrences.get(i))){
+        		return false;
+        	}
+        }
+        return true;
+    }
+
+    public boolean setOccurrencesFrom(List<Long> newTimestamps) {
+        Assert.notNull(newTimestamps);
+        this.occurrences.clear();
+        for(int i=0; i<newTimestamps.size(); i++){
+        	if(!this.occurrences.add(new Occurrence("",new Timestamp(newTimestamps.get(i))))){
+        		return false;
+        	}
+        }
+        return true;
+    }
+    
+	private boolean setParticipantsFrom(List<String> participantNames, RegistrantRepository registrantRepo) {
+		 Assert.notNull(participantNames);
+	        participants.clear();
+	        for(int i=0; i<participantNames.size(); i++){
+	        	Registrant aParticipant = registrantRepo.findByDisplayName(participantNames.get(i));
+	        	if(!this.participants.add(aParticipant)){
+	        		return false;
+	        	}
+	        }
+	        return true;
+	}
+	
+	private boolean setOwnersFrom(List<String> ownerNames, RegistrantRepository registrantRepo) {
+		 Assert.notNull(ownerNames);
+	        owners.clear();
+	        for(int i=0; i<ownerNames.size(); i++){
+	        	Registrant aParticipant = registrantRepo.findByDisplayName(ownerNames.get(i));
+	        	if(!this.owners.add(aParticipant)){
+	        		return false;
+	        	}
+	        }
+	        return true;
+	}
 
     public boolean addFeedback(Feedback feedback) {
         Assert.notNull(feedback);
@@ -149,6 +195,13 @@ public class Event {
     public boolean removeOccurrence(Occurrence occurrence){
         return occurrences.remove(occurrence);
     }
+    
+    public void removeAllOccurrence(){
+    	int length=occurrences.size();
+    	for(int i=0; i<length; i++){
+    		occurrences.remove(i);
+    	}
+    }
 
     public boolean containsOwner(Registrant owner, Errors errors) {
         if (! getOwners().contains(owner)) {
@@ -193,7 +246,7 @@ public class Event {
         Event newEvent = new Event(newEventData.getEventName());
         newEvent.setDescription(newEventData.getEventDescription());
         newEvent.setLocation(new Location(newEventData.getEventCoodinates()));
-
+        
         if (!newEvent.addParticipant(owner)) {
             String message = "Cannot create event. Failed to add creator as participant.";
             errors.reject("-7", message);
@@ -203,88 +256,62 @@ public class Event {
             String message = "Cannot create event. Failed to add creator as owner.";
             errors.reject("-7", message);
         }
-
-        Occurrence occurrence = new Occurrence("", new Timestamp(newEventData.getEventTime()));
-        if (!newEvent.addOccurrence(occurrence)) {
-            String message = "Cannot create event. Failed to add first occurrence to event.";
+        
+        if (!newEvent.setOccurrencesFrom(newEventData.getOccurrences())) {
+            String message = "Cannot create event. Failed to add occurrences to event.";
             errors.reject("-7", message);
         }
-
+        
         Category category = categoryRepo.findByName(newEventData.getEventCategory()).get(0);
         newEvent.setCategory(category);
         return newEvent;
     }
 
-    public static Event updateEventUsing(UpdateEventData updateEventData, Registrant owner, EventRepository eventRepo, RegistrantRepository registrantRepo, CategoryRepository categoryRepo, Errors errors) {
-        Event targetEvent = eventRepo.findOne(updateEventData.getEventId());
+    public Event updateEventUsing(UpdateEventData updateEventData, Registrant owner, RegistrantRepository registrantRepo, CategoryRepository categoryRepo, Errors errors) {
 
-        if (! targetEvent.containsOwner(owner,errors)) {
-            return targetEvent;
-        }
-
-        targetEvent.setName(updateEventData.getEventName());
-        targetEvent.setDescription(updateEventData.getEventDescription());
-        targetEvent.setLocation(new Location(updateEventData.getEventCoodinates()));
-        if(!updateEventData.getOccurrencesToAdd().isEmpty()){
-            for(int i=0;i<updateEventData.getOccurrencesToAdd().size();i++){
-                if (!targetEvent.addOccurrence(updateEventData.getOccurrencesToAdd().get(i))){
-                    String message = "Cannot update event. Failed to add a coccurrence.";
-                    errors.reject("-7", message);
-                }
-            }
-        }
-        if(!updateEventData.getParticipantsToAdd().isEmpty()){
-            for(int i=0;i<updateEventData.getParticipantsToAdd().size();i++){
-            	String displayName=updateEventData.getParticipantsToAdd().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
-                if (registrant==null || !targetEvent.addParticipant(registrant)){
-                    String message = "Cannot update event. Failed to add a participant.";
-                    errors.reject("-7", message);
-                }
-            }
-        }
-        if(!updateEventData.getOwnersToAdd().isEmpty()){
-            for(int i=0;i<updateEventData.getOwnersToAdd().size();i++){
-            	String displayName=updateEventData.getOwnersToAdd().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
-                if (registrant==null || !targetEvent.addOwner(registrant)){
-                    String message = "Cannot update event. Failed to add an owner.";
-                    errors.reject("-7", message);
-                }
-            }
+        if (! this.containsOwner(owner,errors)) {
+            return this;
         }
 
-        if(!updateEventData.getOccurrencesToRemove().isEmpty()){
-            for(int i=0;i<updateEventData.getOccurrencesToRemove().size();i++){
-                if (!targetEvent.removeOccurrence(updateEventData.getOccurrencesToRemove().get(i))){
-                    String message = "Cannot update event. Failed to remove a coccurrence.";
-                    errors.reject("-8", message);
-                }
-            }
+        if(updateEventData.getEventName()!=null){
+        	this.setName(updateEventData.getEventName());
         }
-        if(!updateEventData.getParticipantsToRemove().isEmpty()){
-            for(int i=0;i<updateEventData.getParticipantsToRemove().size();i++){
-            	String displayName=updateEventData.getParticipantsToRemove().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
-                if (registrant==null || !targetEvent.removeParticipant(registrant)){
-                    String message = "Cannot update event. Failed to remove a participant.";
-                    errors.reject("-8", message);
-                }
-            }
+        
+        if(updateEventData.getEventDescription()!=null){
+        	this.setDescription(updateEventData.getEventDescription());
         }
-        if(!updateEventData.getOwnersToRemove().isEmpty()){
-            for(int i=0;i<updateEventData.getOwnersToRemove().size();i++){
-            	String displayName=updateEventData.getOwnersToRemove().get(i);
-            	Registrant registrant = registrantRepo.findByDisplayName(displayName);
-                if (registrant==null || !targetEvent.removeOwner(registrant)){
-                    String message = "Cannot update event. Failed to add an owner.";
-                    errors.reject("-8", message);
-                }
-            }
+        
+        if(updateEventData.getEventCoodinates()!=null){
+        	this.setLocation(new Location(updateEventData.getEventCoodinates()));
         }
-
-        Category category = categoryRepo.findByName(updateEventData.getEventCategory()).get(0);
-        targetEvent.setCategory(category);
-        return targetEvent;
+        
+        if(updateEventData.getOccurrences()!=null){
+        	if (!this.setOccurrencesFrom(updateEventData.getOccurrences())) {
+        		String message = "Cannot create event. Failed to add occurrences to event.";
+        		errors.reject("-7", message);
+        	}
+        }
+        
+        if(updateEventData.getParticipants()!=null){
+        	System.out.println("not null participants");
+	        if (!this.setParticipantsFrom(updateEventData.getParticipants(),registrantRepo)) {
+	            String message = "Cannot create event. Failed to add participants to event.";
+	            errors.reject("-7", message);
+	        }
+        }
+        
+        if(updateEventData.getOwners()!=null){
+	        if (!this.setOwnersFrom(updateEventData.getOwners(),registrantRepo)) {
+	            String message = "Cannot create event. Failed to add owners to event.";
+	            errors.reject("-7", message);
+	        }
+        }
+        
+        if(updateEventData.getEventCategory()!=null){
+        	Category category = categoryRepo.findByName(updateEventData.getEventCategory()).get(0);
+        	this.setCategory(category);
+        }
+        return this;
     }
+
 }

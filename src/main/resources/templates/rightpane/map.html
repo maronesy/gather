@@ -26,7 +26,7 @@
 				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->
 				</div>
 				<div class="pull-left">
-					<button id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
+					<button style="margin-left:5px;" id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
 				</div>
 			</div>
 
@@ -226,54 +226,102 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="edit-new-event-modal" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<form class="form-horizontal" id="new-event-form">
-						<div class="modal-header">
-							<h4 class="modal-title">Edit New Event</h4>
-						</div>
+	<div class="modal fade" id="edit-event-modal" new="" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" id="event-form">
+					<div class="modal-header">
+						<h4 class="modal-title">Edit Event</h4>
+					</div>
 
-						<div class="modal-body">
-							<div class="form-group">
-								<label class="col-xs-4 control-label">Event Name</label>
-								<div class="col-xs-8">
-									<input type="text" class="form-control" name="eventName" id="new-event-name" />
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-xs-4 control-label">Description</label>
-								<div class="col-xs-8">
-									<input type="text" class="form-control" name="eventDescription" id="new-event-description"/>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-xs-4 control-label">Category</label>
-								<div class="col-xs-8">
-									<!--  <input type="text" class="form-control" name="eventLocation" id="new-event-category"/> -->
-									<select class="form-control" id="new-event-category">
-								    </select>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-xs-4 control-label">Time</label>
-								<div class="col-xs-8">
-									<!-- <input type="text" class="form-control" name="eventTime" id="new-event-time"/> -->
-									<input class="form-control" id="new-event-time"/>
-								</div>
-							</div>
-							<div class="form-group">
-								<span style="color:red"><div class="col-xs-10" id="formEventFeedback"></div></span>
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Event Name</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control" name="eventName" id="event-name" />
 							</div>
 						</div>
-						<div class="modal-footer">
-                        	<button type="button" class="btn btn-default" id="new-event-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
-							<button type="button" class="btn btn-success" id="new-event-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Description</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control" name="eventDescription" id="event-description"/>
+							</div>
 						</div>
-					</form>
-				</div>
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Category</label>
+							<div class="col-xs-8">
+								<select class="form-control" id="event-category">
+							    </select>
+							</div>
+						</div>
+						<div class="form-group" >
+							<label class="col-xs-4 control-label">Event occurence</label>
+							<div class="col-xs-5" id="event-occurrence">
+							</div>
+							<div class="col-xs-3">
+							<button type="button" class="btn btn-default occurrence-button" id="addOccurrence"><span class="glyphicon glyphicon-plus"></span></button>
+							<button disabled="disabled" type="button" class="btn btn-default occurrence-button" id="removeOccurrence"><span class="glyphicon glyphicon-minus"></span></button>
+							</div>
+						</div>
+						<div class="form-group col-md-8 col-md-offset-4">
+							<span style="color:red"><div id="formEventFeedback"></div></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+                    	<button type="button" class="btn btn-default" id="event-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+						<button type="button" class="btn btn-success" id="event-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+					</div>
+				</form>
 			</div>
 		</div>
+	</div>
+
+	<div class="modal fade" id="edit-participant-modal" new="" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal" id="participant-form">
+					<div class="modal-header">
+						<h4 class="modal-title">Edit Participant/Owner</h4>
+					</div>
+
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Search Display Name</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control" name="DisplayName" id="search-display-name" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-md-offset-4 col-xs-8 participant-buttons">
+								<button type="button" class="btn btn-default occurrence-button" id="addParticipant"><span class="glyphicon glyphicon-plus"></span> Participant</button>
+								<button type="button" class="btn btn-default occurrence-button" id="addOwner"><span class="glyphicon glyphicon-plus"></span> Owner</button>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Participants</label>
+							<div class="col-xs-8">
+								<textarea rows="3" cols="49" id="event-participants"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-4 control-label">Owners</label>
+							<div class="col-xs-8" >
+								<textarea rows="3" cols="49" id="event-owners"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<span style="color:red"><div class="col-xs-10" id="formParticipantFeedback"></div></span>
+						</div>
+					</div>
+					<div class="modal-footer">
+                    	<button type="button" class="btn btn-default" id="event-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+						<button type="button" class="btn btn-success" id="event-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
 		<div class="content-template" id="established-event-content-template" aria-hidden="true">
 			<div class="established-food-location-popup">
@@ -281,9 +329,9 @@
 				<p><b>%s</b></p>
 
 				<ul>
-					<li>Event category:  %s</li>
-					<li>Event description:  %s</li>
-					<li>Event Time:  %s</li>
+					<li>Category:  %s</li>
+					<li>Description:  %s</li>
+					<li>Next Occurrence:  %s</li>
 					<li>Distance from current location:  %.2f miles</li>
 				</ul>
 
@@ -292,7 +340,7 @@
 
 				<div class="modal-footer" id="establishedEventFooter">
 					<button id="participantBtn" class="pull-left btn" onclick="mapManager.listPart(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-user"></span></button>				
-					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
+					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id'), false); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
 					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
 					<button id="joinEventBtn" class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
 					<button id="leaveEventBtn" class="btn btn-default" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button>
@@ -320,11 +368,11 @@
 				<p><b>New Event Location</b></p>
 
 				<p>Drag the marker to a more precise location.</p>
-				<p>Once the marker is positioned accurately, click the Edit New Event Detail button to provide more information about this event.</p>
+				<p>Once the marker is positioned accurately, click the Update Event Info green button to provide more information about this event.</p>
 
 				<div class="modal-footer">
 					<button class="btn btn-danger" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
-					<button class="btn btn-success" onclick="mapManager.editNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-pencil"></span> Update Event Info</button>
+					<button class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-new-event-data-id'), true); return false;"><span class="glyphicon glyphicon-pencil"></span> Update Event Info</button>
 				</div>
 		</div>
 	</div>

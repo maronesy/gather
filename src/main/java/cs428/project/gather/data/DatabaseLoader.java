@@ -54,7 +54,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccur = new Occurrence("First", new Timestamp(DateTime.now().plusDays(1).getMillis()));
 		newEvent.addOccurrence(newOccur);
 		newEvent.setDescription("lets play soccer!");
-		Category soccer = new Category("Soccer ");
+		Category soccer = new Category("Soccer");
 		this.categoryRepo.save(soccer);
 		newEvent.setCategory(soccer);
 		this.eventRepo.save(newEvent);
@@ -68,7 +68,7 @@ public class DatabaseLoader implements CommandLineRunner {
 		Occurrence newOccurb = new Occurrence("Second2", new Timestamp(DateTime.now().plusDays(5).getMillis()));
 		newEventa.addOccurrence(newOccurb);
 		newEventa.setDescription("lets swim!");
-		Category swim = new Category("Swim ");
+		Category swim = new Category("Swim");
 		this.categoryRepo.save(swim);
 		newEventa.setCategory(swim);
 

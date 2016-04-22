@@ -134,7 +134,8 @@ function submitProfile() {
 		$("#profileFeedback").hide();
 		$("#profileDoNotChangePassword").trigger('click');
 		$("#map").show();
-		map._onResize(); 
+		// not sure who added this? this function is not working
+		// map._onResize(); 
 	});
 }
 
