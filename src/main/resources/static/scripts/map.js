@@ -1200,7 +1200,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			modalForm.data("eventDataID", eventID);
 			owner_list = createCommaList(eventData.owners);
 			participant_list = createCommaList(eventData.participants);
-
+			setupDisplayNamesAutocomplete();
 			if (typeof(eventData.id) === "number") {
 				modalForm.modal("show");
 				$('#event-participants').val(participant_list)
@@ -1209,6 +1209,28 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				displayGeneralFailureModal();
 			}
 		}
+	}
+	
+	function setupDisplayNamesAutocomplete(){
+		
+	    $.ajax({
+	        accepts: "application/json",
+	        type : "GET",
+	        url : "api/registrants",
+	        contentType: "application/json; charset=UTF-8",
+	        success : function(returnvalue) {
+	            var registrants=returnvalue._embedded.registrants;
+	            var names=[];
+	            for(var i=0;i<registrants.length; i++){
+	            	names.push(registrants[i].displayName)
+	            }
+	            var input = document.getElementById("search-display-name");
+	            new Awesomplete(input, {
+	    			list: names
+	    		});
+	        }
+	    });
+		
 	}
 	
 	function updateEventMarker(eventMarker, coordinates, iconOptions) {
@@ -1266,7 +1288,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		ownedEvents();
 		refreshEventListAndMarkers();
 	})
+	
 }
+
+
 
 function distance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180
