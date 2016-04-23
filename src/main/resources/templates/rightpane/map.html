@@ -15,7 +15,7 @@
 </head>
 
 <body>
-
+							
 <div id="rightPane" class="rightPane container col-lg-7 col-md-7" th:fragment="map">
     <div style="margin-right: -15px;">
 	<div class="map-border">
@@ -150,11 +150,30 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Event Joined</h4>
+					<h4 class="modal-title">Event Leave</h4>
 				</div>
 
 				<div class="modal-body">
 					<span>You have left the event.</span>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="event-leave-error-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Event Leave</h4>
+				</div>
+
+				<div class="modal-body">
+					<span style="color:red"><div id="eventLeaveErrorMessage"></div></span>
 				</div>
 
 				<div class="modal-footer">
@@ -315,8 +334,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-                    	<button type="button" class="btn btn-default" id="event-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
-						<button type="button" class="btn btn-success" id="event-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                    	<button type="button" class="btn btn-default" id="participant-close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+						<button type="button" class="btn btn-success" id="participant-save"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
 					</div>
 				</form>
 			</div>
