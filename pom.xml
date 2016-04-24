@@ -116,6 +116,17 @@
 		  <artifactId>joda-time</artifactId>
 		  <version>2.9.2</version>
 		</dependency>
+		<dependency>
+       		<groupId>org.seleniumhq.selenium</groupId>
+        	<artifactId>selenium-java</artifactId>
+        	<version>2.53.0</version>
+   		</dependency>  
+		<dependency>
+      		<groupId>org.seleniumhq.selenium.client-drivers</groupId>
+      		<artifactId>selenium-java-client-driver</artifactId>
+      		<version>1.0.1</version>
+      		<scope>test</scope>
+    	</dependency>
 	</dependencies>
 
 	<build>
