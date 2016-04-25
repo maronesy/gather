@@ -1,4 +1,4 @@
-package cs428.project.gather.controller.rest;
+package cs428.project.gather.controllers;
 
 import java.sql.Timestamp;
 
@@ -48,9 +48,8 @@ import cs428.project.gather.utilities.GsonHelper;
 @WebIntegrationTest
 public class EventControllerTest {
 
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+	private ObjectMapper OBJECT_MAPPER = ControllerTestHelper.OBJECT_MAPPER;
+	private RestTemplate restTemplate = ControllerTestHelper.restTemplate;
 
 	@Autowired
 	EventRepository eventRepo;
@@ -175,7 +174,7 @@ public class EventControllerTest {
 		List<Event> listEvents = this.eventRepo.findByName("EventOne");
 		assertEquals(0, listEvents.size());
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		//Setup coords
 		Coordinates eCoor = getTestCoordinates();
@@ -228,7 +227,7 @@ public class EventControllerTest {
 		// Make sure user is not a participant
 		assertFalse(event1.getParticipants().contains(user));
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
@@ -296,7 +295,7 @@ public class EventControllerTest {
 		// Make sure user is participant
 		assertTrue(event1.getParticipants().contains(user));
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
@@ -352,7 +351,7 @@ public class EventControllerTest {
 		assertTrue(event1.getParticipants().contains(user));
 		assertTrue(event1.getOwners().contains(user));
 		
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
@@ -383,7 +382,7 @@ public class EventControllerTest {
 		assertTrue(event1.getParticipants().contains(user));
 		assertTrue(event1.getOwners().contains(user));
 		
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
@@ -439,7 +438,7 @@ public class EventControllerTest {
 		
 		assertEquals(2, event1.getParticipants().size());
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
@@ -493,7 +492,7 @@ public class EventControllerTest {
 		assertEquals(2, eventOne.getParticipants().size());
 
 		//Sign in as ***NON-OWNER*** - Owner of target event is existed@email.com
-		HttpEntity<String> requestEntity = signInAndCheckSession("nonOwner@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("nonOwner@email.com", "password");
 
 		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
@@ -542,7 +541,7 @@ public class EventControllerTest {
 		
 		assertEquals(2, event1.getParticipants().size());
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		//Get new owner
 		Registrant newOwner = regRepo.findOneByEmail("newOwner@email.com");
@@ -586,7 +585,7 @@ public class EventControllerTest {
 		
 		assertEquals(2, event1.getParticipants().size());
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		//Get new participants
 		Registrant newParticipant = regRepo.findOneByEmail("newOwner@email.com");
@@ -630,7 +629,7 @@ public class EventControllerTest {
 		event1.addParticipant(owner);
 		event1 = eventRepo.save(event1);
 		
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		//Set up times for occurrences to add
 		Long day2, day3, day4;
@@ -779,7 +778,7 @@ public class EventControllerTest {
 		event1.addParticipant(user);
 		this.eventRepo.save(event1);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userJoined", requestEntity);
 
@@ -801,7 +800,7 @@ public class EventControllerTest {
 		addParticipant(events, user);
 		this.eventRepo.save(events);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userJoined", requestEntity);
 
@@ -819,7 +818,7 @@ public class EventControllerTest {
 		addParticipant(events, user);
 		this.eventRepo.save(events);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userJoined", requestEntity);
 
@@ -840,7 +839,7 @@ public class EventControllerTest {
 	@Test
 	public void testGetJoinedEventListZeroEvents() throws JsonProcessingException {
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userJoined", requestEntity);
 
@@ -867,7 +866,7 @@ public class EventControllerTest {
 		event1.addOwner(user);
 		this.eventRepo.save(event1);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userOwned", requestEntity);
 
@@ -890,7 +889,7 @@ public class EventControllerTest {
 		
 		this.eventRepo.save(events);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userOwned", requestEntity);
 
@@ -918,7 +917,7 @@ public class EventControllerTest {
 		// Save events to DB
 		this.eventRepo.save(eventsToSave);
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userOwned", requestEntity);
 
@@ -939,7 +938,7 @@ public class EventControllerTest {
 	@Test
 	public void testGetOwnedEventListZeroEvents() throws JsonProcessingException {
 
-		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 
 		RESTPaginatedResourcesResponseData<Event> resourceResponseData = getPaginatedResponse("http://localhost:8888/rest/events/userOwned", requestEntity);
 
@@ -962,55 +961,7 @@ public class EventControllerTest {
 		return parsePaginatedEventResponseData(responseStr.getBody());
 	}
 	
-	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("email", email);
-		requestBody.put("password", password);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin",
-				HttpMethod.POST, httpEntity, Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(result);
-		return result;
-
-	}
 	
-	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity) throws JsonProcessingException {
-		// Invoking the API
-		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session",
-				HttpMethod.GET, requestEntity, RESTResponseData.class);
-
-		assertNotNull(response);
-		return response;
-
-	}
-	
-	private HttpEntity<String> signInAndCheckSession(String email, String password) throws JsonProcessingException {
-		// Sign in
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password);
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		// Check session
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
-		// Return validated requestEntity
-		return requestEntity;
-	}
 	
 	private Map<String, Object> postRequestBodyForObject(HttpHeaders header, Map<String, Object> requestBody, String url)
 			throws JsonProcessingException {
