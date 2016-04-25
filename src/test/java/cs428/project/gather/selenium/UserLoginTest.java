@@ -45,6 +45,12 @@ public class UserLoginTest {
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
+   driver.findElement(By.id("signOutButton")).click();
+   try{
+  	 element = driver.findElement(By.id("loginFormSubmit"));
+   }catch(Exception e){
+   }
+   Assert.assertNotNull(element);
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
 
@@ -65,7 +71,7 @@ public class UserLoginTest {
      Assert.assertNotNull(element);
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
-
+ 
  @AfterClass
  public static void closeBrowser(){
 	 driver.quit();
