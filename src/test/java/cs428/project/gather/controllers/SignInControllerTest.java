@@ -1,4 +1,4 @@
-package cs428.project.gather.controller.rest;
+package cs428.project.gather.controllers;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
-package cs428.project.gather.controller.rest;
+package cs428.project.gather.controllers;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -14,17 +14,24 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cs428.project.gather.GatherApplication;
+import cs428.project.gather.data.form.RegistrationData;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.response.RESTResourceResponseData;
+import cs428.project.gather.utilities.GsonHelper;
 
 import static org.junit.Assert.*;
 
@@ -33,9 +40,8 @@ import static org.junit.Assert.*;
 @WebIntegrationTest
 public class RegistrantsControllerTest {
 
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+	private ObjectMapper OBJECT_MAPPER = ControllerTestHelper.OBJECT_MAPPER;
+	private RestTemplate restTemplate = ControllerTestHelper.restTemplate;
 
 	@Autowired
 	RegistrantRepository registrantRepo;
@@ -154,6 +160,70 @@ public class RegistrantsControllerTest {
 		// Asserting the response of the API.
 		return apiResponse;
 
+	}
+	
+	@Test
+	public void testGetRegistrant() throws JsonProcessingException{
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
+		
+		//Controller should be changed to simple GET instead of a PUT, then none of this is necessary
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", requestEntity.getHeaders().getFirst("Cookie"));
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+		
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/info", HttpMethod.PUT, httpEntity, String.class);
+		
+		RESTResourceResponseData<Registrant> responseData = parseRegistrantResponseData(responseStr.getBody());
+		Registrant user = responseData.getResult();
+		
+		assertEquals("existedName", user.getDisplayName());
+		assertEquals(10000, user.getDefaultZip());
+	}
+	
+	private RESTResourceResponseData<Registrant> parseRegistrantResponseData(String json) {
+		Gson gson = GsonHelper.getGson();
+		Type resourceType = new TypeToken<RESTResourceResponseData<Registrant>>() {
+		}.getType();
+		return gson.fromJson(json, resourceType);
+	}
+	
+	@Test
+	public void testUpdateUser() throws JsonProcessingException {
+		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
+		
+		Registrant user = registrantRepo.findOneByEmail("existed@email.com");
+		
+		//Build form data
+		RegistrationData requestBody = new RegistrationData();
+		requestBody.setDefaultTimeWindow(20);
+		requestBody.setDefaultZip(11111);
+		requestBody.setDisplayName("newDisplayName");
+		requestBody.setOldPassword("password");
+		requestBody.setPassword("newpassword");
+		requestBody.setEmail("new@email.com");
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", requestEntity.getHeaders().getFirst("Cookie"));
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+		
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/update", HttpMethod.PUT, httpEntity, String.class);
+		
+		RESTResourceResponseData<Registrant> responseData = parseRegistrantResponseData(responseStr.getBody());
+		Registrant frontendUser = responseData.getResult();
+		
+		//Check user data returned to frontend
+		assertEquals("newDisplayName", frontendUser.getDisplayName());
+		assertEquals(11111, frontendUser.getDefaultZip());
+		
+		//Check data in DB
+		Registrant backendUser = registrantRepo.findOne(user.getActorID());
+		assertEquals("newDisplayName", frontendUser.getDisplayName());
+		assertEquals(11111, frontendUser.getDefaultZip());
 	}
 
 }

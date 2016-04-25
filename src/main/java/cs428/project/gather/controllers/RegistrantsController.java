@@ -34,6 +34,7 @@ public class RegistrantsController extends AbstractGatherController {
 		return new ResponseEntity<RESTResponseData>(new RESTResponseData(0,"success"), HttpStatus.CREATED);
 	}
 
+	//TODO: This looks like it should just be a GET, not a PUT. We do nothing with any passed in data.
 	@RequestMapping(value = "/rest/registrants/info", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Registrant>> getRegistrant(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
