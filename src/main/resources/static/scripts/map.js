@@ -1139,7 +1139,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function createCommaList(arrayUserObj) {
 		user_list = ''
 		for(var i = 0; i < arrayUserObj.length; i++){
-			//alert(arrayUserObj[i].displayName);
 			if(user_list == ''){
 				user_list = arrayUserObj[i].displayName;
 			}else{
@@ -1162,6 +1161,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			owner_list = createCommaList(eventData.owners);
 			participant_list = createCommaList(eventData.participants);
 			setupDisplayNamesAutocomplete("rest/registrants/displayname");
+            console.log(JSON.stringify(gather.global.allDisplayName));
 			if (typeof(eventData.id) === "number") {
 				modalForm.modal("show");
 				$('#event-participants').val(participant_list)
@@ -1200,7 +1200,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	            if(returnvalue.next!=null){
 	            	setupDisplayNamesAutocomplete(returnvalue.next)
 	            }
-	            console.log(JSON.stringify(gather.global.allDisplayName));
 	            var input = document.getElementById("search-display-name");
 	            new Awesomplete(input, {
 	    			list: gather.global.allDisplayName
