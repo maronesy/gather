@@ -70,10 +70,10 @@ public class EventControllerTest {
 		regRepo.deleteAll();
 		assertEquals(this.regRepo.count(), 0);
 		List<Registrant> users = new ArrayList<Registrant>();
-		users.add(new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000));
-		users.add(new Registrant("participant@email.com", "password", "participantName", 10L, 3, 10000));
-		users.add(new Registrant("newOwner@email.com", "password", "newOwner", 10L, 3, 10000));
-		users.add(new Registrant("nonOwner@email.com", "password", "nonOwner", 10L, 3, 10000));
+		users.add(new Registrant("existed@email.com", "password", "existedName", 3, 10000));
+		users.add(new Registrant("participant@email.com", "password", "participantName", 3, 10000));
+		users.add(new Registrant("newOwner@email.com", "password", "newOwner", 3, 10000));
+		users.add(new Registrant("nonOwner@email.com", "password", "nonOwner", 3, 10000));
 		this.regRepo.save(users);
 		assertEquals(this.regRepo.count(), 4);
 
