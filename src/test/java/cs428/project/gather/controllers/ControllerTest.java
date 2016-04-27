@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cs428.project.gather.data.response.RESTResponseData;
 
-public class ControllerTestHelper {
+public class ControllerTest {
 	
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	public static RestTemplate restTemplate = new TestRestTemplate();
@@ -43,7 +43,7 @@ public class ControllerTestHelper {
 		// Invoking the API
 		@SuppressWarnings("unchecked")
 		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin",
-				HttpMethod.POST, httpEntity, Map.class, Collections.EMPTY_MAP);
+				HttpMethod.POST, httpEntity, RESTResponseData.class, Collections.EMPTY_MAP);
 
 		assertNotNull(result);
 		return result;

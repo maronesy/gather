@@ -31,9 +31,7 @@ import cs428.project.gather.utilities.GsonHelper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class CategoryControllerTest {
-	
-	private RestTemplate restTemplate = ControllerTestHelper.restTemplate;
+public class CategoryControllerTest extends ControllerTest {
 	
 	@Autowired
 	CategoryRepository categoryRepo;
