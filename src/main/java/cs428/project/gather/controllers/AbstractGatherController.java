@@ -37,7 +37,7 @@ public abstract class AbstractGatherController {
 
 	@Autowired
 	protected UpdateEventDataValidator updateEventDataValidator;
-	
+
 	@Autowired
 	protected EventIdDataValidator eventIdDataValidator;
 
@@ -63,6 +63,11 @@ public abstract class AbstractGatherController {
 	protected Registrant getUser(HttpServletRequest request) {
 		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
 		return this.registrantRepo.findOne(actor.getActorID());
+	}
+
+	protected Registrant getUserAsOption(HttpServletRequest request) {
+		Actor actor = ActorStateUtility.retrieveActorFromRequest(request);
+		return (actor == null) ? null : this.registrantRepo.findOne(actor.getActorID());
 	}
 
 	protected boolean isSessionAuthenticated(HttpServletRequest request) {

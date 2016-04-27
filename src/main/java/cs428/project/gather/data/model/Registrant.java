@@ -22,6 +22,7 @@ public class Registrant extends Actor {
 	private @Column(unique = true, nullable=false) String email;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = 90210;
+	private @Column(nullable=false) boolean showEventsAroundZipCode = false;
 
 	@JsonIgnore
 	@ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
@@ -103,6 +104,14 @@ public class Registrant extends Actor {
 		this.defaultZip = defaultZip;
 	}
 
+	public boolean getShowEventsAroundZipCode() {
+		return showEventsAroundZipCode;
+	}
+
+	public void setShowEventsAroundZipCode(boolean showEventsAroundZipCode) {
+		this.showEventsAroundZipCode = showEventsAroundZipCode;
+	}
+
 	public boolean joinEvent(Event event) {
 		return joinedEvents.add(event);
 	}
@@ -165,6 +174,10 @@ public class Registrant extends Actor {
 	}
 
 	public Registrant updateUsing(RegistrationData updateInfo, CategoryRepository categoryRepo, Errors errors) {
+		if (updateInfo.getShowEventsAroundZipCode() != null) {
+			setShowEventsAroundZipCode(updateInfo.getShowEventsAroundZipCode());
+		}
+
 		if (updateInfo.getEmail() != null) {
 			System.out.println("Setting email:  " + updateInfo.getEmail());
 			setEmail(updateInfo.getEmail());
