@@ -54,23 +54,23 @@ public class UserLoginTest {
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
 
- @Test
- public void inValid_UserEmail()
- {
-	 System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
-     driver.get("http://localhost:8888");	
-     driver.findElement(By.id("signInEmail")).sendKeys("testuserBadEmail");
-     driver.findElement(By.id("signInPassword")).sendKeys("password");
-     driver.findElement(By.id("loginFormSubmit")).click();
-     try{
-		 //element = driver.findElement (By.xpath(".//*[@id='loginErrorBox']/a"));
-    	 String text="Please enter a valid email address";
-    	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
-	 }catch (Exception e){
-		}
-     Assert.assertNotNull(element);
-     System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
- }
+// @Test
+// public void inValid_UserEmail()
+// {
+//	 System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
+//     driver.get("http://localhost:8888");	
+//     driver.findElement(By.id("signInEmail")).sendKeys("testuserBadEmail");
+//     driver.findElement(By.id("signInPassword")).sendKeys("password");
+//     driver.findElement(By.id("loginFormSubmit")).click();
+//     try{
+//		 //element = driver.findElement (By.xpath(".//*[@id='loginErrorBox']/a"));
+//    	 String text="Please enter a valid email address";
+//    	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+//	 }catch (Exception e){
+//		}
+//     Assert.assertNotNull(element);
+//     System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
+// }
  
  @AfterClass
  public static void closeBrowser(){
