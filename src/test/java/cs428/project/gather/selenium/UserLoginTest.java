@@ -46,7 +46,8 @@ public class UserLoginTest {
      String text="Welcome testDisplayName";
      //WebDriverWait wait = new WebDriverWait(driver, 2);
      //wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
-	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+     element = driver.findElement (By.xpath("//*[contains(.,'" + text + "')]"));
 	 
      try{
     	 //String text="Welcome testDisplayName";
