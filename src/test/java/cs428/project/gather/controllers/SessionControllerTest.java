@@ -51,7 +51,7 @@ public class SessionControllerTest extends ControllerTest {
 	@Test
 	public void testSessionFound() throws JsonProcessingException {
 
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password");
+		ResponseEntity<RESTResponseData> signInResponse = authenticateUser("existed@email.com", "password", null);
 		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
 		HttpHeaders requestHeaders = new HttpHeaders();
