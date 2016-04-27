@@ -3,6 +3,7 @@ package cs428.project.gather.controllers;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -30,6 +31,7 @@ import cs428.project.gather.data.form.RegistrationData;
 import cs428.project.gather.data.model.Registrant;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
+import cs428.project.gather.data.response.RESTPaginatedResourcesResponseData;
 import cs428.project.gather.data.response.RESTResourceResponseData;
 import cs428.project.gather.utilities.GsonHelper;
 
@@ -163,6 +165,39 @@ public class RegistrantsControllerTest {
 	}
 	
 	@Test
+	public void testGetAllDisplayNames() throws JsonProcessingException {
+		Map<String, Object> apiResponse = attemptAddUser("newEmail@email.com", "QWER1234", "testingNewUser");
+		String message = apiResponse.get("message").toString();
+		Integer status = (Integer) (apiResponse.get("status"));
+		assertEquals("success", message);
+		assertEquals((Integer)0, status); //success
+
+		// Fetching the Registrant details directly from the DB to verify the
+		// API succeeded
+		Registrant aUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		assertTrue(aUser!=null);
+		assertEquals("testingNewUser", aUser.getDisplayName());
+		assertEquals("newEmail@email.com", aUser.getEmail());
+		assertEquals("QWER1234", aUser.getPassword());
+		
+		
+		
+		Map<String, Object> requestBody = new HashMap<String, Object>();
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
+				requestHeaders);
+		
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/displayname", HttpMethod.GET, httpEntity, String.class);
+		
+		RESTPaginatedResourcesResponseData<String> responseData = parseRESTPaginatedResourcesResponseData(responseStr.getBody());
+		List<String> allUserNames = responseData.getResults();
+		
+		assertTrue(allUserNames.contains("existedName"));
+		assertTrue(allUserNames.contains("testingNewUser"));
+	}
+
+	@Test
 	public void testGetRegistrant() throws JsonProcessingException{
 		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
 		
@@ -186,6 +221,13 @@ public class RegistrantsControllerTest {
 	private RESTResourceResponseData<Registrant> parseRegistrantResponseData(String json) {
 		Gson gson = GsonHelper.getGson();
 		Type resourceType = new TypeToken<RESTResourceResponseData<Registrant>>() {
+		}.getType();
+		return gson.fromJson(json, resourceType);
+	}
+	
+	private RESTPaginatedResourcesResponseData<String> parseRESTPaginatedResourcesResponseData(String json) {
+		Gson gson = GsonHelper.getGson();
+		Type resourceType = new TypeToken<RESTPaginatedResourcesResponseData<String>>() {
 		}.getType();
 		return gson.fromJson(json, resourceType);
 	}

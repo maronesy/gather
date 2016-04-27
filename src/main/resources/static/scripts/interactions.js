@@ -17,10 +17,11 @@ function loadCategories(){
     $.ajax({
         accepts: "application/json",
         type : "GET",
-        url : "api/categories",
+        url : "rest/categories",
         contentType: "application/json; charset=UTF-8",
         success : function(returnvalue) {
-            var categories=returnvalue._embedded.categories;
+        	console.log(JSON.stringify(returnvalue));
+        	var categories=returnvalue.results;
             gather.global.categories = categories;
         }
     });

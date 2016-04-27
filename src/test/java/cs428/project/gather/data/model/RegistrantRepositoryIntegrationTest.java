@@ -103,6 +103,22 @@ public class RegistrantRepositoryIntegrationTest {
 	}
 	
 	@Test
+	public void testGetAllRegistrantDisplayNames(){
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aDiffUser = new Registrant("diffuser@email.com","password","foobar",10L,3,10000);
+		Registrant fooBar = new Registrant("foobar@email.com","foobarPassword","other",10L,3,90000);
+		this.registrantRepo.save(aUser);
+		this.registrantRepo.save(aDiffUser);
+		this.registrantRepo.save(fooBar);
+		
+		List<String> allUser = registrantRepo.findAllDisplayNames();
+		
+		assertTrue(allUser.contains("testDisplayName"));
+		assertTrue(allUser.contains("foobar"));
+		assertTrue(allUser.contains("other"));
+	}
+	
+	@Test
 	public void testFindOne(){
 		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",3,10000);
 		Registrant result = this.registrantRepo.save(aUser);		
