@@ -39,9 +39,11 @@ public class UserLoginTest {
      driver.findElement(By.id("signInEmail")).sendKeys("testuser@email.com");
      driver.findElement(By.id("signInPassword")).sendKeys("password");
      driver.findElement(By.id("loginFormSubmit")).click();
+     String text="Welcome testDisplayName";
+	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
      try{
-    	 String text="Welcome testDisplayName";
-    	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+    	 //String text="Welcome testDisplayName";
+    	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
