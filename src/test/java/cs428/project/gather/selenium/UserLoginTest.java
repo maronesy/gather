@@ -43,12 +43,14 @@ public class UserLoginTest {
      driver.findElement(By.id("loginFormSubmit")).click();
      
      driver.switchTo().defaultContent();
-     String text="Welcome testDisplayName";
+     //String text="Welcome testDisplayName";
+     String text="Welcome";
      //WebDriverWait wait = new WebDriverWait(driver, 2);
      //wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
 	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
      element = driver.findElement (By.xpath("//*[contains(.,'" + text + "')]"));
-	 
+     //element = driver.findElement (By.id("greetings"));
+     //Assert.assertEquals(driver.findElement (By.id("greetings")).getAttribute("html"),text);
      try{
     	 //String text="Welcome testDisplayName";
     	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
