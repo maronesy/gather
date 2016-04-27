@@ -41,9 +41,11 @@ public class UserLoginTest {
      driver.findElement(By.id("signInEmail")).sendKeys("testuser@email.com");
      driver.findElement(By.id("signInPassword")).sendKeys("password");
      driver.findElement(By.id("loginFormSubmit")).click();
+     
+     driver.switchTo().defaultContent();
      String text="Welcome testDisplayName";
-     WebDriverWait wait = new WebDriverWait(driver, 2);
-     wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
+     //WebDriverWait wait = new WebDriverWait(driver, 2);
+     //wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
 	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
 	 
      try{
