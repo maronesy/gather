@@ -11,6 +11,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,7 +42,10 @@ public class UserLoginTest {
      driver.findElement(By.id("signInPassword")).sendKeys("password");
      driver.findElement(By.id("loginFormSubmit")).click();
      String text="Welcome testDisplayName";
+     WebDriverWait wait = new WebDriverWait(driver, 2);
+     wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
 	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+	 
      try{
     	 //String text="Welcome testDisplayName";
     	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
