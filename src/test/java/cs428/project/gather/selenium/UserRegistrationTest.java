@@ -19,9 +19,7 @@ import cs428.project.gather.GatherApplication;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class UserRegistrationTest {
-	private static FirefoxDriver driver;
- 	WebElement element;
+public class UserRegistrationTest extends AbstractSeleniumTest {
 
  @BeforeClass
  public static void openBrowser(){
@@ -50,6 +48,9 @@ public class UserRegistrationTest {
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
+     
+     userSignOut();
+     
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
 
