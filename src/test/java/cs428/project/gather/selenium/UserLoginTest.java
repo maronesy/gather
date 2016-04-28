@@ -43,26 +43,10 @@ public class UserLoginTest {
      driver.findElement(By.id("signInEmail")).sendKeys("testuser@email.com");
      driver.findElement(By.id("signInPassword")).sendKeys("password");
      driver.findElement(By.id("loginFormSubmit")).click();
-     
-     driver.get("http://localhost:8888");
-     
-     System.out.println(driver.getPageSource());
-     //Assert.assertTrue(driver.getPageSource().contains("Welcome testDisplayName"));
-     
-     
-     //driver.switchTo().defaultContent();
-     String text="Welcome testDisplayName";
-     
-//     WebDriverWait wait = new WebDriverWait(driver, 10);
-//     wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("greetings"))));
-	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
-     //element = driver.findElement(By.xpath("//*[contains(.,'" + text + "')]"));
-     //List<WebElement> elems=driver.findElements(By.xpath("//*[contains(.,'" + text + "')]"));
-     //element = driver.findElement (By.id("greetings"));
-     //Assert.assertEquals(driver.findElement (By.id("greetings")).getAttribute("html"),text);
+
      try{
-    	 //String text="Welcome testDisplayName";
-    	 //element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+    	 String text="Welcome testDisplayName";
+    	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
