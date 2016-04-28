@@ -50,15 +50,22 @@ public class UserLoginTest {
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
-   driver.findElement(By.id("signOutButton")).click();
-   try{
-  	 element = driver.findElement(By.id("loginFormSubmit"));
-   }catch(Exception e){
-   }
-   Assert.assertNotNull(element);
+     driver.findElement(By.id("signOutButton")).click();
+     boolean elemHidden = isElementHidden(driver.findElement(By.id("loginFormSubmit")));
+     Assert.assertFalse(elemHidden);
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
 
+ private boolean isElementHidden(WebElement welem){
+	 boolean clickFailed=false;
+     try{
+    	 welem.click();
+     }catch(Exception e){
+    	 clickFailed = true; 
+     }
+     return clickFailed;
+ }
+ 
  @Test
  public void inValid_UserEmail()
  {
