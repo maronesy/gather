@@ -1,4 +1,4 @@
-package cs428.project.gather.controller.rest;
+package cs428.project.gather.controllers;
 
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +55,7 @@ public class SignOutControllerTest {
 		assertEquals(this.eventRepo.count(), 0);
 		registrantRepo.deleteAll();
 		assertEquals(this.registrantRepo.count(), 0);
-		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
+		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 3, 10000);
 		this.registrantRepo.save(aUser);
 		assertEquals(this.registrantRepo.count(), 1);
 	}

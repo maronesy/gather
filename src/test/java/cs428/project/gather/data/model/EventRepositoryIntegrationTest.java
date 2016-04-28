@@ -302,9 +302,9 @@ public class EventRepositoryIntegrationTest {
 		testEvent.setCategory(foundCategory.get(0));
 		
 		//Creating users and join
-		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",3,10000);
 		Registrant participant = this.registrantRepo.save(aUser);
-		aUser = new Registrant("owner@email.com","password","owner",10L,3,10000);
+		aUser = new Registrant("owner@email.com","password","owner",3,10000);
 		Registrant owner = this.registrantRepo.save(aUser);
 		testEvent.addParticipant(participant);
 		testEvent.addOwner(owner);
@@ -345,9 +345,9 @@ public class EventRepositoryIntegrationTest {
 		testEvent.setCategory(foundCategory.get(0));
 		
 		//Creating users and join
-		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
+		Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",3,10000);
 		Registrant participant = this.registrantRepo.save(aUser);
-		aUser = new Registrant("owner@email.com","password","owner",10L,3,10000);
+		aUser = new Registrant("owner@email.com","password","owner",3,10000);
 		Registrant owner = this.registrantRepo.save(aUser);
 		testEvent.addParticipant(participant);
 		testEvent.addOwner(owner);
@@ -367,12 +367,14 @@ public class EventRepositoryIntegrationTest {
 		String newEventName = "Updated Event Name";
 		Location newLocation = new Location("New Test Location", "1234 NewPlace Blvd", "San Francisco", "CA", "94530", 134.0498, -1118.2498);
 		Occurrence newOccur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().plusDays(1).getMillis()));
+		newOccur.setDescription("New Occurrence");
+		newOccur.setTimestamp(new Timestamp(DateTime.now().plusDays(2).getMillis()));
 		testEvent.addOccurrence(newOccur);
 		testEvent.setLocation(newLocation);
 		List<Category> newCategory = categoryRepo.findByName("Sports");
 		testEvent.setCategory(newCategory.get(0));
-		Registrant newOwner = new Registrant("newOnwer@email.com","password","newOwer",10L,3,10000);
-		Registrant newParticipant = new Registrant("newParticipant@email.com","password","newParticipant",10L,3,10000);
+		Registrant newOwner = new Registrant("newOnwer@email.com","password","newOwer",3,10000);
+		Registrant newParticipant = new Registrant("newParticipant@email.com","password","newParticipant",3,10000);
 		newOwner = this.registrantRepo.save(newOwner);
 		newParticipant = this.registrantRepo.save(newParticipant);
 		testEvent.addOwner(newOwner);

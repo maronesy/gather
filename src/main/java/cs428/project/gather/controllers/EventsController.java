@@ -114,9 +114,9 @@ public class EventsController extends AbstractGatherController {
 		EventsQueryData removeEventData = EventsQueryData.parseIn(rawData, eventIdDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		Event joinedEvent = getUser(request).removeEvent(removeEventData, eventRepo, bindingResult);
+		Event removedEvent = getUser(request).removeEvent(removeEventData, eventRepo, bindingResult);
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
-		return RESTResourceResponseData.createResponse(joinedEvent, HttpStatus.OK);
+		return RESTResourceResponseData.createResponse(removedEvent, HttpStatus.OK);
 	}
 }

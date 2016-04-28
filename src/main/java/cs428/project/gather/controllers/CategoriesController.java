@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller("CategoriesController")
 public class CategoriesController extends AbstractGatherController {
 	@RequestMapping(value = "/rest/categories", method = RequestMethod.GET)
-	public ResponseEntity<RESTPaginatedResourcesResponseData<Category>> getCategories(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
+	public ResponseEntity<RESTPaginatedResourcesResponseData<Category>> getCategories(HttpServletRequest request) {
 		List<Category> categories = categoryRepo.findAll();
 		return RESTPaginatedResourcesResponseData.createResponse(request, categories);
 	}

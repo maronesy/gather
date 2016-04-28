@@ -1,4 +1,4 @@
-package cs428.project.gather.controller.rest;
+package cs428.project.gather.controllers;
 
 import java.sql.Timestamp;
 
@@ -7,20 +7,17 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,10 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -46,11 +41,7 @@ import cs428.project.gather.utilities.GsonHelper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class EventControllerTest {
-
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+public class EventControllerTest extends ControllerTest {
 
 	@Autowired
 	EventRepository eventRepo;
@@ -71,10 +62,10 @@ public class EventControllerTest {
 		regRepo.deleteAll();
 		assertEquals(this.regRepo.count(), 0);
 		List<Registrant> users = new ArrayList<Registrant>();
-		users.add(new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000));
-		users.add(new Registrant("participant@email.com", "password", "participantName", 10L, 3, 10000));
-		users.add(new Registrant("newOwner@email.com", "password", "newOwner", 10L, 3, 10000));
-		users.add(new Registrant("nonOwner@email.com", "password", "nonOwner", 10L, 3, 10000));
+		users.add(new Registrant("existed@email.com", "password", "existedName", 3, 10000));
+		users.add(new Registrant("participant@email.com", "password", "participantName", 3, 10000));
+		users.add(new Registrant("newOwner@email.com", "password", "newOwner", 3, 10000));
+		users.add(new Registrant("nonOwner@email.com", "password", "nonOwner", 3, 10000));
 		this.regRepo.save(users);
 		assertEquals(this.regRepo.count(), 4);
 
@@ -193,7 +184,7 @@ public class EventControllerTest {
 
 	}
 
-	private Map<String, Object> attemptAddEvent(String name, Coordinates eCoor, String description, String category,
+	private ResponseEntity<String> attemptAddEvent(String name, Coordinates eCoor, String description, String category,
 			long time, Coordinates uCoor, HttpHeaders header) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -209,7 +200,7 @@ public class EventControllerTest {
 		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		Map<String, Object> apiResponse = postRequestBodyForObject(header, requestBody, "http://localhost:8888/rest/events");
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(header, requestBody, "http://localhost:8888/rest/events");
 
 		assertNotNull(apiResponse);
 		return apiResponse;
@@ -232,7 +223,7 @@ public class EventControllerTest {
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
-		ResponseEntity<String> responseStr = attemptJoinEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> responseStr = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/join");
 		assertEquals(HttpStatus.CREATED, responseStr.getStatusCode());
 
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
@@ -255,7 +246,7 @@ public class EventControllerTest {
 		this.eventRepo.save(event1);
 
 		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
-		ResponseEntity<String> response = attemptJoinEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> response = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/join");
 		// Make sure the request is rejected since user is not signed in
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
@@ -265,23 +256,13 @@ public class EventControllerTest {
 		assertEquals("Incorrect User State. Only registered users can access /rest/events/join ",
 				resourceResponseData.getMessage());
 	}
-
-	private ResponseEntity<String> attemptJoinEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
-		// Building the Request body data
+	
+	private ResponseEntity<String> attemptPostEventId(Long Id, HttpHeaders headers, String url) throws JsonProcessingException {
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("eventId", Id);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", headers.getFirst("Cookie"));
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		ResponseEntity<String> responseStr = restTemplate.postForEntity("http://localhost:8888/rest/events/join",
-				httpEntity, String.class);
-
-		assertNotNull(responseStr);
-		return responseStr;
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(headers, requestBody, url);
+		assertNotNull(apiResponse);
+		return apiResponse;
 	}
 	
 	@Test
@@ -300,7 +281,7 @@ public class EventControllerTest {
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
-		ResponseEntity<String> responseStr = attemptLeaveEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> responseStr = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/leave");
 		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
 
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
@@ -327,7 +308,7 @@ public class EventControllerTest {
 		this.eventRepo.save(event1);
 		
 		HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
-		ResponseEntity<String> response = attemptLeaveEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> response = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/leave");
 		// Make sure the request is rejected since user is not signed in
 		assertTrue(response.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 
@@ -356,7 +337,7 @@ public class EventControllerTest {
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
-		ResponseEntity<String> response = attemptLeaveEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> response = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/leave");
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		
 		// Check error message
@@ -387,7 +368,7 @@ public class EventControllerTest {
 
 		// Receive the request body as a string so that it can be parsed and
 		// validated
-		ResponseEntity<String> responseStr = attemptLeaveEvent(event1.getId(), requestEntity.getHeaders());
+		ResponseEntity<String> responseStr = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/leave");
 		assertEquals(HttpStatus.OK, responseStr.getStatusCode());
 
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
@@ -404,27 +385,36 @@ public class EventControllerTest {
 		assertFalse(backendEvent.getParticipants().contains(user));
 		assertFalse(backendEvent.getOwners().contains(user));
 	}
+	
+	@Test
+	public void testRemoveEvent() throws JsonProcessingException{
+		
+		Registrant user = this.regRepo.findOneByEmail("existed@email.com");
+		
+		Event event1 = createSingleTestEvent();
+		event1.addParticipant(user);
+		event1.addOwner(user);
+		event1 = eventRepo.save(event1);
+		
+		// Make sure user is participant and owner
+		assertTrue(event1.getParticipants().contains(user));
+		assertTrue(event1.getOwners().contains(user));
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 
-	private ResponseEntity<String> attemptLeaveEvent(Long Id, HttpHeaders headers) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("eventId", Id);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", headers.getFirst("Cookie"));
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		ResponseEntity<String> responseStr = restTemplate.postForEntity("http://localhost:8888/rest/events/leave",
-				httpEntity, String.class);
-
-		assertNotNull(responseStr);
-		return responseStr;
+		// Receive the request body as a string so that it can be parsed and
+		// validated
+		ResponseEntity<String> responseStr = attemptPostEventId(event1.getId(), requestEntity.getHeaders(), "http://localhost:8888/rest/events/remove");
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTResourceResponseData<Event> resourceResponseData = parseEventResponseData(responseStr.getBody());
+		Event frontendEvent = resourceResponseData.getResult();
+		
+		//Double check ID and that event was removed
+		assertEquals(frontendEvent.getId(), event1.getId());
+		assertNull(eventRepo.findOne(frontendEvent.getId()));
 	}
 	
-	
-
 	@Test
 	public void testUpdateEventBasic() throws JsonProcessingException {
 		//Setup event with owner
@@ -661,7 +651,7 @@ public class EventControllerTest {
 		assertEquals(day2, time);
 	}
 	
-	private Map<String, Object> attemptUpdateEventAddOwner(Event event, HttpHeaders header, Registrant ownerToAdd) throws JsonProcessingException {
+	private ResponseEntity<String> attemptUpdateEventAddOwner(Event event, HttpHeaders header, Registrant ownerToAdd) throws JsonProcessingException {
 		long eventId=event.getId();
 		
 		List<String> owners = new ArrayList<String>();
@@ -676,14 +666,14 @@ public class EventControllerTest {
 		requestBody.put("eventId", eventId);
 		requestBody.put("owners", owners);
 
-		Map<String, Object> apiResponse = postRequestBodyForObject(header, requestBody, "http://localhost:8888/rest/events/update");
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(header, requestBody, "http://localhost:8888/rest/events/update");
 
 		assertNotNull(apiResponse);
 
 		return apiResponse;
 	}
 	
-	private Map<String, Object> attemptUpdateEventAddMultipleParticipants(Event event, HttpHeaders header, List<Registrant> participantsToAdd) throws JsonProcessingException {
+	private ResponseEntity<String> attemptUpdateEventAddMultipleParticipants(Event event, HttpHeaders header, List<Registrant> participantsToAdd) throws JsonProcessingException {
 		long eventId=event.getId();
 		
 		List<String> participants = new ArrayList<String>();
@@ -700,14 +690,14 @@ public class EventControllerTest {
 		requestBody.put("eventId", eventId);
 		requestBody.put("participants", participants);
 
-		Map<String, Object> apiResponse = postRequestBodyForObject(header, requestBody, "http://localhost:8888/rest/events/update");
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(header, requestBody, "http://localhost:8888/rest/events/update");
 
 		assertNotNull(apiResponse);
 
 		return apiResponse;
 	}
 	
-	private Map<String, Object> attemptUpdateEventAddMultipleOccurrences(Event event, HttpHeaders header, List<Long> occurrenceTimesToAdd) throws JsonProcessingException {
+	private ResponseEntity<String> attemptUpdateEventAddMultipleOccurrences(Event event, HttpHeaders header, List<Long> occurrenceTimesToAdd) throws JsonProcessingException {
 		long eventId=event.getId();
 		
 		List<Long> occurrenceTimes = new ArrayList<Long>();
@@ -722,14 +712,14 @@ public class EventControllerTest {
 		requestBody.put("eventId", eventId);
 		requestBody.put("eventOccurrences", occurrenceTimes);
 
-		Map<String, Object> apiResponse = postRequestBodyForObject(header, requestBody, "http://localhost:8888/rest/events/update");
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(header, requestBody, "http://localhost:8888/rest/events/update");
 
 		assertNotNull(apiResponse);
 
 		return apiResponse;
 	}
 
-	private Map<String, Object> attemptUpdateEvent(Event event, String name, Coordinates eCoor, String description,
+	private ResponseEntity<String> attemptUpdateEvent(Event event, String name, Coordinates eCoor, String description,
 			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
 			Registrant ownerToAdd) throws JsonProcessingException {
 		
@@ -763,7 +753,7 @@ public class EventControllerTest {
 		requestBody.put("owners", owners);
 		requestBody.put("participants", participants);
 
-		Map<String, Object> apiResponse = postRequestBodyForObject(header, requestBody, "http://localhost:8888/rest/events/update");
+		ResponseEntity<String> apiResponse = postRequestBodyForEntity(header, requestBody, "http://localhost:8888/rest/events/update");
 
 		assertNotNull(apiResponse);
 
@@ -962,57 +952,9 @@ public class EventControllerTest {
 		return parsePaginatedEventResponseData(responseStr.getBody());
 	}
 	
-	private ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("email", email);
-		requestBody.put("password", password);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin",
-				HttpMethod.POST, httpEntity, Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(result);
-		return result;
-
-	}
 	
-	private ResponseEntity<RESTResponseData> checkSession(HttpEntity<String> requestEntity) throws JsonProcessingException {
-		// Invoking the API
-		ResponseEntity<RESTResponseData> response = restTemplate.exchange("http://localhost:8888/rest/session",
-				HttpMethod.GET, requestEntity, RESTResponseData.class);
-
-		assertNotNull(response);
-		return response;
-
-	}
 	
-	private HttpEntity<String> signInAndCheckSession(String email, String password) throws JsonProcessingException {
-		// Sign in
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password);
-		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
-
-		// Check session
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", StringUtils.join(cookies, ';'));
-		HttpEntity<String> requestEntity = new HttpEntity<String>(requestHeaders);
-		ResponseEntity<RESTResponseData> response = checkSession(requestEntity);
-		assertTrue(response.getStatusCode().equals(HttpStatus.OK));
-		RESTResponseData responseData = response.getBody();
-		assertTrue(responseData.getMessage().equals("Session Found"));
-
-		// Return validated requestEntity
-		return requestEntity;
-	}
-	
-	private Map<String, Object> postRequestBodyForObject(HttpHeaders header, Map<String, Object> requestBody, String url)
+	private ResponseEntity<String> postRequestBodyForEntity(HttpHeaders header, Map<String, Object> requestBody, String url)
 			throws JsonProcessingException {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", header.getFirst("Cookie"));
@@ -1023,10 +965,11 @@ public class EventControllerTest {
 				requestHeaders);
 
 		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject(url,
-				httpEntity, Map.class, Collections.EMPTY_MAP);
-		return apiResponse;
+		ResponseEntity<String> responseStr = restTemplate.postForEntity(url,
+				httpEntity, String.class);
+
+		assertNotNull(responseStr);
+		return responseStr;
 	}
 	
 	private RESTPaginatedResourcesResponseData<Event> parsePaginatedEventResponseData(String json) {

@@ -18,13 +18,6 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }
 
-    public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> badResponse(String errorCode, String message) {
-        // Build the original errorResponse
-        ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.buildResponse(errorCode, message);
-        // Extract the stuff out and rebuild the errorResponse
-        return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
-    }
-
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> createResponse(HttpServletRequest request, List<T> results) {
         int total_num_results   = results.size();
         int results_per_page    = 20;
