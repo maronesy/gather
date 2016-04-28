@@ -28,7 +28,7 @@ public class UserLoginTest extends AbstractSeleniumTest{
 	} 
 
  @Test
- public void valid_UserCredential(){
+ public void testValidUserCredential(){
 
 	 System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
 	 userSignIn();
@@ -37,7 +37,7 @@ public class UserLoginTest extends AbstractSeleniumTest{
  }
  
  @Test
- public void inValid_UserEmail()
+ public void testInValidUserEmail()
  {
 	 System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
      driver.get("http://localhost:8888");	
