@@ -28,33 +28,33 @@ function loadCategories(){
 }
 
 function resizeMap() {
-    var cw = $('#map-canvas').width()*.75;
+    var cw = $('#map-canvas').width()*1.13;
     $('#map-canvas').css({'height':cw+'px'});
 }
 
 function resizeLayout() {
     $('#resizeLayout').on('click', function() {
-        if ($('.rightPane').hasClass("col-lg-7")) {
+        if ($('.rightPane').hasClass("col-lg-8")) {
             $('#resizeLayout').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
-            $('.rightPane').switchClass("col-lg-7", "col-lg-5");
-            $('.rightPane').switchClass("col-md-7", "col-md-5");
+            $('.rightPane').switchClass("col-lg-8", "col-lg-6");
+            $('.rightPane').switchClass("col-md-8", "col-md-6");
             setTimeout(
                     function(){
-                        $('.leftPane').switchClass("col-lg-5", "col-lg-7");
-                        $('.leftPane').switchClass("col-md-5", "col-md-7");
+                        $('.leftPane').switchClass("col-lg-4", "col-lg-6");
+                        $('.leftPane').switchClass("col-md-4", "col-md-6");
                     }, 200);
             setInterval(
                     function(){
                         resizeMap();
                     }, 10);
-        } else if ($('.rightPane').hasClass("col-lg-5")) {
+        } else if ($('.rightPane').hasClass("col-lg-6")) {
             $('#resizeLayout').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
-            $('.leftPane').switchClass("col-lg-7", "col-lg-5");
-            $('.leftPane').switchClass("col-md-7", "col-md-5");
+            $('.leftPane').switchClass("col-lg-6", "col-lg-4");
+            $('.leftPane').switchClass("col-md-6", "col-md-4");
             setTimeout(
                     function(){
-                        $('.rightPane').switchClass("col-lg-5", "col-lg-7");
-                        $('.rightPane').switchClass("col-md-5", "col-md-7");
+                        $('.rightPane').switchClass("col-lg-6", "col-lg-8");
+                        $('.rightPane').switchClass("col-md-6", "col-md-8");
                     }, 200);
             setInterval(
                     function(){

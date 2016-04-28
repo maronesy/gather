@@ -766,8 +766,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var datetime = new Date( unixtime );
 		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 		var date = datetime.toLocaleDateString();
+		var address = mapManager.determineAddressByCoord(eCoordinates.latitude, eCoordinates.longitude)
 		timeDisplay = date + ', ' + time 
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, anEvent.description, timeDisplay, distanceFromCaller);
+		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, address, distanceFromCaller, anEvent.description);
 
 		eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
@@ -924,18 +925,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
             }
 		});
 		return flag
-		// $.get(url, function (data){
-		// 	if (data.status == 'ZERO_RESULTS') {
-		// 		return -1;
-		// 	} else if (data.status == 'OK') {
-		// 		uCoordinates = {
-		// 			latitude: data.results[0].geometry.location.lat,
-		// 			longitude: data.results[0].geometry.location.lng
-		// 		}
-		// 		processUserCoordinates(uCoordinates);
-		// 		return 0;
-		// 	}
-		// });
 	}
 	
 	this.determineAddressByCoord = function(lat, lng){

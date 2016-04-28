@@ -28,7 +28,6 @@ function appentToTable(tableClass, events, userCoordinates, message){
 				var lon2 = parseFloat(userCoordinates.longitude);
 				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
-//				var rating = events[i].feedbacks.rating
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var dateTime = new Date( unixtime );
@@ -41,19 +40,20 @@ function appentToTable(tableClass, events, userCoordinates, message){
 					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
-								'<a href="#" class="pull-left"> ' +
-									'<img height="60px;" width="60px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/> ' +
+								'<div class="list-header">' +
+								'<a href="#" class="list-image pull-left"> ' +
+									'<img height="30px;" width="30px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/> ' +
 								'</a>' +
+								'<h4 class="list-title">'+ title +'</h4>' +
+								'</div>' +
 								'<div class="media-body">' +
-									'<span class="pull-right">'+ dist +' mi</span>' +
-									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
-									'<h4 class="list-title">'+ title +'</h4>' +
-									'<span class="pull-right"></span>' +
-									'<p style="display:none;" eventId="' + eventId + '"></p>' +
-									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
-									'<p class="list-description">Place: '+ address +'</p>' +
-									'<p class="list-description">Description: '+ description +'</p>' +
+								// 	'<span class="pull-right"></span>' +
+								// 	'<p style="display:none;" eventId="' + eventId + '"></p>' +
+								// 	'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-play"></span>'+ category +'</p>' +
+									'<p class="pull-left list-description"><span class="glyphicon-space glyphicon glyphicon-calendar"></span>'+ date + ', ' + time +'</p>' +
+								// 	'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-map-marker"></span>'+ address +'</p>' +
+									'<p class="pull-right list-description"><span class="glyphicon-space glyphicon glyphicon-map-marker"></span>'+ dist +' mi</p>' +
+								// 	'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-info-sign"></span>'+ description +'</p>' +
 								'</div>' +
 							'</div>' +
 						'</td>' +

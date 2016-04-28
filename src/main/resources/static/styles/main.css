@@ -2,6 +2,16 @@ body {
     padding-top: 50px;
 }
 
+.list-image {
+    margin-right: 10px;
+}
+
+.list-header {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
 .map-glyphicon {
 	z-index: 1001; 
 	color:rgba(0,0,0,.75); 
@@ -29,7 +39,7 @@ td, th {
 
 .list-title {
 	margin-top: 0px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .list-description {

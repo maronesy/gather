@@ -1,4 +1,12 @@
 
+.glyphicon-space {
+	margin-right: 5px;
+}
+
+.li-space {
+	margin-bottom: 5px;
+}
+
 .participant-buttons {
 	position: relative;
     top: -10px;
@@ -14,13 +22,14 @@
 
 
 .leaflet-popup-content-wrapper {
-	width: 500px;
-	height: 250px;
+	width: 450px;
+	height: auto;
+	z-index: 1001 !important;
 }
 
 .leaflet-popup-content {
-	width: 500px !important;
-	height: 250px !important;
+	width: 450px !important;
+	height: auto !important;
 }
 
 .modal-footer {
@@ -164,15 +173,15 @@ html, body {
 	margin: 4px 0px 4px 0px;
 }
 
-.established-food-location-popup hr {
+.established-event-location-popup hr {
 	margin: 4px 0px 4px 0px;
 }
 
-.established-food-location-popup ul {
+.established-event-location-popup ul {
 	padding: 0px;
 }
 
-.established-food-location-popup li {
+.established-event-location-popup li {
 	font-size:  15px;
 	list-style: none;
 }
