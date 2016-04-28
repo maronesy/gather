@@ -109,6 +109,7 @@ function submitProfile() {
             },
 			success : function(returnvalue) {
 				if (returnvalue.status == 0) {
+					$(formId).css("color", "green")
 					$(formId).html('Profile update successful!').show().delay(3000).hide(1000)
 					if (gather.global.currentDisplayName != displayName) {
 						gather.global.currentDisplayName = displayName
@@ -116,6 +117,7 @@ function submitProfile() {
 						updateProfileHeader();
 					}
 				} else {
+					$(formId).css("color", "red")
 					$(formId).html(returnvalue.message)
 				}
 				$("#profileDoNotChangePassword").trigger('click');

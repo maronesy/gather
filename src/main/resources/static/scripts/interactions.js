@@ -249,6 +249,7 @@ function signUp() {
                             },
                             success : function(returnvalue) {
                                 if (returnvalue.status == 0) {
+                                    $(formId).css("color", "green")
                                     $(formId).html('Registration Success!');
                                     $(registerBox).fadeOut(100);
                                     $('#mask , .register-popup').fadeOut(300, function() {
@@ -315,6 +316,7 @@ function validateEmail(formId, email) {
     var atpos = x.indexOf("@");
     var dotpos = x.lastIndexOf(".");
     if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x.length) {
+        $(formId).css("color", "red")
         $(formId).html('Please enter a valid email address').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -324,9 +326,11 @@ function validateEmail(formId, email) {
 
 function validatePassword(formId, password, confirmPassword){
     if (password.length < 7 || password.length > 21) {
+        $(formId).css("color", "red")
         $(formId).html('Password must be between 6 and 21 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (password != confirmPassword) {
+        $(formId).css("color", "red")
         $(formId).html('Passwords do not match').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -336,11 +340,14 @@ function validatePassword(formId, password, confirmPassword){
 
 function validateDisplayName(formId, displayName) {
     if ($.isNumeric(displayName)) {
+        $(formId).css("color", "red")
         $(formId).html('Display name cannot be numeric').slideDown().delay(3000).slideUp();
     } else if (displayName.length < 5 || displayName.length > 15) {
+        $(formId).css("color", "red")
         $(formId).html('Display name must be between than 5 and 15 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (displayName.indexOf(' ') >= 0) {
+        $(formId).css("color", "red")
         $(formId).html('Display name cannot have spaces').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -350,19 +357,22 @@ function validateDisplayName(formId, displayName) {
 
 function validateZipCode(formId, zipCode) {
     if (zipCode.length != 5) {
+        $(formId).css("color", "red")
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else if (!($.isNumeric(zipCode))) {
+        $(formId).css("color", "red")
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else {
         var returnValue = mapManager.determineCoordByZipCode(zipCode);
-        if (returnValue == -1) {
-            $(formId).html('Zip code does not exist').slideDown().delay(3000).slideUp();
-            return false;
-        } else {
+        if (returnValue) {
             $(formId).hide();
             return true
+        } else {
+            $(formId).css("color", "red")
+            $(formId).html('Zip code does not exist').slideDown().delay(3000).slideUp();
+            return false;
         }
     } 
 }
