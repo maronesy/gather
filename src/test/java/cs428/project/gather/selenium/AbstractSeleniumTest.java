@@ -17,8 +17,6 @@ public abstract class AbstractSeleniumTest {
 	}
 
  	protected void userSignIn() {
-		
-		driver.get("http://localhost:8888");
 	    
 	    driver.findElement(By.id("signInEmail")).sendKeys("testuser@email.com");
 	    driver.findElement(By.id("signInPassword")).sendKeys("password");
