@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class AbstractSeleniumTest {
 
@@ -11,7 +13,9 @@ public abstract class AbstractSeleniumTest {
 	protected WebElement element;
  	
  	protected void userSignOut() {
-		driver.findElement(By.id("signOutButton")).click();
+ 		WebDriverWait wait = new WebDriverWait(driver, 3);
+ 		WebElement signOutButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("signOutButton")));
+		signOutButton.click();
 	    boolean elemHidden = isElementHidden(driver.findElement(By.id("loginFormSubmit")));
 	    Assert.assertFalse(elemHidden);
 	}
@@ -39,4 +43,12 @@ public abstract class AbstractSeleniumTest {
 	     }
 	     return clickFailed;
 	 }
+ 	
+ 	protected void timeoutFor(int milliSec){
+ 		try {
+ 			 Thread.sleep(milliSec);
+ 		 } catch (InterruptedException e) {
+ 			 e.printStackTrace();
+ 		 }
+ 	}
 }
