@@ -34,27 +34,8 @@ function appentToTable(tableClass, events, userCoordinates, message){
 				var dateTime = new Date( unixtime );
 				var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = dateTime.toLocaleDateString();
-				var city = events[i].location.city;
-				var streetAddress = events[i].location.streetAddr;
-				var state = events[i].location.state;
-				var zipCode = events[i].location.zipCode;
-				var address = ''
-				if (streetAddress != null) {
-					address = streetAddress + ', '
-				}
-				if (city != null) {
-					address = address + city + ', '
-				}
-				if (state != null) {
-					address = address + state + ' '
-				}
-				if (zipCode != null) {
-					address = address + zipCode
-				}
-				if (address == '') {
-					// if the user has not provided the address, the approximate address is generated
-					address = mapManager.determineAddressByCoord(lat1, lon1)
-				}
+				// provide address by latlng
+				var address = mapManager.determineAddressByCoord(lat1, lon1)
 				var description = events[i].description;
 				$('.' + tableClass).append(
 					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
