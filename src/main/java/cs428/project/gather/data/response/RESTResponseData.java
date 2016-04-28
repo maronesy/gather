@@ -11,23 +11,11 @@ public class RESTResponseData {
 
     public RESTResponseData() {}
 
-    public RESTResponseData(int status) {
-        this.status = status;
-        Date now = new Date();
-        this.timestamp = now.getTime();
-    }
-
     public RESTResponseData(int status, String message) {
         this.status = status;
         Date now = new Date();
         this.timestamp = now.getTime();
         this.message = message;
-    }
-
-    public RESTResponseData(int status, String message, long timestamp) {
-        this.status = status;
-        this.message = message;
-        this.timestamp = timestamp;
     }
 
     public static ResponseEntity<RESTResponseData> OKResponse(String message) {
@@ -59,13 +47,6 @@ public class RESTResponseData {
         HttpStatus httpStatus=convertErrorCodeToHttpStatus(errorCode);
         return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,message),httpStatus);
     }
-
-	public static ResponseEntity<RESTResponseData> buildResponse(String errorCodeStr, String errorMessage) {
-		int errorCode = -1;
-		errorCode = Integer.parseInt(errorCodeStr);
-		HttpStatus httpStatus = convertErrorCodeToHttpStatus(errorCode);
-		return new ResponseEntity<RESTResponseData>(new RESTResponseData(errorCode,errorMessage),httpStatus);
-	}
 
     private static HttpStatus convertErrorCodeToHttpStatus(int errorCode) {
         HttpStatus result;

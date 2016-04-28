@@ -39,39 +39,6 @@ public class NewEventData {
 		validator.validate(this, errors);
 	}
 
-	@Override
-	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder();
-		builder.append(eventName);
-		builder.append(eventCoordinates);
-		builder.append(eventDescription);
-		builder.append(eventCategory);
-		builder.append(callerCoordinates);
-		int hashCode = builder.toHashCode();
-		return hashCode;
-	}
-
-	@Override
-	public boolean equals(Object anotherObject) {
-		boolean equal = false;
-
-		if (anotherObject == this) {
-			equal = true;
-		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
-			NewEventData anotherEventData = (NewEventData) anotherObject;
-			EqualsBuilder equalsBuilder = new EqualsBuilder();
-
-			equalsBuilder.append(this.eventName, anotherEventData.eventName);
-			equalsBuilder.append(this.eventCategory, anotherEventData.eventCoordinates);
-			equalsBuilder.append(this.eventDescription, anotherEventData.eventDescription);
-			equalsBuilder.append(this.callerCoordinates, anotherEventData.callerCoordinates);
-			equalsBuilder.append(this.eventCoordinates, anotherEventData.eventCoordinates);
-
-			equal = equalsBuilder.isEquals();
-		}
-		return equal;
-	}
-
 	public String getEventName() {
 		return eventName;
 	}

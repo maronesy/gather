@@ -88,28 +88,5 @@ public class RegistrationData {
 	public void setPreferences(Set<String> preferences) {
 		this.preferences = preferences;
 	}
-
-	@Override
-	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder();
-		builder.append(email);
-		return builder.toHashCode();
-	}
-
-	@Override
-	public boolean equals(Object anotherObject) {
-		boolean equal = false;
-		if(anotherObject == this) {
-			equal = true;
-		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
-			RegistrationData anotherUserRegistrationData = (RegistrationData)anotherObject;
-			EqualsBuilder equalsBuilder = new EqualsBuilder();
-			equalsBuilder.append(this.email, anotherUserRegistrationData.email);
-			equalsBuilder.append(this.password, anotherUserRegistrationData.password);
-			equalsBuilder.append(this.displayName, anotherUserRegistrationData.displayName);
-			equal = equalsBuilder.isEquals();
-		}
-		return equal;
-	}
 }
 

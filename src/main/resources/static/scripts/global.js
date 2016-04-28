@@ -5,6 +5,7 @@ var ViewingJoinedEvents=1;
 var ViewingOwnedEvents=2;
 gather.global = {};
 gather.global.currentDisplayName="Gather";
+gather.global.allDisplayName=[];
 gather.global.nearEvents = [];
 gather.global.joinedEvents = [];
 gather.global.ownedEvents = [];
