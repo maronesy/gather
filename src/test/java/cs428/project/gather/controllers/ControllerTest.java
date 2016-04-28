@@ -23,17 +23,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cs428.project.gather.data.response.RESTResponseData;
 
-public class ControllerTestHelper {
+public class ControllerTest {
 	
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	public static RestTemplate restTemplate = new TestRestTemplate();
 
-	public static ResponseEntity<RESTResponseData> authenticateUser(String email, String password) throws JsonProcessingException {
+	public static ResponseEntity<RESTResponseData> authenticateUser(String email, String password, HttpHeaders headers) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		requestBody.put("email", email);
 		requestBody.put("password", password);
 		HttpHeaders requestHeaders = new HttpHeaders();
+		if(headers != null){
+			requestHeaders.set("Cookie", headers.getFirst("Cookie"));
+		}
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Creating http entity object with request body and headers
@@ -43,7 +46,7 @@ public class ControllerTestHelper {
 		// Invoking the API
 		@SuppressWarnings("unchecked")
 		ResponseEntity<RESTResponseData> result = restTemplate.exchange("http://localhost:8888/rest/registrants/signin",
-				HttpMethod.POST, httpEntity, Map.class, Collections.EMPTY_MAP);
+				HttpMethod.POST, httpEntity, RESTResponseData.class, Collections.EMPTY_MAP);
 
 		assertNotNull(result);
 		return result;
@@ -62,7 +65,7 @@ public class ControllerTestHelper {
 	
 	public static HttpEntity<String> signInAndCheckSession(String email, String password) throws JsonProcessingException {
 		// Sign in
-		ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password);
+		ResponseEntity<RESTResponseData> signInResponse = authenticateUser(email, password, null);
 		List<String> cookies = signInResponse.getHeaders().get("Set-Cookie");
 
 		// Check session

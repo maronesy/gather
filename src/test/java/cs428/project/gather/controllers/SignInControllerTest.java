@@ -14,6 +14,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,11 +31,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class SignInControllerTest {
-
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+public class SignInControllerTest extends ControllerTest {
 
 	@Autowired
 	RegistrantRepository registrantRepo;
@@ -48,79 +45,58 @@ public class SignInControllerTest {
 		assertEquals(this.eventRepo.count(), 0);
 		registrantRepo.deleteAll();
 		assertEquals(this.registrantRepo.count(), 0);
-		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
+		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 3, 10000);
 		this.registrantRepo.save(aUser);
 		assertEquals(this.registrantRepo.count(), 1);
 	}
 
 	@Test
 	public void testSignInUserSuccess() throws JsonProcessingException {
-		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "password");
-		String message = apiResponse.get("message").toString();
-		String displayName = apiResponse.get("displayName").toString();
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("success", message);
-		assertEquals("existedName", displayName);
-		assertEquals((Integer)0, status); //success
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser("existed@email.com", "password", null);
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("success", responseData.getMessage());
+		assertEquals(0, responseData.getSTATUS()); //success
 	}
 
 	@Test
 	public void testSignInUserWrongPassword() throws JsonProcessingException {
-		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "wrongpassword");
-		String message = apiResponse.get("message").toString();
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("The password is incorrect.  Please enter the correct password. ", message);
-		assertEquals((Integer)(-6), status); //success
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser("existed@email.com", "wrongpassword", null);
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("The password is incorrect.  Please enter the correct password. ", responseData.getMessage());
+		assertEquals(-6, responseData.getSTATUS());
 	}
 
 	@Test
 	public void testSignInInvalidEmail() throws JsonProcessingException {
-		Map<String, Object> apiResponse = authenticateUser(".Thi$IsN0TaEM@il", "password");
-		String message = apiResponse.get("message").toString();
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("Field invalid-email:Please enter a valid email address. ", message);
-		assertEquals((Integer)(-3), status); //success
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser(".Thi$IsN0TaEM@il", "password", null);
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("Field invalid-email:Please enter a valid email address. ", responseData.getMessage());
+		assertEquals(-3, responseData.getSTATUS());
 	}
 
 	@Test
 	public void testSignInInvalidPassword() throws JsonProcessingException {
-		Map<String, Object> apiResponse = authenticateUser("existed@email.com", "ThisPasswordIsTooLongAndItShouldNotBeAnValidPasswordSoTheTestShouldFail");
-		String message = apiResponse.get("message").toString();
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("Field invalid-password:The password length must be 64 characters or less. ", message);
-		assertEquals((Integer)(-2), status); //success
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser("existed@email.com", "ThisPasswordIsTooLongAndItShouldNotBeAnValidPasswordSoTheTestShouldFail", null);
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("Field invalid-password:The password length must be 64 characters or less. ", responseData.getMessage());
+		assertEquals(-2,  responseData.getSTATUS());
 	}
 
 	@Test
 	public void testSignInUserNotExist() throws JsonProcessingException {
-		Map<String, Object> apiResponse = authenticateUser("notexisted@email.com", "password");
-		String message = apiResponse.get("message").toString();
-		Integer status = (Integer) (apiResponse.get("status"));
-		assertEquals("Field invalid-email:The email address doesn't exist.  Please enter another email address. ", message);
-		assertEquals((Integer)(-5), status); //success
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser("notexisted@email.com", "password", null);
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("Field invalid-email:The email address doesn't exist.  Please enter another email address. ", responseData.getMessage());
+		assertEquals(-5, responseData.getSTATUS());
 	}
-
-	private Map<String, Object> authenticateUser(String email, String password) throws JsonProcessingException {
-		// Building the Request body data
-		Map<String, Object> requestBody = new HashMap<String, Object>();
-		requestBody.put("email", email);
-		requestBody.put("password", password);
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Creating http entity object with request body and headers
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
-
-		// Invoking the API
-		@SuppressWarnings("unchecked")
-		Map<String, Object> apiResponse = restTemplate.postForObject("http://localhost:8888/rest/registrants/signin", httpEntity,
-				Map.class, Collections.EMPTY_MAP);
-
-		assertNotNull(apiResponse);
-		// Asserting the response of the API.
-		return apiResponse;
-
+	
+	@Test
+	public void testSignInAlreadySignedIn() throws JsonProcessingException{
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		ResponseEntity<RESTResponseData> apiResponse = authenticateUser("existed@email.com", "password", requestEntity.getHeaders());
+		RESTResponseData responseData = apiResponse.getBody();
+		assertEquals("Incorrect User State. Only non-registered users can access /rest/registrants/signin ", responseData.getMessage());
+		assertEquals(-7, responseData.getSTATUS()); 
 	}
 
 }

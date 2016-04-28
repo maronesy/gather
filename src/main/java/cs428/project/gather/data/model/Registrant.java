@@ -20,7 +20,6 @@ public class Registrant extends Actor {
 	private @Column(nullable=false) String password;
 	private @Column(unique = true, nullable=false) String displayName;
 	private @Column(unique = true, nullable=false) String email;
-	private long reliability = 0;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = 90210;
 
@@ -49,13 +48,12 @@ public class Registrant extends Actor {
 		this.password = password;
 	}
 
-	public Registrant(String email, String password, String displayName, long reliability,
-			int defaultTimeWindow, int defaultZip) {
+	public Registrant(String email, String password, String displayName, int defaultTimeWindow,
+			int defaultZip) {
 		super(ActorType.REGISTERED_USER);
 		this.password = password;
 		this.displayName = displayName;
 		this.email = email;
-		this.reliability = reliability;
 		this.defaultTimeWindow = defaultTimeWindow;
 		this.defaultZip = defaultZip;
 	}
@@ -87,14 +85,6 @@ public class Registrant extends Actor {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public long getReliability() {
-		return reliability;
-	}
-
-	public void setReliability(long reliability) {
-		this.reliability = reliability;
 	}
 
 	public int getDefaultTimeWindow() {

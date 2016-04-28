@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,10 +18,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,10 +37,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class RegistrantsControllerTest {
-
-	private ObjectMapper OBJECT_MAPPER = ControllerTestHelper.OBJECT_MAPPER;
-	private RestTemplate restTemplate = ControllerTestHelper.restTemplate;
+public class RegistrantsControllerTest extends ControllerTest {
 
 	@Autowired
 	RegistrantRepository registrantRepo;
@@ -57,7 +51,7 @@ public class RegistrantsControllerTest {
 		assertEquals(this.eventRepo.count(), 0);
 		registrantRepo.deleteAll();
 		assertEquals(this.registrantRepo.count(), 0);
-		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 10L, 3, 10000);
+		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 3, 10000);
 		this.registrantRepo.save(aUser);
 		assertEquals(this.registrantRepo.count(), 1);
 	}
@@ -199,7 +193,7 @@ public class RegistrantsControllerTest {
 
 	@Test
 	public void testGetRegistrant() throws JsonProcessingException{
-		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 		
 		//Controller should be changed to simple GET instead of a PUT, then none of this is necessary
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -234,7 +228,7 @@ public class RegistrantsControllerTest {
 	
 	@Test
 	public void testUpdateUser() throws JsonProcessingException {
-		HttpEntity<String> requestEntity = ControllerTestHelper.signInAndCheckSession("existed@email.com", "password");
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
 		
 		Registrant user = registrantRepo.findOneByEmail("existed@email.com");
 		

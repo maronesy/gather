@@ -41,31 +41,4 @@ public class SignInData {
 	public void setPassword(String password) {
 		this.password = StringUtils.trimToNull(password);
 	}
-
-	@Override
-	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder();
-
-		builder.append(email);
-
-		int hashCode = builder.toHashCode();
-
-		return hashCode;
-	}
-
-	@Override
-	public boolean equals(Object anotherObject) {
-		boolean equal = false;
-
-		if (anotherObject == this) {
-			equal = true;
-		} else if (anotherObject != null && anotherObject.getClass().equals(this.getClass())) {
-			SignInData anotherSignInData = (SignInData) anotherObject;
-			EqualsBuilder equalsBuilder = new EqualsBuilder();
-			equalsBuilder.append(this.email, anotherSignInData.email);
-			equalsBuilder.append(this.password, anotherSignInData.password);
-			equal = equalsBuilder.isEquals();
-		}
-		return equal;
-	}
 }
