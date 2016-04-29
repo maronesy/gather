@@ -19,6 +19,7 @@ public class EventsQueryData {
 	private float radiusMi;
 	private int hour = -1;
 	private Set<String> categories = new HashSet<String>();
+	private boolean useRegistrantProfile;
 
 	public static EventsQueryData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -77,6 +78,14 @@ public class EventsQueryData {
 
 	public void setCategories(Set<String> categories) {
 		this.categories = categories;
+	}
+
+	public boolean getUseRegistrantProfile() {
+		return useRegistrantProfile;
+	}
+
+	public void setUseRegistrantProfile(boolean useRegistrantProfile) {
+		this.useRegistrantProfile = useRegistrantProfile;
 	}
 }
 

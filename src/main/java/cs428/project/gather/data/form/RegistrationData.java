@@ -21,6 +21,7 @@ public class RegistrationData {
 	private int defaultTimeWindow = 1;
 	private int defaultZip = -1;
 	private Set<String> preferences;
+	private Boolean showEventsAroundZipCode;
 
 	public static RegistrationData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -87,6 +88,14 @@ public class RegistrationData {
 
 	public void setPreferences(Set<String> preferences) {
 		this.preferences = preferences;
+	}
+
+	public Boolean getShowEventsAroundZipCode() {
+		return showEventsAroundZipCode;
+	}
+
+	public void setShowEventsAroundZipCode(Boolean showEventsAroundZipCode) {
+		this.showEventsAroundZipCode = showEventsAroundZipCode;
 	}
 }
 
