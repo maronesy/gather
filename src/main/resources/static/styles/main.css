@@ -2,6 +2,26 @@ body {
     padding-top: 50px;
 }
 
+.cb-div {
+    width: 24%;
+    float: right;
+    position: relative;
+    top: 5px;
+}
+
+.category-span {
+    width:56%;
+    margin-bottom: 15px;
+}
+.category-button {
+    margin-left: 5px; 
+}
+
+.profile-zip-code {
+    display: inline-block !important; 
+    width: 100%;
+}
+
 .list-image {
     margin-right: 10px;
 }

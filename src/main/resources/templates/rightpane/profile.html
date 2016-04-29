@@ -47,35 +47,57 @@
 								  	</div>
 								</div>
 								<div class="form-group">
-								  	<label for="profileTimeWindow">Show events within</label>
-								  	<select id="profileTimeWindow" class="form-control">
-										<option value="1">1 hour</option>
-										<option value="2">2 hours</option>
-										<option value="3">3 hours</option>
-										<option value="4">4 hours</option>
-										<option value="5">8 hours</option>
-										<option value="6">12 hours</option>
-										<option value="7">1 day</option>
-										<option value="8">3 days</option>
-										<option value="9">1 week</option>
-										<option value="10">2 weeks</option>
-										<option value="11" selected="selected">1 month</option>
-										<option value="12">3 months</option>
-										<option value="13">1 year</option>
-									</select>
-								</div>
-								<div class="form-group" id="profileMyCategories">
-								  	<label for="profileMyCategory1">My Categories</label>
-								  	<select id="profileMyCategory1" class="form-control">
-								  		<option value="--">Category</option>
-								  		<option value="removeCategory1">Remove this category</option>
-										<option value="swim">Swim</option>
-										<option value="soccer">Soccer</option>
-									</select>
+									<label for="profileTimeWindow">Show events within</label>
+									<div class="form-inline">
+									  	<select id="profileTimeWindow" class="form-control" style="width:75%;">
+											<option value="1">1 hour</option>
+											<option value="2">2 hours</option>
+											<option value="3">3 hours</option>
+											<option value="4">4 hours</option>
+											<option value="5">8 hours</option>
+											<option value="6">12 hours</option>
+											<option value="7">1 day</option>
+											<option value="8">3 days</option>
+											<option value="9">1 week</option>
+											<option value="10">2 weeks</option>
+											<option value="11" selected="selected">1 month</option>
+											<option value="12">3 months</option>
+											<option value="13">1 year</option>
+										</select>
+										<div class="checkbox cb-div">
+				  							<label class="pull-right">
+				    							<input id="timeWindowCheckbox" type="checkbox" style="position:relative; top:2px;" value=""/>
+				    							Set as default
+				  							</label>
+										</div>
+									</div>
 								</div>
 								<div class="form-group">
+								  	<label>My Categories</label>
+								  	<div class="form-inline">
+								  		<span class="pull-left category-span" id="profileCategories">
+								  		</span>
+											<button type="button" class="btn btn-default category-button" id="addCategory"><span class="glyphicon glyphicon-plus"></span></button>
+											<button disabled="disabled" type="button" class="btn btn-default category-button" id="removeCategory"><span class="glyphicon glyphicon-minus"></span></button>
+											<div class="checkbox cb-div">
+					  							<label class="pull-right">
+					    							<input id="categoriesCheckbox" type="checkbox" style="position:relative; top:2px;" value=""/>
+					    							Set as default
+					  							</label>
+											</div>
+									</div>
+								</div>
+								<div class="form-group profile-zip-code">
 								  	<label for="profileZipCode">Default Zip Code</label>
-								  	<input type="text" class="form-control" id="profileZipCode" value="" placeholder="Zip Code"/>
+								  	<div class="form-inline">
+								  		<input type="text" style="width:75%;" class="form-control" id="profileZipCode" value="" placeholder="Zip Code"/>
+								  		<div class="checkbox cb-div">
+				  							<label class="pull-right">
+				    							<input id="zipCodeCheckbox" type="checkbox" style="position:relative; top:2px;" value=""/>
+				    							Set as default
+				  							</label>
+										</div>
+								  	</div>
 								</div>
 								<div align="middle">
 									<span style="color:red"><div class="form-group" id="profileFeedback"></div></span>
