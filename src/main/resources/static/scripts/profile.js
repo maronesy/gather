@@ -245,8 +245,8 @@ function submitProfile() {
 		$("#profile").hide();
 		$("#profileFeedback").hide();
 		$("#profileDoNotChangePassword").trigger('click');
-		$("#map").show();
 		userFrontPage();
+		$("#map").show();
 	});
 }
 

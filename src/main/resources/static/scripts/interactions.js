@@ -276,7 +276,6 @@ function signUp() {
 
 function sessionCheck() {
     $.ajax({
-        async: false,
         accepts: "application/json",
         type : "GET",
         url : "rest/session",

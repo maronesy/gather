@@ -3,14 +3,12 @@ body {
 }
 
 .cb-div {
-    width: 24%;
-    float: right;
     position: relative;
-    top: 5px;
+    top: -10px;
 }
 
 .category-span {
-    width:56%;
+    width:80%;
     margin-bottom: 15px;
 }
 .category-button {
