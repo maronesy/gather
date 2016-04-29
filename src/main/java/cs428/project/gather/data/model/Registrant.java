@@ -43,12 +43,6 @@ public class Registrant extends Actor {
 		super(ActorType.REGISTERED_USER);
 	}
 
-	public Registrant(String email, String password) {
-		super(ActorType.REGISTERED_USER);
-		this.email = email;
-		this.password = password;
-	}
-
 	public Registrant(String email, String password, String displayName, int defaultTimeWindow,
 			int defaultZip) {
 		super(ActorType.REGISTERED_USER);
@@ -126,6 +120,7 @@ public class Registrant extends Actor {
 		return Collections.unmodifiableSet(ownedEvents);
 	}
 
+	@JsonIgnore
 	public void setPreferences(Set<Category> preferences) {
 		this.preferences = preferences;
 	}

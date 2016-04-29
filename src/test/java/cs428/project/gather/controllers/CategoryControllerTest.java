@@ -25,6 +25,7 @@ import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
+import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.data.response.RESTPaginatedResourcesResponseData;
 import cs428.project.gather.utilities.GsonHelper;
 
@@ -32,6 +33,9 @@ import cs428.project.gather.utilities.GsonHelper;
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
 public class CategoryControllerTest extends ControllerTest {
+	
+	@Autowired
+	RegistrantRepository registrantRepo;
 	
 	@Autowired
 	CategoryRepository categoryRepo;
@@ -42,6 +46,7 @@ public class CategoryControllerTest extends ControllerTest {
 	@Test
 	public void testGetCategories(){
 		eventRepo.deleteAll();
+		registrantRepo.deleteAll();
 		categoryRepo.deleteAll();
 		assertEquals(0, categoryRepo.count());
 		Category cat1 = new Category("Cat1");
