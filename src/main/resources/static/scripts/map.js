@@ -803,6 +803,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
 			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + eventSearchRadiusInMiles + ', "hour": ' + hour + ' }',
+			async: false,
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
@@ -854,6 +855,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			type : "GET",
 			url : "/rest/events/userJoined",
 			contentType: "application/json; charset=UTF-8",
+			async: false,
 			success : function(returnvalue) {
 				gather.global.joinedEvents = returnvalue.results;
 			},
@@ -879,6 +881,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			type : "GET",
 			url : "/rest/events/userOwned",
 			contentType: "application/json; charset=UTF-8",
+			async: false,
 			success : function(returnvalue) {
 				gather.global.ownedEvents = returnvalue.results;
 			},
