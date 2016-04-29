@@ -18,7 +18,7 @@ import cs428.project.gather.GatherApplication;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
 @WebIntegrationTest
-public class EventBasicTest extends AbstractSeleniumTest {
+public class EventTest extends AbstractSeleniumTest {
 
  @BeforeClass
  public static void openBrowser(){
@@ -49,11 +49,10 @@ public class EventBasicTest extends AbstractSeleniumTest {
      String eText = "Welcome testDisplayName";
 	 driver.findElement (By.xpath("//*[contains(text(),'" + eText + "')]")).click();
      driver.findElement(By.id("showNearBy")).click();
-//     String subReg = "Submit";
-//     driver.findElement (By.xpath("//*[contains(text(),'" + subReg + "')]")).click();
      try{
     	 String text="Nearby Event List";
     	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
+    	 text="There are no events around you :(";
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
@@ -74,15 +73,13 @@ public class EventBasicTest extends AbstractSeleniumTest {
      String eText = "Welcome testDisplayName";
 	 driver.findElement (By.xpath("//*[contains(text(),'" + eText + "')]")).click();
      driver.findElement(By.id("showOwned")).click();
-//     String subReg = "Submit";
-//     driver.findElement (By.xpath("//*[contains(text(),'" + subReg + "')]")).click();
      try{
     	 String text="Owned Event List";
     	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
-     
+
      userSignOut();
      
      System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
@@ -99,14 +96,14 @@ public class EventBasicTest extends AbstractSeleniumTest {
      String eText = "Welcome testDisplayName";
 	 driver.findElement (By.xpath("//*[contains(text(),'" + eText + "')]")).click();
      driver.findElement(By.id("showJoined")).click();
-//     String subReg = "Submit";
-//     driver.findElement (By.xpath("//*[contains(text(),'" + subReg + "')]")).click();
      try{
     	 String text="Joined Event List";
     	 element = driver.findElement (By.xpath("//*[contains(text(),'" + text + "')]"));
 	 }catch (Exception e){
 		}
      Assert.assertNotNull(element);
+     //Assert.assertTrue(driver.getPageSource().contains("lets play soccer!"));
+     //Assert.assertTrue(driver.getPageSource().contains("Nowhere Blvd, Los Angeles"));
      
      userSignOut();
      
