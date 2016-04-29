@@ -287,6 +287,7 @@ function sessionCheck() {
                 gather.global.email = jqXHR.responseJSON.email;
                 updateGreeting();
                 headerSelect();
+                // userFrontPage();
             } else {
                 gather.global.session.signedIn = false;
                 headerSelect();
@@ -299,6 +300,7 @@ function sessionCheck() {
         }
     });
 }
+
 
 function updateGreeting(){
     $("#greetings").html("Welcome "+gather.global.currentDisplayName);

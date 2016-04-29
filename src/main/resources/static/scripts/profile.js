@@ -18,6 +18,7 @@ function loadProfilePage() {
 		$("#profile").show();
 		$("#map").hide();
 		$.ajax({
+			async: false,
 		 	accepts: "application/json",
 			type : "PUT",
 			url : "rest/registrants/info",
@@ -214,6 +215,7 @@ function submitProfile() {
 		updateData = updateData.slice(0,-2)  // removing the last comma
 
 		$.ajax({
+			async: false,
 		 	accepts: "application/json",
 			type : "PUT",
 			url : "rest/registrants/update",
