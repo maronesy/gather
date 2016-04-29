@@ -1,6 +1,5 @@
 $(document).ready(function() {
     locateMe();
-    sessionCheck();
     resizeLayout();
     resizeMap();
     enterZip();
@@ -11,7 +10,8 @@ $(document).ready(function() {
     onLoadSessionCheck();
     headerSelect();
     loadCategories();
-});
+    sessionCheck();
+ });
 
 function loadCategories(){
     $.ajax({
@@ -276,6 +276,7 @@ function signUp() {
 
 function sessionCheck() {
     $.ajax({
+        async: false,
         accepts: "application/json",
         type : "GET",
         url : "rest/session",
@@ -287,16 +288,47 @@ function sessionCheck() {
                 gather.global.email = jqXHR.responseJSON.email;
                 updateGreeting();
                 headerSelect();
-                // userFrontPage();
+                userFrontPage();
             } else {
                 gather.global.session.signedIn = false;
                 headerSelect();
+                mapManager.performAction();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR.status);
             alert(textStatus);
             alert(errorThrown);
+        }
+    });
+}
+
+function userFrontPage() {
+    $.ajax({
+        accepts: "application/json",
+        type : "PUT",
+        url : "rest/registrants/info",
+        contentType: "application/json; charset=UTF-8",
+        dataType: "json",
+        data : '{}',
+        success : function(returnvalue) {
+            if (returnvalue.status == 0) {
+                var defaultZip = returnvalue.result.defaultZip
+                var defaultTimeWindow = returnvalue.result.defaultTimeWindow
+                var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
+                var categories = returnvalue.result.preferences
+                if (showEventsAroundZipCode) {
+                    mapManager.determineCoordByZipCode(defaultZip);
+                } else {
+                    mapManager.performAction();
+                }
+            } else {
+                alert(returnvalue.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var responseMessage = $.parseJSON(jqXHR.responseText).message;
+            alert(responseMessage);
         }
     });
 }
@@ -357,7 +389,10 @@ function validateDisplayName(formId, displayName) {
     }
 }
 
-function validateZipCode(formId, zipCode) {
+function validateZipCode(formId, zipCode, showmap) {
+    if (typeof showmap === "undefined" || showmap === null) { 
+        showmap = true; 
+    }
     if (zipCode.length != 5) {
         $(formId).css("color", "red")
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
@@ -367,7 +402,7 @@ function validateZipCode(formId, zipCode) {
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else {
-        var returnValue = mapManager.determineCoordByZipCode(zipCode);
+        var returnValue = mapManager.determineCoordByZipCode(zipCode, showmap);
         if (returnValue) {
             $(formId).hide();
             return true

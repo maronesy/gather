@@ -46,9 +46,13 @@ function loadProfilePage() {
 						$(htmlID).val(categories[i-1])
 					}
 				} else {
-
+					$(formId).html(returnvalue.message);
 				}
-			}
+			},
+	        error: function(jqXHR, textStatus, errorThrown) {
+	            var responseMessage = $.parseJSON(jqXHR.responseText).message;
+	            alert(responseMessage);
+        }
 		});
 	});
 
@@ -139,9 +143,7 @@ function submitProfile() {
 		var defaultZipCode = $("#profileZipCode").val()
 		var defaultTimeWindow = $("#profileTimeWindow").val()
 		var categories = [];
-		var categoriesCheck = $('#categoriesCheckbox').is(':checked')
 		var zipCodeCheck = $('#zipCodeCheckbox').is(':checked')
-		var timeWindowCheck = $('#timeWindowCheckbox').is(':checked')
 		for (var i = 1; i < categoryIndex+1; i++) {
 			var selectID = '#profileCategories' + i
 			categories.push($(selectID).val())
@@ -172,7 +174,7 @@ function submitProfile() {
 
 
 		if (defaultZipCode != '') {
-			if (validateZipCode(formId, defaultZipCode)) {
+			if (validateZipCode(formId, defaultZipCode, false)) {
 				updateData = updateData + '"defaultZip":' + defaultZipCode + ', '
 			} else {
 				$('#profileSaving').hide();
@@ -189,17 +191,7 @@ function submitProfile() {
 			}
 		}
 
-		if (categoriesCheck) {
-			updateData = updateData + '"showEventsAroundZipCode":' + categoriesCheck + ', '
-		}
-
-		// if (zipCodeCheck) {
-		// 	updateData = updateData + '"showEventsAroundZipCode":' zipCodeCheck + ''
-		// }
-
-		// if (timeWindowCheck) {
-		// 	updateData = updateData + '"showEventsAroundZipCode":' timeWindowCheck + ''
-		// }
+		updateData = updateData + '"showEventsAroundZipCode":' + zipCodeCheck + ', '
 
 		if (emptyStringArray(categories)) {
 			updateData = updateData + '"preferences": ['
@@ -254,8 +246,7 @@ function submitProfile() {
 		$("#profileFeedback").hide();
 		$("#profileDoNotChangePassword").trigger('click');
 		$("#map").show();
-		// not sure who added this? this function is not working
-		// map._onResize(); 
+		userFrontPage();
 	});
 }
 

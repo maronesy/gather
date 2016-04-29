@@ -82,22 +82,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			determineUserCoordinates(function(initialUserCoordinates) {
 				try {
 					processUserCoordinates(initialUserCoordinates);
-
-					// Update every 10 seconds.
-//					var updateIntervalID = setInterval(function() {
-//
-//						determineUserCoordinates(function(updatedUserCoordinates) {
-//
-//							try {
-//								processUserCoordinates(updatedUserCoordinates);
-//							}
-//							catch(updatedException) {
-//								clearInterval(updateIntervalID);
-//
-//								doStandardExceptionHandling(updatedException);
-//							}
-//						});
-//					}, 10000);
 				}
 				catch(initialException) {
 					doStandardExceptionHandling(initialException);
@@ -125,22 +109,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		else {
 			geolocationErrorCount = 0;
 
-			if(currentUserCoordinates === null || currentUserCoordinates.latitude !== userCoordinates.latitude || currentUserCoordinates.longitude !== userCoordinates.longitude) {
-				var currentZoomLevel = map.getZoom();
+			currentZoomLevel = 11;
+			map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
 
-				if(typeof(currentZoomLevel) !== "number") {
-					currentZoomLevel = 13;
-				}
-
-				map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
-
-				placeUserMarker(userCoordinates);
-				getNearByEvents();
-				currentUserCoordinates = userCoordinates;
-				if (gather.global.session.signedIn == true){
-					joinedEvents();
-					ownedEvents();
-				}
+			placeUserMarker(userCoordinates);
+			getNearByEvents();
+			currentUserCoordinates = userCoordinates;
+			if (gather.global.session.signedIn == true){
+				joinedEvents();
+				ownedEvents();
 			}
 		}
 	}
@@ -901,9 +878,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-	this.determineCoordByZipCode = function(zipCode){
+	this.determineCoordByZipCode = function(zipCode, showmap){
 		// using Google API for zip search because mapbox is awfully inaccurate.
 		// What Souhayl had was great but this is 100 times faster.
+		if (typeof showmap === "undefined" || showmap === null) { 
+			showmap = true; 
+		}
 		var url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&components=country:US|postal_code:"+zipCode
 		var flag = false
 		$.ajax({
@@ -918,7 +898,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 						latitude: returnvalue.results[0].geometry.location.lat,
 						longitude: returnvalue.results[0].geometry.location.lng
 					}
-					processUserCoordinates(uCoordinates);
+					currentUserCoordinates = uCoordinates;
+					if (showmap) {
+						processUserCoordinates(uCoordinates);
+					}
 					flag = true;
 				}
 			},
