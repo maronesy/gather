@@ -20,6 +20,7 @@ public class RegistrationData {
 	private String displayName;
 	private int defaultTimeWindow = 1;
 	private int defaultZip = -1;
+	private int defaultRadiusMi = -1;
 	private Set<String> preferences;
 	private Boolean showEventsAroundZipCode;
 
@@ -72,6 +73,14 @@ public class RegistrationData {
 
 	public void setDefaultZip(int defaultZip) {
 		this.defaultZip = defaultZip;
+	}
+
+	public int getDefaultRadiusMi() {
+		return defaultRadiusMi;
+	}
+
+	public void setDefaultRadiusMi(int defaultRadiusMi) {
+		this.defaultRadiusMi = defaultRadiusMi;
 	}
 
 	public String getEmail() {

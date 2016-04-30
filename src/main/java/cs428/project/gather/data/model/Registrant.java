@@ -207,6 +207,11 @@ public class Registrant extends Actor {
 			setDefaultZip(updateInfo.getDefaultZip());
 		}
 
+		if (updateInfo.getDefaultRadiusMi() > 0) {
+			System.out.println("Setting defaultRadiusMi:  " + updateInfo.getDefaultRadiusMi());
+			setDefaultRadiusMi(updateInfo.getDefaultRadiusMi());
+		}
+
 		if (updateInfo.getPreferences() != null) {
 			Set<Category> newCategories = new HashSet<Category>();
 			for (String categoryName : updateInfo.getPreferences()) {
