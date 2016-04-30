@@ -1,22 +1,94 @@
+$(document).ready(function() {
+    eventFilter();
+    loadFilterForm();
+ });
+
 function loadEventsFirstView(userCoordinates) {
 	$('#eventListTitle').text("Nearby Event List");
 	var events = gather.global.nearEvents
-	appentToTable("eventTable", events, userCoordinates, "around you");
+	appendToTable("eventTable", events, userCoordinates, "around you");
 }
 
 function loadJoinedEvents(userCoordinates) {
 	$('#eventListTitle').text("Joined Event List");
 	var events = gather.global.joinedEvents;
-	appentToTable("eventTable", events, userCoordinates, "that you have joined");
+	appendToTable("eventTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
 	$('#eventListTitle').text("Owned Event List");
 	var events = gather.global.ownedEvents;
-	appentToTable("eventTable", events, userCoordinates, "that you own");
+	appendToTable("eventTable", events, userCoordinates, "that you own");
 }
 
-function appentToTable(tableClass, events, userCoordinates, message){
+function loadFilterForm() {
+	setUpCategoryOptions(0, "#filterCategory")
+}
+
+function eventFilter() {
+	$('#filterSubmit').on('click', function() {
+        var email = $("#inputEmail").val();
+        var password = $("#inputPassword1").val();
+        var confirmPassword = $("#inputPassword2").val();
+        var displayName = $("#inputDisplayName").val();
+        var registerBox = $('#registerFormSubmit').attr('href');
+        var formId = '#formFeedback'
+        var emailStatus = false
+        var passwordStatus = false
+        var displayNameStatus = false
+        if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
+            $(formId).html('All the fields are required');
+        } else {
+            emailStatus = validateEmail(formId, email)
+            passwordStatus = validatePassword(formId, password, confirmPassword)
+            displayNameStatus = validateDisplayName(formId, displayName)
+        }
+        if (emailStatus && passwordStatus && displayNameStatus) {
+            $.ajax({
+                    accepts: "application/json",
+                    type : "POST",
+                    url : "/rest/registrants",
+                    contentType: "application/json; charset=UTF-8",
+                    dataType: "json",
+                    beforeSend: function() {
+                        $('#loading').show();
+                    },
+                    data : '{ \
+                        "email" : ' + email + ', \
+                        "password" : ' + password + ', \
+                        "displayName" : ' + displayName + ' \
+                    }',
+                    complete: function() {
+                        $('#loading').hide();
+                    },
+                    success : function(returnvalue) {
+                        if (returnvalue.status == 0) {
+                            $(formId).css("color", "green")
+                            $(formId).html('Registration Success!');
+                            $(registerBox).fadeOut(100);
+                            $('#mask , .register-popup').fadeOut(300, function() {
+                                $('#mask').remove();
+                            });
+                            resetRegisterFields();
+                            gather.global.session.signedIn = true
+                            gather.global.currentDisplayName = displayName;
+                            updateGreeting();
+                            headerSelect();
+                            window.location.href = "/"
+                        } else {
+                                $(formId).html(returnvalue.message);
+                        }
+                    },
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        var responseMessage = $.parseJSON(jqXHR.responseText).message;
+                        $('#formFeedback').html(responseMessage);
+                    }
+                });
+        }
+    });
+}
+
+function appendToTable(tableClass, events, userCoordinates, message){
 	if (events != null) {
 		if (events.length != 0) {
 			$('.' + tableClass).html('');

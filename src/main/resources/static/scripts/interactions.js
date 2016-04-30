@@ -329,6 +329,7 @@ function userFrontPage() {
         error: function(jqXHR, textStatus, errorThrown) {
             var responseMessage = $.parseJSON(jqXHR.responseText).message;
             alert(responseMessage);
+            sessionCheck();
         }
     });
 }

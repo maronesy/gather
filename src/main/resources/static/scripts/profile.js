@@ -62,6 +62,7 @@ function loadProfilePage() {
 	        error: function(jqXHR, textStatus, errorThrown) {
 	            var responseMessage = $.parseJSON(jqXHR.responseText).message;
 	            alert(responseMessage);
+	    		sessionCheck();
         }
 		});
 	});
@@ -116,10 +117,10 @@ function controlCategory() {
 	});
 }
 
-function setUpCategoryOptions(index) {
+function setUpCategoryOptions(index, formID) {
 	var newOptions={};
 	var catArray = gather.global.categories;
-	var htmlID = "#profileCategories" + index
+	var htmlID = formID + index
 	$(htmlID).empty();
 	$(htmlID).append($("<option></option>")
 			     .attr("value", "").text("---------"));
@@ -136,7 +137,7 @@ function displayCategoryField(index) {
 	var jsID = '#profileCategories' + index
 	var categoryField = '<div id="' + divID + '"><select style="margin-bottom: 5px; width:100%;" class="form-control" id="' + htmlID + '"/><div>'
 	$('#profileCategories').append(categoryField)
-	setUpCategoryOptions(index);
+	setUpCategoryOptions(index, "#profileCategories");
 }
 
 function removeCategoryField(index) {
