@@ -71,17 +71,6 @@ public class Event {
         return this.occurrences.add(occurrence);
     }
 
-    public boolean setOccurrences(List<Occurrence> newOccurrences) {
-        Assert.notNull(newOccurrences);
-        this.occurrences.clear();
-        for(int i=0; i<newOccurrences.size(); i++){
-            if(!this.occurrences.add(newOccurrences.get(i))){
-                return false;
-            }
-        }
-        return true;
-    }
-
     public boolean setOccurrencesFrom(List<Long> newTimestamps) {
         Assert.notNull(newTimestamps);
         this.occurrences.clear();
@@ -196,11 +185,8 @@ public class Event {
         return occurrences.remove(occurrence);
     }
 
-    public void removeAllOccurrence(){
-        int length=occurrences.size();
-        for(int i=0; i<length; i++){
-            occurrences.remove(i);
-        }
+    public void removeAllOccurrences(){
+        occurrences.clear();
     }
 
     public boolean containsOwner(Registrant owner, Errors errors) {
@@ -218,6 +204,10 @@ public class Event {
                 errors.reject("-7", "Cannot query for events. useRegistrantProfile was set to true, but user is not authenticated.");
                 return null;
             }
+
+            // If the useRegistrantProfile flag is true, then we will use the registrant's profile settings to query our events
+            queryParams.setRadiusMi(maybeUser.getDefaultRadiusMi());
+            queryParams.setHour(maybeUser.getDefaultTimeWindow());
             filterCategories = new HashSet<String>();
             for (Category cat : maybeUser.getPreferences()) {
                 filterCategories.add(cat.getName());
