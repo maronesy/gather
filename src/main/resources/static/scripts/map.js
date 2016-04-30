@@ -15,7 +15,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var map = buildMap();
 
 	var eventSearchRadiusInMiles = 10.0;
-	var eventSearchRadiusInMeters = eventSearchRadiusInMiles * 1609.34;
 
 	var currentUserCoordinates = null;
 	var userMarker = null;
@@ -76,6 +75,10 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
+	this.filter = function(hour, category, radius) {
+		getNearByEvents(hour, category, radius)
+	}
+
 	this.performAction = function() {
 		if(geolocationSupported) {
 			// Get and process the user's current location.
@@ -97,14 +100,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var geolocationErrorCount = 0;
 
-<<<<<<< HEAD
 	function processUserCoordinates(uCoordinates, hour, categories, radius) {
-		userCoordinates = uCoordinates
-		if(userCoordinates == null) {
-=======
-	function processUserCoordinates(uCoordinates) {
 		if(uCoordinates == null) {
->>>>>>> remotes/origin/staging
 			geolocationErrorCount++;
 
 			if(geolocationErrorCount > 2) {
@@ -114,41 +111,32 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		else {
 			geolocationErrorCount = 0;
 
-<<<<<<< HEAD
-			currentZoomLevel = 11;
-			map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
-
-			placeUserMarker(userCoordinates);
+			placeUserMarker(uCoordinates);
 			getNearByEvents(hour, categories, radius);
-			currentUserCoordinates = userCoordinates;
+			currentUserCoordinates = uCoordinates;
 			if (gather.global.session.signedIn == true){
 				joinedEvents();
 				ownedEvents();
-=======
-			if(currentUserCoordinates === null || currentUserCoordinates.latitude !== uCoordinates.latitude || currentUserCoordinates.longitude !== uCoordinates.longitude) {
-				var currentZoomLevel = map.getZoom();
-
-				if(typeof(currentZoomLevel) !== "number") {
-					currentZoomLevel = 13;
-				}
-
-				map.setView([uCoordinates.latitude, uCoordinates.longitude], currentZoomLevel);
-
-				currentUserCoordinates = uCoordinates;
-				placeUserMarker(uCoordinates);
-				getNearByEvents();
-				
-				if (gather.global.session.signedIn == true){
-					joinedEvents();
-					ownedEvents();
-				}
->>>>>>> remotes/origin/staging
 			}
 		}
 	}
 
 	function placeUserMarker(uCoordinates) {
 		var markerPosition = new L.LatLng(uCoordinates.latitude, uCoordinates.longitude);
+
+		if (eventSearchRadiusInMiles >= 50) {
+				currentZoomLevel = 10;
+			} else if (eventSearchRadiusInMiles >= 25) {
+				currentZoomLevel = 10;
+			} else if (eventSearchRadiusInMiles >= 10) {
+				currentZoomLevel = 11;
+			} else if (eventSearchRadiusInMiles >= 5) {
+				currentZoomLevel = 12;
+			} else {
+				currentZoomLevel = 13;
+			}
+
+		map.setView([uCoordinates.latitude, uCoordinates.longitude], currentZoomLevel);
 
 		if(userMarker === null) {
 			var iconOptions = {
@@ -168,6 +156,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			userMarker.setLatLng(markerPosition);
 		}
 
+		var eventSearchRadiusInMeters = eventSearchRadiusInMiles * 1609.34;
+
 		if(searchRadiusCircle === null) {
 			var searchRadiusCircleOptions = {
 				clickable: false,
@@ -175,12 +165,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				fillColor: "#40A3FE",
 				fillOpacity: 0.2
 			};
-
+			
 			searchRadiusCircle = L.circle(markerPosition, eventSearchRadiusInMeters, searchRadiusCircleOptions);
 			searchRadiusCircle.addTo(map);
 		}
 		else {
 			searchRadiusCircle.setLatLng(markerPosition);
+			searchRadiusCircle.setRadius(eventSearchRadiusInMeters);
 		}
 
 		setUserMarkerPopup(uCoordinates);
@@ -803,17 +794,19 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 		if (typeof radius === "undefined" || radius === null) { 
 		    radius = eventSearchRadiusInMiles
+		} else {
+			eventSearchRadiusInMiles = radius
 		}
 
 		var data = '  '
 
-		data = data + '"latitude" : ' + userCoordinates.latitude + ', '
-		data = data + '"longitude" : ' + userCoordinates.longitude + ', '
+		data = data + '"latitude" : ' + uCoordinates.latitude + ', '
+		data = data + '"longitude" : ' + uCoordinates.longitude + ', '
 		data = data + '"radiusMi": ' + radius + ', '
 		data = data + '"hour": ' + hour + ', '
 
 		if (emptyStringArray(categories)) {
-			data = data + '"preferences": ['
+			data = data + '"categories": ['
 			for (var i = 0; i < categories.length; i++) {
 				if (categories[i] !== "") {
 					data = data + '"' + categories[i] + '", '
@@ -831,16 +824,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			url : "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
-<<<<<<< HEAD
 			data : '{'+data+'}',
-=======
-			data : '{ "latitude" : ' + currentUserCoordinates.latitude + ', "longitude" : ' + currentUserCoordinates.longitude + ', "radiusMi": ' + eventSearchRadiusInMiles + ', "hour": ' + hour + ' }',
->>>>>>> remotes/origin/staging
 			async: false,
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
-				
+				placeUserMarker(uCoordinates);
 				refreshEventListAndMarkers();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {

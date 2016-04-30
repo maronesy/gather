@@ -25,21 +25,31 @@
 							<select id="filterCategory" class="form-control">
 							</select>
 							<select id="filterTime" class="form-control">
-								<option value="--">Time</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
+								<option value="" selected="selected">Within</option>
+								<option value="1">1 hour</option>
+								<option value="2">2 hours</option>
+								<option value="3">3 hours</option>
+								<option value="4">4 hours</option>
+								<option value="8">8 hours</option>
+								<option value="12">12 hours</option>
+								<option value="24">1 day</option>
+								<option value="72">3 days</option>
+								<option value="168">1 week</option>
+								<option value="336">2 weeks</option>
+								<option value="730">1 month</option>
+								<option value="2190">3 months</option>
+								<option value="8760">1 year</option>
 							</select>
 							<select id="filterRadius" class="form-control">
-								  <option value="--">Distance</option>
-								  <option>1 mi</option>
-								  <option>5 mi</option>
-								  <option>10 mi</option>
-								  <option>25 mi</option>
-							</select>
+								  <option value="">Distance</option>
+								  <option value="2">2 mi</option>
+								  <option value="5">5 mi</option>
+								  <option value="10">10 mi</option>
+								  <option value="25">25 mi</option>
+								  <option value="50">50 mi</option>
+ 							</select>
+							<button style="margin-left: 5px;" id="filterSubmit" type="button" class="btn btn-default">Show</button>
 						</div>
-						<button style="margin-left: 5px;" id="filterSubmit" type="submit" class="pull-right btn btn-default">Filter</button>
 					</form>
 					</div>
 				</div>

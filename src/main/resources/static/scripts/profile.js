@@ -36,9 +36,7 @@ function loadProfilePage() {
 					//             0  1  2  3  4  5   6   7   8    9    10   11    12
 					timeInHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
 					var ind = $.inArray(defaultTimeWindow, timeInHours)
-					if (ind != -1) {
-						defaultTimeWindow = ind
-					} else {
+					if (ind == -1) {
 						defaultTimeWindow = 10
 					}
 
@@ -123,7 +121,7 @@ function setUpCategoryOptions(index, formID) {
 	var htmlID = formID + index
 	$(htmlID).empty();
 	$(htmlID).append($("<option></option>")
-			     .attr("value", "").text("---------"));
+			     .attr("value", "").text("Category"));
 	for (var i = 0; i < catArray.length; i++) {
 		newOptions[catArray[i].name] = catArray[i].name;
 		$(htmlID).append($("<option></option>")
@@ -152,19 +150,13 @@ function submitProfile() {
 		var password = $("#profileNewPassword1").val()
 		var confirmPassword = $("#profileNewPassword2").val()
 		var defaultZipCode = $("#profileZipCode").val()
-		var defaultTimeWindowIndex = $("#profileTimeWindow").val()
+		var defaultTimeWindow = $("#profileTimeWindow").val()
 		var categories = [];
 		var zipCodeCheck = $('#zipCodeCheckbox').is(':checked')
 		for (var i = 1; i < categoryIndex+1; i++) {
 			var selectID = '#profileCategories' + i
 			categories.push($(selectID).val())
 		}
-
-		// index to hours
-		//             0  1  2  3  4  5   6   7   8    9    10   11    12
-		timeInHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
-
-		defaultTimeWindow = timeInHours[defaultTimeWindowIndex]
 
 		var formId = '#profileFeedback'
 		var updateData = '  ' // do not remove the extra space here, because we slice later
@@ -205,8 +197,12 @@ function submitProfile() {
 			}
 		}
 
+		// index to hours
+		timeInHours = ["1", "2", "3", "4", "8", "12", "24", "72", "168", "336", "730", "2190", "8760"]
+		var ind = $.inArray(defaultTimeWindow, timeInHours)
+
 		if (defaultTimeWindow != '') {
-			if (defaultTimeWindowIndex >= 0 && defaultTimeWindowIndex <= 12) {
+			if (ind != -1) {
 				updateData = updateData + '"defaultTimeWindow":' + defaultTimeWindow + ', '
 			} else {
 				$('#profileSaving').hide();

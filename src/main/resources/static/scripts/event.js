@@ -1,6 +1,5 @@
 $(document).ready(function() {
     eventFilter();
-    loadFilterForm();
  });
 
 function loadEventsFirstView(userCoordinates) {
@@ -22,69 +21,26 @@ function loadOwnedEvents(userCoordinates) {
 }
 
 function loadFilterForm() {
-	setUpCategoryOptions(0, "#filterCategory")
+	setUpCategoryOptions("", "#filterCategory")
 }
 
 function eventFilter() {
 	$('#filterSubmit').on('click', function() {
-        var email = $("#inputEmail").val();
-        var password = $("#inputPassword1").val();
-        var confirmPassword = $("#inputPassword2").val();
-        var displayName = $("#inputDisplayName").val();
-        var registerBox = $('#registerFormSubmit').attr('href');
-        var formId = '#formFeedback'
-        var emailStatus = false
-        var passwordStatus = false
-        var displayNameStatus = false
-        if (displayName == "" || password == "" || confirmPassword == "" || email == "") {
-            $(formId).html('All the fields are required');
+        var category = $("#filterCategory").val(); 
+        var time = $("#filterTime").val();
+        var radius = $("#filterRadius").val();
+        if (category == "") {
+        	category = null  // will use default values defined in getNearByEvents
         } else {
-            emailStatus = validateEmail(formId, email)
-            passwordStatus = validatePassword(formId, password, confirmPassword)
-            displayNameStatus = validateDisplayName(formId, displayName)
+        	category = [category]  // category is always a list
         }
-        if (emailStatus && passwordStatus && displayNameStatus) {
-            $.ajax({
-                    accepts: "application/json",
-                    type : "POST",
-                    url : "/rest/registrants",
-                    contentType: "application/json; charset=UTF-8",
-                    dataType: "json",
-                    beforeSend: function() {
-                        $('#loading').show();
-                    },
-                    data : '{ \
-                        "email" : ' + email + ', \
-                        "password" : ' + password + ', \
-                        "displayName" : ' + displayName + ' \
-                    }',
-                    complete: function() {
-                        $('#loading').hide();
-                    },
-                    success : function(returnvalue) {
-                        if (returnvalue.status == 0) {
-                            $(formId).css("color", "green")
-                            $(formId).html('Registration Success!');
-                            $(registerBox).fadeOut(100);
-                            $('#mask , .register-popup').fadeOut(300, function() {
-                                $('#mask').remove();
-                            });
-                            resetRegisterFields();
-                            gather.global.session.signedIn = true
-                            gather.global.currentDisplayName = displayName;
-                            updateGreeting();
-                            headerSelect();
-                            window.location.href = "/"
-                        } else {
-                                $(formId).html(returnvalue.message);
-                        }
-                    },
-                    error : function(jqXHR, textStatus, errorThrown) {
-                        var responseMessage = $.parseJSON(jqXHR.responseText).message;
-                        $('#formFeedback').html(responseMessage);
-                    }
-                });
+        if (time == "") {
+        	time = null  // will use default values defined in getNearByEvents
         }
+        if (radius == "") {
+        	radius = null  // will use default values defined in getNearByEvents
+        }
+        mapManager.filter(time, category, radius)
     });
 }
 
