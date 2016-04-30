@@ -343,7 +343,7 @@
 	</div>
 
 		<div class="content-template" id="established-event-content-template" aria-hidden="true">
-			<div class="established-event-location-popup">
+			<div class="established-food-location-popup">
 				<p style="display:none;" id="eventId">%s</p>
 				<p><b>%s</b></p>
 
@@ -354,13 +354,16 @@
 					<li>Distance from current location:  %.2f miles</li>
 				</ul>
 
-				<p><br></br></p>
+				<p><b>Have you been to this event?</b><br></br>
+				Check in to rank this location and leave feedback.</p>
+
 				<div class="modal-footer" id="establishedEventFooter">
 					<button id="participantBtn" class="pull-left btn" onclick="mapManager.listPart(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-user"></span></button>				
 					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id'), false); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
 					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
 					<button id="joinEventBtn" class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
-					<button id="leaveEventBtn" class="btn btn-default" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button> 
+					<button id="leaveEventBtn" class="btn btn-default" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button>
+					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button> 
 				</div>
 			</div>
 		</div>
@@ -382,11 +385,10 @@
 	<div class="content-template" id="new-event-content-template" aria-hidden="true">
 		<div class="new-event-location-popup">
 				<p><b>New Event Location</b></p>
-
 				<p>Drag the marker to a more precise location.</p>
 				
 				<p>Once the marker is positioned accurately, click the Update Event Info green button to provide more information about this event.</p>
-				<br></br><br></br>
+
 				<div class="modal-footer">
 					<button class="btn btn-danger" onclick="mapManager.discardNewEvent(this.getAttribute('data-new-event-data-id')); return false;"><span class="glyphicon glyphicon-trash"></span> Discard</button>
 					<button class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-new-event-data-id'), true); return false;"><span class="glyphicon glyphicon-pencil"></span> Update Event Info</button>
