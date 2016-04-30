@@ -97,7 +97,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var geolocationErrorCount = 0;
 
-	function processUserCoordinates(uCoordinates) {
+	function processUserCoordinates(uCoordinates, hour, categories, radius) {
 		userCoordinates = uCoordinates
 		if(userCoordinates == null) {
 			geolocationErrorCount++;
@@ -113,7 +113,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
 
 			placeUserMarker(userCoordinates);
-			getNearByEvents();
+			getNearByEvents(hour, categories, radius);
 			currentUserCoordinates = userCoordinates;
 			if (gather.global.session.signedIn == true){
 				joinedEvents();
@@ -770,8 +770,36 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		return result;
 	}
 	
-	function getNearByEvents() {
-		var hour = 730;
+	function getNearByEvents(hour, categories, radius) {
+		if (typeof hour === "undefined" || hour === null) { 
+		    hour = 730;
+		}
+		if (typeof categories === "undefined" || categories === null) { 
+		    categories = [""]
+		}
+		if (typeof radius === "undefined" || radius === null) { 
+		    radius = eventSearchRadiusInMiles
+		}
+
+		var data = '  '
+
+		data = data + '"latitude" : ' + userCoordinates.latitude + ', '
+		data = data + '"longitude" : ' + userCoordinates.longitude + ', '
+		data = data + '"radiusMi": ' + radius + ', '
+		data = data + '"hour": ' + hour + ', '
+
+		if (emptyStringArray(categories)) {
+			data = data + '"preferences": ['
+			for (var i = 0; i < categories.length; i++) {
+				if (categories[i] !== "") {
+					data = data + '"' + categories[i] + '", '
+				}
+			}
+			data = data.slice(0,-2)  // removing the last comma
+			data = data + '], '
+		}
+
+		data = data.slice(0,-2)  // removing the last comma
 
 		$.ajax({
 		 	accepts: "application/json",
@@ -779,7 +807,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			url : "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
-			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + eventSearchRadiusInMiles + ', "hour": ' + hour + ' }',
+			data : '{'+data+'}',
 			async: false,
 			success : function(returnvalue) {
 				signedIn = true;
@@ -878,7 +906,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-	this.determineCoordByZipCode = function(zipCode, showmap){
+	this.determineCoordByZipCode = function(zipCode, showmap, defaultTimeWindow, categories){
 		// using Google API for zip search because mapbox is awfully inaccurate.
 		// What Souhayl had was great but this is 100 times faster.
 		if (typeof showmap === "undefined" || showmap === null) { 
@@ -900,7 +928,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					}
 					currentUserCoordinates = uCoordinates;
 					if (showmap) {
-						processUserCoordinates(uCoordinates);
+						processUserCoordinates(uCoordinates, defaultTimeWindow, categories);
 					}
 					flag = true;
 				}
@@ -917,7 +945,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
 		var full_address = ''
 		$.ajax({
-			    async: false,
+			    // async: false, commented to enhance performance by 3 seconds!
 			    url: url,
 			    dataType: "json",
 			    success: function(data) {
@@ -1240,7 +1268,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function refreshEventGlobalVariables(){
-		getNearByEvents();
+		getNearByEvents(hour, categories, radius);
 		joinedEvents();
 		ownedEvents();
 	}
@@ -1248,7 +1276,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	$('#showNearBy').on('click', function(){
 		gather.global.currentEventList = ViewingNearByEvents;
 		rightPaneSelect();
-		getNearByEvents();
+		getNearByEvents(hour, categories, radius);
 		refreshEventListAndMarkers();
 	});
 	

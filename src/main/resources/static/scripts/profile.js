@@ -32,6 +32,16 @@ function loadProfilePage() {
 					var defaultTimeWindow = returnvalue.result.defaultTimeWindow
 					var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
 					var categories = returnvalue.result.preferences
+					// index to hours
+					//             0  1  2  3  4  5   6   7   8    9    10   11    12
+					timeInHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
+					var ind = $.inArray(defaultTimeWindow, timeInHours)
+					if (ind != -1) {
+						defaultTimeWindow = ind
+					} else {
+						defaultTimeWindow = 10
+					}
+
 					$("#profileDisplayName").val(displayName)
 					$("#profileZipCode").val(defaultZip)
 					$("#profileTimeWindow").val(defaultTimeWindow)
@@ -141,13 +151,19 @@ function submitProfile() {
 		var password = $("#profileNewPassword1").val()
 		var confirmPassword = $("#profileNewPassword2").val()
 		var defaultZipCode = $("#profileZipCode").val()
-		var defaultTimeWindow = $("#profileTimeWindow").val()
+		var defaultTimeWindowIndex = $("#profileTimeWindow").val()
 		var categories = [];
 		var zipCodeCheck = $('#zipCodeCheckbox').is(':checked')
 		for (var i = 1; i < categoryIndex+1; i++) {
 			var selectID = '#profileCategories' + i
 			categories.push($(selectID).val())
 		}
+
+		// index to hours
+		//             0  1  2  3  4  5   6   7   8    9    10   11    12
+		timeInHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
+
+		defaultTimeWindow = timeInHours[defaultTimeWindowIndex]
 
 		var formId = '#profileFeedback'
 		var updateData = '  ' // do not remove the extra space here, because we slice later
@@ -158,6 +174,8 @@ function submitProfile() {
 				updateData = updateData + '"displayName":"' + displayName + '", '
 			} else {
 				$('#profileSaving').hide();
+				$(formId).css("color", "red")
+				$(formId).html("Invalid display name")
 				return
 			}
 		}
@@ -168,6 +186,8 @@ function submitProfile() {
 				updateData = updateData + '"oldPassword":"' + oldPassword + '", '
 			} else {
 				$('#profileSaving').hide();
+				$(formId).css("color", "red")
+				$(formId).html("Invalid password")
 				return
 			}
 		}
@@ -178,15 +198,19 @@ function submitProfile() {
 				updateData = updateData + '"defaultZip":' + defaultZipCode + ', '
 			} else {
 				$('#profileSaving').hide();
+				$(formId).css("color", "red")
+				$(formId).html("Invalid zip code")
 				return
 			}
 		}
 
 		if (defaultTimeWindow != '') {
-			if (defaultTimeWindow >= 1 && defaultTimeWindow <= 13) {
+			if (defaultTimeWindowIndex >= 0 && defaultTimeWindowIndex <= 12) {
 				updateData = updateData + '"defaultTimeWindow":' + defaultTimeWindow + ', '
 			} else {
 				$('#profileSaving').hide();
+				$(formId).css("color", "red")
+				$(formId).html("Invalid time window")
 				return
 			}
 		}
@@ -223,9 +247,9 @@ function submitProfile() {
 					$(formId).html('Profile update successful!').show().delay(3000).hide(1000)
 					if (gather.global.currentDisplayName != displayName) {
 						gather.global.currentDisplayName = displayName
-						sessionCheck();
 						updateProfileHeader();
 					}
+					sessionCheck();
 				} else {
 					$(formId).css("color", "red")
 					$(formId).html(returnvalue.message)

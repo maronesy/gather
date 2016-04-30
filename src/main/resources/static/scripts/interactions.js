@@ -276,6 +276,7 @@ function signUp() {
 
 function sessionCheck() {
     $.ajax({
+        async: false,
         accepts: "application/json",
         type : "GET",
         url : "rest/session",
@@ -317,7 +318,7 @@ function userFrontPage() {
                 var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
                 var categories = returnvalue.result.preferences
                 if (showEventsAroundZipCode) {
-                    mapManager.determineCoordByZipCode(defaultZip);
+                    mapManager.determineCoordByZipCode(defaultZip, true, defaultTimeWindow, categories);
                 } else {
                     mapManager.performAction();
                 }
