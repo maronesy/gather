@@ -21,7 +21,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var userMarker = null;
 	var eventMarker = null;
 	var searchRadiusCircle = null;
-	var userCoordinates = null;
 
 	var geolocationSupported = (navigator.geolocation ? true : false);
 
@@ -52,15 +51,16 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	function determineUserCoordinates(successCallback, failureCallback) {
 		navigator.geolocation.getCurrentPosition(function(currentPosition) {
-			userCoordinates = {
+			var uCoordinates = null;
+			uCoordinates = {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
 
-			map.setView([userCoordinates.latitude, userCoordinates.longitude], 10);
+			map.setView([uCoordinates.latitude, uCoordinates.longitude], 10);
 
 			if(typeof(successCallback) === "function") {
-				successCallback(userCoordinates);
+				successCallback(uCoordinates);
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
@@ -82,22 +82,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			determineUserCoordinates(function(initialUserCoordinates) {
 				try {
 					processUserCoordinates(initialUserCoordinates);
-
-					// Update every 10 seconds.
-//					var updateIntervalID = setInterval(function() {
-//
-//						determineUserCoordinates(function(updatedUserCoordinates) {
-//
-//							try {
-//								processUserCoordinates(updatedUserCoordinates);
-//							}
-//							catch(updatedException) {
-//								clearInterval(updateIntervalID);
-//
-//								doStandardExceptionHandling(updatedException);
-//							}
-//						});
-//					}, 10000);
 				}
 				catch(initialException) {
 					doStandardExceptionHandling(initialException);
@@ -114,8 +98,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var geolocationErrorCount = 0;
 
 	function processUserCoordinates(uCoordinates) {
-		userCoordinates = uCoordinates
-		if(userCoordinates == null) {
+		if(uCoordinates == null) {
 			geolocationErrorCount++;
 
 			if(geolocationErrorCount > 2) {
@@ -125,18 +108,19 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		else {
 			geolocationErrorCount = 0;
 
-			if(currentUserCoordinates === null || currentUserCoordinates.latitude !== userCoordinates.latitude || currentUserCoordinates.longitude !== userCoordinates.longitude) {
+			if(currentUserCoordinates === null || currentUserCoordinates.latitude !== uCoordinates.latitude || currentUserCoordinates.longitude !== uCoordinates.longitude) {
 				var currentZoomLevel = map.getZoom();
 
 				if(typeof(currentZoomLevel) !== "number") {
 					currentZoomLevel = 13;
 				}
 
-				map.setView([userCoordinates.latitude, userCoordinates.longitude], currentZoomLevel);
+				map.setView([uCoordinates.latitude, uCoordinates.longitude], currentZoomLevel);
 
-				placeUserMarker(userCoordinates);
+				currentUserCoordinates = uCoordinates;
+				placeUserMarker(uCoordinates);
 				getNearByEvents();
-				currentUserCoordinates = userCoordinates;
+				
 				if (gather.global.session.signedIn == true){
 					joinedEvents();
 					ownedEvents();
@@ -145,8 +129,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
 
-	function placeUserMarker(userCoordinates) {
-		var markerPosition = new L.LatLng(userCoordinates.latitude, userCoordinates.longitude);
+	function placeUserMarker(uCoordinates) {
+		var markerPosition = new L.LatLng(uCoordinates.latitude, uCoordinates.longitude);
 
 		if(userMarker === null) {
 			var iconOptions = {
@@ -181,12 +165,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			searchRadiusCircle.setLatLng(markerPosition);
 		}
 
-		setUserMarkerPopup(userCoordinates);
+		setUserMarkerPopup(uCoordinates);
 	}
 
-	function setUserMarkerPopup(userCoordinates) {
+	function setUserMarkerPopup(uCoordinates) {
 		var simpleUserMarkerHTML = $("#simple-user-marker-content-template").html();
-		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, userCoordinates.latitude, userCoordinates.longitude);
+		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, uCoordinates.latitude, uCoordinates.longitude);
 
 		userMarker.bindPopup(simpleUserMarkerHTML);
 	}
@@ -533,7 +517,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				} else if (validateEventDescription(eventDescription) == false) {
 					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
 				} else {
-					event.preventDefault();
 					storeEventFormData();
 					submitEventForm();
 					clearEventForm();
@@ -801,7 +784,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			url : "rest/events",
 			contentType: "application/json; charset=UTF-8",
 			dataType: "json",
-			data : '{ "latitude" : ' + userCoordinates.latitude + ', "longitude" : ' + userCoordinates.longitude + ', "radiusMi": ' + eventSearchRadiusInMiles + ', "hour": ' + hour + ' }',
+			data : '{ "latitude" : ' + currentUserCoordinates.latitude + ', "longitude" : ' + currentUserCoordinates.longitude + ', "radiusMi": ' + eventSearchRadiusInMiles + ', "hour": ' + hour + ' }',
 			async: false,
 			success : function(returnvalue) {
 				signedIn = true;
@@ -904,6 +887,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		// using Google API for zip search because mapbox is awfully inaccurate.
 		// What Souhayl had was great but this is 100 times faster.
 		var url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&components=country:US|postal_code:"+zipCode
+		var uCoordinates=null;
 		$.get(url, function (data){
 			if (data.status == 'ZERO_RESULTS') {
 				return -1;
@@ -1227,13 +1211,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	
 	function refreshEventListAndMarkers(){		
 		if (gather.global.currentEventList == ViewingNearByEvents){
-			loadEventsFirstView(userCoordinates);
+			loadEventsFirstView(currentUserCoordinates);
 			refreshEventMarkers(gather.global.nearEvents);
 		} else if (gather.global.currentEventList == ViewingJoinedEvents){
-			loadJoinedEvents(userCoordinates);
+			loadJoinedEvents(currentUserCoordinates);
 			refreshEventMarkers(gather.global.joinedEvents);
 		} else if(gather.global.currentEventList == ViewingOwnedEvents){
-			loadOwnedEvents(userCoordinates);
+			loadOwnedEvents(currentUserCoordinates);
 			refreshEventMarkers(gather.global.ownedEvents);
 		} else {
 			displayGeneralFailureModal();
