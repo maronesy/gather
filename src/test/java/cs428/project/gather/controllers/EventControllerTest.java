@@ -8,9 +8,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -87,7 +89,7 @@ public class EventControllerTest extends ControllerTest {
 
 		Coordinates eCoor = getTestCoordinates();
 		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
-				500);
+				500, null);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
 		
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
@@ -107,7 +109,7 @@ public class EventControllerTest extends ControllerTest {
 		// Using radius of 100, which is too large - Check EventsQueryData for
 		// MAX_RADIUS
 		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 100,
-				500);
+				500, null);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST));
 	}
 	
@@ -119,7 +121,7 @@ public class EventControllerTest extends ControllerTest {
 		
 		Coordinates eCoor = getTestCoordinates();
 		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
-				500);
+				500, null);
 		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
 		
 		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
@@ -136,7 +138,45 @@ public class EventControllerTest extends ControllerTest {
 		assertEquals("Single Occurrence", returnedEvents.get(0).getOccurrences().get(0).getDescription());
 	}
 	
-	private ResponseEntity<String> attemptGetEvent(double lat, double lon, float radius, int hour)
+	@Test
+	public void testGetEventFilterCategories() throws JsonProcessingException {
+		// Create events
+		List<Event> events = createTestEvents(35);
+		this.eventRepo.save(events);
+		
+		HashSet<String> categories = new HashSet<String>();
+		categories.add("Test");
+		categories.add("Sports");
+		
+		Coordinates eCoor = getTestCoordinates();
+		ResponseEntity<String> apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+				500, categories);
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		RESTPaginatedResourcesResponseData<Event> resourceResponseData = parsePaginatedEventResponseData(
+				apiResponse.getBody());
+
+		// Make sure all events are returned
+		assertEquals(35, resourceResponseData.getCount());
+		
+		//Change the filter
+		categories.remove("Test");
+		
+		apiResponse = attemptGetEvent(eCoor.getLatitude(), eCoor.getLongitude(), 10,
+				500, categories);
+		assertTrue(apiResponse.getStatusCode().equals(HttpStatus.OK));
+		
+		// Parse the data back to RESTPaginatedResourcesResponseData<Event>
+		resourceResponseData = parsePaginatedEventResponseData(apiResponse.getBody());
+
+		// Make sure no events are returned
+		assertEquals(0, resourceResponseData.getCount());
+		
+		
+	}
+	
+	private ResponseEntity<String> attemptGetEvent(double lat, double lon, float radius, int hour, Set<String> categories)
 			throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
@@ -144,6 +184,9 @@ public class EventControllerTest extends ControllerTest {
 		requestBody.put("longitude", lon);
 		requestBody.put("radiusMi", radius);
 		requestBody.put("hour", hour);
+		if(categories != null){
+			requestBody.put("categories", categories);
+		}
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
