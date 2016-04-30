@@ -1,6 +1,5 @@
 $(document).ready(function() {
     locateMe();
-    sessionCheck();
     resizeLayout();
     resizeMap();
     enterZip();
@@ -11,7 +10,8 @@ $(document).ready(function() {
     onLoadSessionCheck();
     headerSelect();
     loadCategories();
-});
+    sessionCheck();
+ });
 
 function loadCategories(){
     $.ajax({
@@ -23,38 +23,39 @@ function loadCategories(){
         	console.log(JSON.stringify(returnvalue));
         	var categories=returnvalue.results;
             gather.global.categories = categories;
+            loadFilterForm();
         }
     });
 }
 
 function resizeMap() {
-    var cw = $('#map-canvas').width()*.75;
+    var cw = $('#map-canvas').width()*1.13;
     $('#map-canvas').css({'height':cw+'px'});
 }
 
 function resizeLayout() {
     $('#resizeLayout').on('click', function() {
-        if ($('.rightPane').hasClass("col-lg-7")) {
+        if ($('.rightPane').hasClass("col-lg-8")) {
             $('#resizeLayout').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
-            $('.rightPane').switchClass("col-lg-7", "col-lg-5");
-            $('.rightPane').switchClass("col-md-7", "col-md-5");
+            $('.rightPane').switchClass("col-lg-8", "col-lg-6");
+            $('.rightPane').switchClass("col-md-8", "col-md-6");
             setTimeout(
                     function(){
-                        $('.leftPane').switchClass("col-lg-5", "col-lg-7");
-                        $('.leftPane').switchClass("col-md-5", "col-md-7");
+                        $('.leftPane').switchClass("col-lg-4", "col-lg-6");
+                        $('.leftPane').switchClass("col-md-4", "col-md-6");
                     }, 200);
             setInterval(
                     function(){
                         resizeMap();
                     }, 10);
-        } else if ($('.rightPane').hasClass("col-lg-5")) {
+        } else if ($('.rightPane').hasClass("col-lg-6")) {
             $('#resizeLayout').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
-            $('.leftPane').switchClass("col-lg-7", "col-lg-5");
-            $('.leftPane').switchClass("col-md-7", "col-md-5");
+            $('.leftPane').switchClass("col-lg-6", "col-lg-4");
+            $('.leftPane').switchClass("col-md-6", "col-md-4");
             setTimeout(
                     function(){
-                        $('.rightPane').switchClass("col-lg-5", "col-lg-7");
-                        $('.rightPane').switchClass("col-md-5", "col-md-7");
+                        $('.rightPane').switchClass("col-lg-6", "col-lg-8");
+                        $('.rightPane').switchClass("col-md-6", "col-md-8");
                     }, 200);
             setInterval(
                     function(){
@@ -249,6 +250,7 @@ function signUp() {
                             },
                             success : function(returnvalue) {
                                 if (returnvalue.status == 0) {
+                                    $(formId).css("color", "green")
                                     $(formId).html('Registration Success!');
                                     $(registerBox).fadeOut(100);
                                     $('#mask , .register-popup').fadeOut(300, function() {
@@ -275,6 +277,7 @@ function signUp() {
 
 function sessionCheck() {
     $.ajax({
+        async: false,
         accepts: "application/json",
         type : "GET",
         url : "rest/session",
@@ -286,9 +289,11 @@ function sessionCheck() {
                 gather.global.email = jqXHR.responseJSON.email;
                 updateGreeting();
                 headerSelect();
+                userFrontPage();
             } else {
                 gather.global.session.signedIn = false;
                 headerSelect();
+                mapManager.performAction();
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -298,6 +303,39 @@ function sessionCheck() {
         }
     });
 }
+
+function userFrontPage() {
+    $.ajax({
+        accepts: "application/json",
+        type : "PUT",
+        url : "rest/registrants/info",
+        contentType: "application/json; charset=UTF-8",
+        dataType: "json",
+        data : '{}',
+        success : function(returnvalue) {
+            if (returnvalue.status == 0) {
+                var defaultZip = returnvalue.result.defaultZip
+                var defaultTimeWindow = returnvalue.result.defaultTimeWindow
+                var defaultRadius = returnvalue.result.defaultRadiusMi
+                var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
+                var categories = returnvalue.result.preferences
+                if (showEventsAroundZipCode) {
+                    mapManager.determineCoordByZipCode(defaultZip, true, defaultTimeWindow, categories, defaultRadius);
+                } else {
+                    mapManager.performAction();
+                }
+            } else {
+                alert(returnvalue.message);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var responseMessage = $.parseJSON(jqXHR.responseText).message;
+            alert(responseMessage);
+            sessionCheck();
+        }
+    });
+}
+
 
 function updateGreeting(){
     $("#greetings").html("Welcome "+gather.global.currentDisplayName);
@@ -315,6 +353,7 @@ function validateEmail(formId, email) {
     var atpos = x.indexOf("@");
     var dotpos = x.lastIndexOf(".");
     if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x.length) {
+        $(formId).css("color", "red")
         $(formId).html('Please enter a valid email address').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -324,9 +363,11 @@ function validateEmail(formId, email) {
 
 function validatePassword(formId, password, confirmPassword){
     if (password.length < 7 || password.length > 21) {
+        $(formId).css("color", "red")
         $(formId).html('Password must be between 6 and 21 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (password != confirmPassword) {
+        $(formId).css("color", "red")
         $(formId).html('Passwords do not match').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -336,11 +377,14 @@ function validatePassword(formId, password, confirmPassword){
 
 function validateDisplayName(formId, displayName) {
     if ($.isNumeric(displayName)) {
+        $(formId).css("color", "red")
         $(formId).html('Display name cannot be numeric').slideDown().delay(3000).slideUp();
     } else if (displayName.length < 5 || displayName.length > 15) {
+        $(formId).css("color", "red")
         $(formId).html('Display name must be between than 5 and 15 characters').slideDown().delay(3000).slideUp();
         return false;
     } else if (displayName.indexOf(' ') >= 0) {
+        $(formId).css("color", "red")
         $(formId).html('Display name cannot have spaces').slideDown().delay(3000).slideUp();
         return false;
     } else {
@@ -348,21 +392,27 @@ function validateDisplayName(formId, displayName) {
     }
 }
 
-function validateZipCode(formId, zipCode) {
+function validateZipCode(formId, zipCode, showmap) {
+    if (typeof showmap === "undefined" || showmap === null) { 
+        showmap = true; 
+    }
     if (zipCode.length != 5) {
+        $(formId).css("color", "red")
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else if (!($.isNumeric(zipCode))) {
+        $(formId).css("color", "red")
         $(formId).html('Zip code must be five digits').slideDown().delay(3000).slideUp();
         return false;
     } else {
-        var returnValue = mapManager.determineCoordByZipCode(zipCode);
-        if (returnValue == -1) {
-            $(formId).html('Zip code does not exist').slideDown().delay(3000).slideUp();
-            return false;
-        } else {
+        var returnValue = mapManager.determineCoordByZipCode(zipCode, showmap);
+        if (returnValue) {
             $(formId).hide();
             return true
+        } else {
+            $(formId).css("color", "red")
+            $(formId).html('Zip code does not exist').slideDown().delay(3000).slideUp();
+            return false;
         }
     } 
 }

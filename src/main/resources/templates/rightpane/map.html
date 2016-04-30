@@ -16,7 +16,7 @@
 
 <body>
 							
-<div id="rightPane" class="rightPane container col-lg-7 col-md-7" th:fragment="map">
+<div id="rightPane" class="rightPane container col-lg-8 col-md-8" th:fragment="map">
     <div style="margin-right: -15px;">
 	<div class="map-border">
 		<div class="row">
@@ -26,7 +26,7 @@
 				<!-- <span id="resizeLayout" style="cursor: pointer; z-index: 1001; color:rgba(0,0,0,.75); font-size:2em;" class="glyphicon glyphicon-resize-small"></span> -->
 				</div>
 				<div class="pull-left">
-					<button style="margin-left:5px;" id="addEventBtn" type="button" class="remove-outline btn btn-default">Add New Event</button>
+					<button style="margin-left:5px;" id="addEventBtn" type="button" class="remove-outline btn btn-default">Add Event</button>
 				</div>
 			</div>
 
@@ -343,27 +343,24 @@
 	</div>
 
 		<div class="content-template" id="established-event-content-template" aria-hidden="true">
-			<div class="established-food-location-popup">
+			<div class="established-event-location-popup">
 				<p style="display:none;" id="eventId">%s</p>
 				<p><b>%s</b></p>
 
 				<ul>
-					<li>Category:  %s</li>
-					<li>Description:  %s</li>
-					<li>Next Occurrence:  %s</li>
-					<li>Distance from current location:  %.2f miles</li>
+					<li class="li-space"><span class="glyphicon-space glyphicon glyphicon-play"></span>  %s</li>
+					<li class="li-space"><span class="glyphicon-space glyphicon glyphicon-calendar"></span>  %s</li>
+					<li class="li-space"><span class="glyphicon-space glyphicon glyphicon-map-marker"></span> %s</li>
+					<li class="li-space"><span class="glyphicon-space glyphicon glyphicon-road"></span> %.1f miles</li>
+					<li class="li-space"><span class="glyphicon-space glyphicon glyphicon-info-sign"></span> %s</li>
 				</ul>
-
-				<p><b>Have you been to this event?</b><br></br>
-				Check in to rank this location and leave feedback.</p>
 
 				<div class="modal-footer" id="establishedEventFooter">
 					<button id="participantBtn" class="pull-left btn" onclick="mapManager.listPart(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-user"></span></button>				
 					<button id="editEventBtn" style="display:none;" class="btn btn-success" onclick="mapManager.editEvent(this.getAttribute('data-event-id'), false); return false;"><span class="glyphicon glyphicon-pencil"></span> Edit Event </button>
 					<button id="removeEventBtn" class="btn btn-danger" onclick="mapManager.removeEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-remove"></span> Remove </button>
-					<button id="joinEventBtn" class="btn btn-default" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
-					<button id="leaveEventBtn" class="btn btn-default" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button>
-					<button class="btn btn-info" onclick="mapManager.feedbackFoodLocation(this.getAttribute('data-food-location-id')); return false;"><span class="glyphicon glyphicon-heart-empty"></span> Feedback</button> 
+					<button id="joinEventBtn" class="btn btn-info" onclick="mapManager.joinEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-plus"></span> Join</button>				
+					<button id="leaveEventBtn" class="btn btn-info" onclick="mapManager.leaveEvent(this.getAttribute('data-event-id')); return false;"><span class="glyphicon glyphicon-minus"></span> Leave </button>
 				</div>
 			</div>
 		</div>
