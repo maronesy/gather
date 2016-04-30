@@ -120,7 +120,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			}
 		}
 	}
-
+ 
 	function placeUserMarker(uCoordinates) {
 		var markerPosition = new L.LatLng(uCoordinates.latitude, uCoordinates.longitude);
 
