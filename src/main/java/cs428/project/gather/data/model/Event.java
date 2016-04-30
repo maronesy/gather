@@ -204,6 +204,10 @@ public class Event {
                 errors.reject("-7", "Cannot query for events. useRegistrantProfile was set to true, but user is not authenticated.");
                 return null;
             }
+
+            // If the useRegistrantProfile flag is true, then we will use the registrant's profile settings to query our events
+            queryParams.setRadiusMi(maybeUser.getDefaultRadiusMi());
+            queryParams.setHour(maybeUser.getDefaultTimeWindow());
             filterCategories = new HashSet<String>();
             for (Category cat : maybeUser.getPreferences()) {
                 filterCategories.add(cat.getName());

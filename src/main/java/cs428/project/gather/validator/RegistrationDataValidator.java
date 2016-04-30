@@ -19,21 +19,15 @@ public class RegistrationDataValidator extends AbstractValidator {
 	}
 
 	@Override
-	public void validate(Object target, Errors errors)
-	{
-
+	public void validate(Object target, Errors errors) {
 		RegistrationData userRegistrationData = (RegistrationData)target;
-
-		if(userRegistrationData == null)
-		{
+		if (userRegistrationData == null) {
 			throw new IllegalArgumentException("The user registration data cannot be null.");
-		}
-		else
-		{
+		} else {
 			validatePassword(userRegistrationData, errors);
 			validateDisplayName(userRegistrationData, errors);
 			validateEmailAddress(userRegistrationData, errors);
-
+			validateRadius(userRegistrationData, errors);
 		}
 	}
 
@@ -98,6 +92,14 @@ public class RegistrationDataValidator extends AbstractValidator {
 		{
 			String message = "Field invalid-" + RegistrationData.EMAIL_FIELD_NAME;
 			errors.reject("-4", message+":The email address already exists.  Please enter another email address.");
+		}
+	}
+
+	private void validateRadius(RegistrationData queryData, Errors errors) {
+		float radius = queryData.getDefaultRadiusMi();
+		if(radius <= 0 || radius > RegistrationData.MAX_RADIUS ) {
+			String message = "Field invalid-" + RegistrationData.RADIUS_MI_FIELD_NAME;
+			errors.reject("-3", message+":The radius value must be greater than zero but less than " + RegistrationData.MAX_RADIUS + ".");
 		}
 	}
 }

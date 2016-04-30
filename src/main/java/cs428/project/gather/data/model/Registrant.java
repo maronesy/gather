@@ -20,8 +20,9 @@ public class Registrant extends Actor {
 	private @Column(nullable=false) String password;
 	private @Column(unique = true, nullable=false) String displayName;
 	private @Column(unique = true, nullable=false) String email;
-	private int defaultTimeWindow = 1;
-	private int defaultZip = 90210;
+	private @Column(nullable=false) int defaultTimeWindow = 1;
+	private @Column(nullable=false) int defaultZip = 90210;
+	private @Column(nullable=false) int defaultRadiusMi = 10;
 	private @Column(nullable=false) boolean showEventsAroundZipCode = false;
 
 	@JsonIgnore
@@ -96,6 +97,14 @@ public class Registrant extends Actor {
 
 	public void setDefaultZip(int defaultZip) {
 		this.defaultZip = defaultZip;
+	}
+
+	public int getDefaultRadiusMi() {
+		return defaultRadiusMi;
+	}
+
+	public void setDefaultRadiusMi(int defaultRadiusMi) {
+		this.defaultRadiusMi = defaultRadiusMi;
 	}
 
 	public boolean getShowEventsAroundZipCode() {
@@ -196,6 +205,11 @@ public class Registrant extends Actor {
 		if (updateInfo.getDefaultZip() > 0) {
 			System.out.println("Setting defaultZip:  " + updateInfo.getDefaultZip());
 			setDefaultZip(updateInfo.getDefaultZip());
+		}
+
+		if (updateInfo.getDefaultRadiusMi() > 0) {
+			System.out.println("Setting defaultRadiusMi:  " + updateInfo.getDefaultRadiusMi());
+			setDefaultRadiusMi(updateInfo.getDefaultRadiusMi());
 		}
 
 		if (updateInfo.getPreferences() != null) {
