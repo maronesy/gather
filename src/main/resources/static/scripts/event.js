@@ -62,7 +62,6 @@ function appendToTable(tableClass, events, userCoordinates, message){
 				var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = dateTime.toLocaleDateString();
 				// provide address by latlng
-				var address = mapManager.determineAddressByCoord(lat1, lon1)
 				var description = events[i].description;
 				$('.' + tableClass).append(
 					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +

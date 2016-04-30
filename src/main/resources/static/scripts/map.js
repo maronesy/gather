@@ -758,12 +758,57 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		var datetime = new Date( unixtime );
 		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 		var date = datetime.toLocaleDateString();
-		var address = mapManager.determineAddressByCoord(eCoordinates.latitude, eCoordinates.longitude)
+		// var address = mapManager.determineAddressByCoord(eCoordinates.latitude, eCoordinates.longitude)
 		timeDisplay = date + ', ' + time 
-		establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, address, distanceFromCaller, anEvent.description);
+		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + eCoordinates.latitude + "," + eCoordinates.longitude + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
+		var full_address = ''
+		$.ajax({
+			    // async: false, commented to enhance performance by 3 seconds!
+			    url: url,
+			    dataType: "json",
+			    success: function(data) {
+				  if (data.status == 'ZERO_RESULTS') {
+						full_address = 'Address not found'
+					} else if (data.status == 'OK') {
+						// always return the first result which is most relevant.
+						full_address = data.results[0].formatted_address;
+						establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, full_address, distanceFromCaller, anEvent.description);
+						eventMarker.bindPopup(establishedEventHTML, popupOptions);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+                    var responseMessage = $.parseJSON(jqXHR.responseText).message;
+                    alert(responseMessage);
+                }
+			});	
 
-		eventMarker.bindPopup(establishedEventHTML, popupOptions);
+		
+		// establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, address, distanceFromCaller, anEvent.description);
+		// eventMarker.bindPopup(establishedEventHTML, popupOptions);
 	}
+
+	// this.determineAddressByCoord = function(lat, lng){
+	// 	var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
+	// 	var full_address = ''
+	// 	$.ajax({
+	// 		    // async: false, commented to enhance performance by 3 seconds!
+	// 		    url: url,
+	// 		    dataType: "json",
+	// 		    success: function(data) {
+	// 			  if (data.status == 'ZERO_RESULTS') {
+	// 					full_address = 'Address not found'
+	// 				} else if (data.status == 'OK') {
+	// 					// always return the first result which is most relevant.
+	// 					full_address = data.results[0].formatted_address;
+	// 				}
+	// 			},
+	// 			error: function(jqXHR, textStatus, errorThrown) {
+ //                    var responseMessage = $.parseJSON(jqXHR.responseText).message;
+ //                    alert(responseMessage);
+ //                }
+	// 		});	
+	// 	return full_address;
+	// }
 
 	function isCurrentUserOnwer(owners){
 		var result=false;
@@ -958,29 +1003,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		return flag
 	}
 	
-	this.determineAddressByCoord = function(lat, lng){
-		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
-		var full_address = ''
-		$.ajax({
-			    // async: false, commented to enhance performance by 3 seconds!
-			    url: url,
-			    dataType: "json",
-			    success: function(data) {
-				  if (data.status == 'ZERO_RESULTS') {
-						full_address = 'Address not found'
-					} else if (data.status == 'OK') {
-						// always return the first result which is most relevant.
-						full_address = data.results[0].formatted_address;
-					}
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-                    var responseMessage = $.parseJSON(jqXHR.responseText).message;
-                    alert(responseMessage);
-                }
-			});	
-		return full_address;
-	}
-
 	function displayGeolocationUnsupportedModal() {
 		$("#geolocation-unsupported-modal").modal("show");
 	}
