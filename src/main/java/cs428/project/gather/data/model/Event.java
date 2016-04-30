@@ -31,10 +31,6 @@ public class Event {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "event_id")
-    private Set<Feedback> feedbacks = new HashSet<Feedback>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_id")
     private Set<ChangeLog> changeLog = new HashSet<ChangeLog>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -106,11 +102,6 @@ public class Event {
             return true;
     }
 
-    public boolean addFeedback(Feedback feedback) {
-        Assert.notNull(feedback);
-        return this.feedbacks.add(feedback);
-    }
-
     public boolean addChangeLog(ChangeLog changeLog){
         Assert.notNull(changeLog);
         return this.changeLog.add(changeLog);
@@ -136,10 +127,6 @@ public class Event {
     public void setName(String name){
         Assert.hasText(name);
         this.name = name;
-    }
-
-    public Set<Feedback> getFeedbacks() {
-        return Collections.unmodifiableSet(feedbacks);
     }
 
     public Set<ChangeLog> getChangeLog() {
