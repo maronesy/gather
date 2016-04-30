@@ -32,26 +32,37 @@ function loadProfilePage() {
 					var defaultTimeWindow = returnvalue.result.defaultTimeWindow
 					var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
 					var categories = returnvalue.result.preferences
-					// index to hours
-					//             0  1  2  3  4  5   6   7   8    9    10   11    12
-					timeInHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
-					var ind = $.inArray(defaultTimeWindow, timeInHours)
+					var defaultRadius = returnvalue.result.defaultRadiusMi
+
+					availableHours = [1, 2, 3, 4, 8, 12, 24, 72, 168, 336, 730, 2190, 8760]
+					var ind = $.inArray(defaultTimeWindow, availableHours)
 					if (ind == -1) {
 						defaultTimeWindow = 10
+					}
+
+					availableRadius = [2, 5, 10, 25, 50]
+					var ind = $.inArray(defaultRadius, availableRadius)
+					if (ind == -1) {
+						defaultRadius = 10
 					}
 
 					$("#profileDisplayName").val(displayName)
 					$("#profileZipCode").val(defaultZip)
 					$("#profileTimeWindow").val(defaultTimeWindow)
+					$("#profileRadius").val(defaultRadius)
 					$('#zipCodeCheckbox').prop('checked', showEventsAroundZipCode);
 					$("#profile").show();
 					$("#map").hide();
 					updateProfileHeader();
 					$("#profileCategories").empty();
-					setUpCategory(categories.length)
-					for (var i = 1; i < categories.length+1; i++) {
-						var htmlID = "#profileCategories" + i
-						$(htmlID).val(categories[i-1])
+					if (categories.length == 0) {
+						setUpCategory(1)
+					} else {
+						setUpCategory(categories.length)
+						for (var i = 1; i < categories.length+1; i++) {
+							var htmlID = "#profileCategories" + i
+							$(htmlID).val(categories[i-1])
+						}
 					}
 				} else {
 					$(formId).html(returnvalue.message);
@@ -151,6 +162,7 @@ function submitProfile() {
 		var confirmPassword = $("#profileNewPassword2").val()
 		var defaultZipCode = $("#profileZipCode").val()
 		var defaultTimeWindow = $("#profileTimeWindow").val()
+		var defaultRadius = $("#profileRadius").val()
 		var categories = [];
 		var zipCodeCheck = $('#zipCodeCheckbox').is(':checked')
 		for (var i = 1; i < categoryIndex+1; i++) {
@@ -198,8 +210,8 @@ function submitProfile() {
 		}
 
 		// index to hours
-		timeInHours = ["1", "2", "3", "4", "8", "12", "24", "72", "168", "336", "730", "2190", "8760"]
-		var ind = $.inArray(defaultTimeWindow, timeInHours)
+		availableHours = ["1", "2", "3", "4", "8", "12", "24", "72", "168", "336", "730", "2190", "8760"]
+		var ind = $.inArray(defaultTimeWindow, availableHours)
 
 		if (defaultTimeWindow != '') {
 			if (ind != -1) {
@@ -208,6 +220,20 @@ function submitProfile() {
 				$('#profileSaving').hide();
 				$(formId).css("color", "red")
 				$(formId).html("Invalid time window")
+				return
+			}
+		}
+
+		availableRadius = ["2", "5", "10", "25", "50"]
+		var ind = $.inArray(defaultTimeWindow, availableHours)
+
+		if (defaultRadius != '') {
+			if (ind != -1) {
+				updateData = updateData + '"defaultRadiusMi":' + defaultRadius + ', '
+			} else {
+				$('#profileSaving').hide();
+				$(formId).css("color", "red")
+				$(formId).html("Invalid radius")
 				return
 			}
 		}

@@ -316,10 +316,11 @@ function userFrontPage() {
             if (returnvalue.status == 0) {
                 var defaultZip = returnvalue.result.defaultZip
                 var defaultTimeWindow = returnvalue.result.defaultTimeWindow
+                var defaultRadius = returnvalue.result.defaultRadiusMi
                 var showEventsAroundZipCode = returnvalue.result.showEventsAroundZipCode
                 var categories = returnvalue.result.preferences
                 if (showEventsAroundZipCode) {
-                    mapManager.determineCoordByZipCode(defaultZip, true, defaultTimeWindow, categories);
+                    mapManager.determineCoordByZipCode(defaultZip, true, defaultTimeWindow, categories, defaultRadius);
                 } else {
                     mapManager.performAction();
                 }

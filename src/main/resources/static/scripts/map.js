@@ -15,7 +15,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var map = buildMap();
 
 	var eventSearchRadiusInMiles = 10.0;
-
+	var uCoordinates = null;
 	var currentUserCoordinates = null;
 	var userMarker = null;
 	var eventMarker = null;
@@ -50,7 +50,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	function determineUserCoordinates(successCallback, failureCallback) {
 		navigator.geolocation.getCurrentPosition(function(currentPosition) {
-			var uCoordinates = null;
+			
 			uCoordinates = {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
@@ -923,7 +923,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		});
 	}
 
-	this.determineCoordByZipCode = function(zipCode, showmap, defaultTimeWindow, categories){
+	this.determineCoordByZipCode = function(zipCode, showmap, defaultTimeWindow, categories, radius){
 		// using Google API for zip search because mapbox is awfully inaccurate.
 		// What Souhayl had was great but this is 100 times faster.
 		if (typeof showmap === "undefined" || showmap === null) { 
@@ -945,7 +945,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					}
 					currentUserCoordinates = uCoordinates;
 					if (showmap) {
-						processUserCoordinates(uCoordinates, defaultTimeWindow, categories);
+						processUserCoordinates(uCoordinates, defaultTimeWindow, categories, radius);
 					}
 					flag = true;
 				}
