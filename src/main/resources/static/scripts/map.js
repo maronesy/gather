@@ -175,21 +175,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		userMarker.bindPopup(simpleUserMarkerHTML);
 	}
 
-
-	function submitFeedbackForm() {
-		var modalForm = $("#feedback-modal");
-		var locationID = modalForm.data("locationID");
-
-		submitFeedback(locationID, function() {
-			modalForm.modal("hide");
-		}, function() {
-			modalForm.modal("hide");
-
-			displayGeneralFailureModal();
-		});
-	}
-
-
 	function isSameCoordinates(coordinates, anotherCoordinates) {
 		var sameCoordinates = false;
 

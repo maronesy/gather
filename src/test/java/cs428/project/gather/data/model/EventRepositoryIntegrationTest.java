@@ -128,33 +128,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(testOccur.getDescription(),"Test Occurrence");
 		assertEquals(testEvent.getLocation().getCity(),"Los Angeles");
 		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
-	
-	@Test
-	@Transactional
-	public void testSaveLoadEventWithFeedback(){
-		Event testEvent = new Event("Test Event");
-		Timestamp feedbackTime = new Timestamp(DateTime.now().getMillis());
-		Feedback feedback = new Feedback("What a great event!",5,feedbackTime);
-		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime);
-		testEvent.addOccurrence(occur);
-		testEvent.addFeedback(feedback);
-		List<Category> foundCategory = categoryRepo.findByName("Others");
-		testEvent.setCategory(foundCategory.get(0));
-		Event result = this.eventRepo.save(testEvent);
-		
-		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<Feedback> feedbacks = foundEvent.getFeedbacks();
-		assertEquals(feedbacks.size(),1);
-		
-		Iterator<Feedback> feedbackIt = feedbacks.iterator();
-		Feedback testFeedback = feedbackIt.next();
-		assertEquals(testFeedback.getRating(), 5);
-		assertEquals(testFeedback.getReview(), "What a great event!");
-		assertEquals(testFeedback.getDatetime(),feedbackTime);
-		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
-	
+	}	
 	
 	@Test
 	@Transactional

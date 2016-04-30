@@ -90,10 +90,6 @@ html, body {
 	margin-top: 15px;
 }
 
-#food-location-cards {
-	margin-bottom: 0px;
-}
-
 #food-preferences-list {
 	padding: 15px 15px 15px 40px;
 }
@@ -108,18 +104,6 @@ html, body {
 
 #food-specializations-list .controls {
 	padding-left: 20px;
-}
-
-#feedback-container {
-	border-width: 1px;
-	border-style: solid;
-	border-color: rgb(169, 169, 169);
-	height: 200px;
-	overflow-y: auto;
-}
-
-#user-feedback-comments {
-	width: 100%;
 }
 
 #salutation {
@@ -140,26 +124,6 @@ html, body {
 	margin-bottom: 10px;
 }
 
-.food-location-card:not(:last-child) {
-	margin-bottom:  10px;
-}
-
-.food-location-card ul {
-	padding: 0px;
-}
-
-.food-location-card li {
-	list-style: none;
-}
-
-.food-location-card hr {
-	margin: 4px 0px 4px 0px;
-}
-
-.food-location-card-title {
-	font-weight: bold;
-}
-
 .new-food-location-popup hr {
 	margin: 4px 0px 4px 0px;
 }
@@ -175,10 +139,6 @@ html, body {
 .established-food-location-popup li {
 	font-size:  15px;
 	list-style: none;
-}
-
-.feedback-form-input {
-	font-weight: normal;
 }
 
 .form-label {
