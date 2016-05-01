@@ -98,19 +98,19 @@ html, body {
 	margin-top: 15px;
 }
 
-#food-preferences-list {
+#event-preferences-list {
 	padding: 15px 15px 15px 40px;
 }
 
-#food-preferences-list .controls {
+#event-preferences-list .controls {
 	padding-left: 20px;
 }
 
-#food-specializations-list {
+#event-specializations-list {
 	padding: 15px 15px 15px 40px;
 }
 
-#food-specializations-list .controls {
+#event-specializations-list .controls {
 	padding-left: 20px;
 }
 
@@ -132,7 +132,7 @@ html, body {
 	margin-bottom: 10px;
 }
 
-.new-food-location-popup hr {
+.new-event-location-popup hr {
 	margin: 4px 0px 4px 0px;
 }
 
