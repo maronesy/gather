@@ -3,26 +3,41 @@ $(document).ready(function() {
  });
 
 function loadEventsFirstView(userCoordinates) {
+	showFilterForm();
 	$('#eventListTitle').text("Nearby Event List");
 	var events = gather.global.nearEvents
 	appendToTable("eventTable", events, userCoordinates, "around you");
 }
 
 function loadJoinedEvents(userCoordinates) {
+	hideFilterForm();
 	$('#eventListTitle').text("Joined Event List");
 	var events = gather.global.joinedEvents;
 	appendToTable("eventTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
+	hideFilterForm();
 	$('#eventListTitle').text("Owned Event List");
 	var events = gather.global.ownedEvents;
 	appendToTable("eventTable", events, userCoordinates, "that you own");
 }
 
-function loadFilterForm() {
+function loadCategoryForm() {
 	setUpCategoryOptions("", "#filterCategory")
 }
+
+function showFilterForm() {
+	$('#filter').show()
+	$('#eventList').css("height", "608px");
+}
+
+function hideFilterForm() {
+	$('#filter').hide()
+	$('#eventList').css("height", "733px");
+}
+
+
 
 function eventFilter() {
 	$('#filterSubmit').on('click', function() {

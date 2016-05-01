@@ -1273,7 +1273,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	$('#showNearBy').on('click', function(){
 		gather.global.currentEventList = ViewingNearByEvents;
 		rightPaneSelect();
-		getNearByEvents(hour, categories, radius);
+		getNearByEvents();
 		refreshEventListAndMarkers();
 	});
 	

@@ -23,7 +23,7 @@ function loadCategories(){
         	console.log(JSON.stringify(returnvalue));
         	var categories=returnvalue.results;
             gather.global.categories = categories;
-            loadFilterForm();
+            loadCategoryForm();
         }
     });
 }
