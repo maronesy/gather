@@ -15,7 +15,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	var map = buildMap();
 
 	var eventSearchRadiusInMiles = 10.0;
-	var uCoordinates = null;
+	// var uCoordinates = null;
 	var currentUserCoordinates = null;
 	var userMarker = null;
 	var eventMarker = null;
@@ -51,15 +51,15 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	function determineUserCoordinates(successCallback, failureCallback) {
 		navigator.geolocation.getCurrentPosition(function(currentPosition) {
 			
-			uCoordinates = {
+			CurrentUserCoordinates = {
 				latitude: currentPosition.coords.latitude,
 				longitude: currentPosition.coords.longitude
 			}
 
-			map.setView([uCoordinates.latitude, uCoordinates.longitude], 10);
+			map.setView([CurrentUserCoordinates.latitude, CurrentUserCoordinates.longitude], 10);
 
 			if(typeof(successCallback) === "function") {
-				successCallback(uCoordinates);
+				successCallback(CurrentUserCoordinates);
 			}
 		}, function(error) {
 			if(error.code == error.PERMISSION_DENIED) {
@@ -83,8 +83,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		if(geolocationSupported) {
 			// Get and process the user's current location.
 			determineUserCoordinates(function(initialUserCoordinates) {
+				currentUserCoordinates = initialUserCoordinates
 				try {
-					processUserCoordinates(initialUserCoordinates);
+					processUserCoordinates();
 				}
 				catch(initialException) {
 					doStandardExceptionHandling(initialException);
@@ -100,8 +101,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 	var geolocationErrorCount = 0;
 
-	function processUserCoordinates(uCoordinates, hour, categories, radius) {
-		if(uCoordinates == null) {
+	function processUserCoordinates(hour, categories, radius) {
+		if(CurrentUserCoordinates == null) {
 			geolocationErrorCount++;
 
 			if(geolocationErrorCount > 2) {
@@ -111,9 +112,9 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		else {
 			geolocationErrorCount = 0;
 
-			placeUserMarker(uCoordinates);
+			placeUserMarker();
 			getNearByEvents(hour, categories, radius);
-			currentUserCoordinates = uCoordinates;
+			currentUserCoordinates = CurrentUserCoordinates;
 			if (gather.global.session.signedIn == true){
 				joinedEvents();
 				ownedEvents();
@@ -121,8 +122,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 		}
 	}
  
-	function placeUserMarker(uCoordinates) {
-		var markerPosition = new L.LatLng(uCoordinates.latitude, uCoordinates.longitude);
+	function placeUserMarker() {
+		var markerPosition = new L.LatLng(CurrentUserCoordinates.latitude, CurrentUserCoordinates.longitude);
 
 		if (eventSearchRadiusInMiles >= 50) {
 				currentZoomLevel = 10;
@@ -136,7 +137,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				currentZoomLevel = 13;
 			}
 
-		map.setView([uCoordinates.latitude, uCoordinates.longitude], currentZoomLevel);
+		map.setView([CurrentUserCoordinates.latitude, CurrentUserCoordinates.longitude], currentZoomLevel);
 
 		if(userMarker === null) {
 			var iconOptions = {
@@ -174,12 +175,12 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			searchRadiusCircle.setRadius(eventSearchRadiusInMeters);
 		}
 
-		setUserMarkerPopup(uCoordinates);
+		setUserMarkerPopup();
 	}
 
-	function setUserMarkerPopup(uCoordinates) {
+	function setUserMarkerPopup() {
 		var simpleUserMarkerHTML = $("#simple-user-marker-content-template").html();
-		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, uCoordinates.latitude, uCoordinates.longitude);
+		simpleUserMarkerHTML = sprintf(simpleUserMarkerHTML, CurrentUserCoordinates.latitude, CurrentUserCoordinates.longitude);
 
 		userMarker.bindPopup(simpleUserMarkerHTML);
 	}
@@ -802,8 +803,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var data = '  '
 
-		data = data + '"latitude" : ' + uCoordinates.latitude + ', '
-		data = data + '"longitude" : ' + uCoordinates.longitude + ', '
+		data = data + '"latitude" : ' + CurrentUserCoordinates.latitude + ', '
+		data = data + '"longitude" : ' + CurrentUserCoordinates.longitude + ', '
 		data = data + '"radiusMi": ' + radius + ', '
 		data = data + '"hour": ' + hour + ', '
 
@@ -831,7 +832,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			success : function(returnvalue) {
 				signedIn = true;
 				gather.global.nearEvents = returnvalue.results;
-				placeUserMarker(uCoordinates);
+				placeUserMarker();
 				refreshEventListAndMarkers();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
@@ -941,13 +942,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				if (returnvalue.status == 'ZERO_RESULTS') {
 					flag = false;
 				} else if (returnvalue.status == 'OK') {
-					uCoordinates = {
+					CurrentUserCoordinates = {
 						latitude: returnvalue.results[0].geometry.location.lat,
 						longitude: returnvalue.results[0].geometry.location.lng
 					}
-					currentUserCoordinates = uCoordinates;
+					currentUserCoordinates = CurrentUserCoordinates;
 					if (showmap) {
-						processUserCoordinates(uCoordinates, defaultTimeWindow, categories, radius);
+						processUserCoordinates(CurrentUserCoordinates, defaultTimeWindow, categories, radius);
 					}
 					flag = true;
 				}

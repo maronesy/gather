@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    sessionCheck();
     locateMe();
     resizeLayout();
     resizeMap();
@@ -10,7 +11,6 @@ $(document).ready(function() {
     onLoadSessionCheck();
     headerSelect();
     loadCategories();
-    sessionCheck();
  });
 
 function loadCategories(){
