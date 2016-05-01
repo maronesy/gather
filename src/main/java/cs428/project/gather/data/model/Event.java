@@ -6,12 +6,13 @@ import cs428.project.gather.data.repo.*;
 import java.util.*;
 import java.sql.Timestamp;
 import javax.persistence.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
-import lombok.Data;
 
-@Data
 @Entity
 public class Event {
     private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
@@ -25,13 +26,11 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
 
+    //@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch( FetchMode.SELECT)
     @JoinColumn(name = "event_id")
     private List<Occurrence> occurrences = new ArrayList<Occurrence>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_id")
-    private Set<ChangeLog> changeLog = new HashSet<ChangeLog>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Registrant> subscribers = new HashSet<Registrant>();
@@ -102,11 +101,6 @@ public class Event {
             return true;
     }
 
-    public boolean addChangeLog(ChangeLog changeLog){
-        Assert.notNull(changeLog);
-        return this.changeLog.add(changeLog);
-    }
-
     public List<Occurrence> getOccurrences() {
         return Collections.unmodifiableList(occurrences);
     }
@@ -127,10 +121,6 @@ public class Event {
     public void setName(String name){
         Assert.hasText(name);
         this.name = name;
-    }
-
-    public Set<ChangeLog> getChangeLog() {
-        return Collections.unmodifiableSet(changeLog);
     }
 
     public Set<Registrant> getParticipants(){

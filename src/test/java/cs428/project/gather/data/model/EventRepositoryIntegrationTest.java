@@ -130,30 +130,30 @@ public class EventRepositoryIntegrationTest {
 		assertTrue(result.getCategory().getName().equals("Others"));		
 	}	
 	
-	@Test
-	@Transactional
-	public void testSaveLoadEventWithChangeLog(){
-		Event testEvent = new Event("Test Event");
-		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
-		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
-		testEvent.addOccurrence(occur);
-		testEvent.addChangeLog(change);
-		List<Category> foundCategory = categoryRepo.findByName("Others");
-		testEvent.setCategory(foundCategory.get(0));
-		Event result = this.eventRepo.save(testEvent);
-		
-		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<ChangeLog> changeLog = foundEvent.getChangeLog();
-		assertEquals(changeLog.size(),1);
-		
-		Iterator<ChangeLog> changeLogIt = changeLog.iterator();
-		ChangeLog testChangeLogEntry = changeLogIt.next();
-		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
-		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
-		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
-		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
+//	@Test
+//	@Transactional
+//	public void testSaveLoadEventWithChangeLog(){
+//		Event testEvent = new Event("Test Event");
+//		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+//		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
+//		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
+//		testEvent.addOccurrence(occur);
+//		testEvent.addChangeLog(change);
+//		List<Category> foundCategory = categoryRepo.findByName("Others");
+//		testEvent.setCategory(foundCategory.get(0));
+//		Event result = this.eventRepo.save(testEvent);
+//		
+//		Event foundEvent = this.eventRepo.findOne(result.getId());
+//		Set<ChangeLog> changeLog = foundEvent.getChangeLog();
+//		assertEquals(changeLog.size(),1);
+//		
+//		Iterator<ChangeLog> changeLogIt = changeLog.iterator();
+//		ChangeLog testChangeLogEntry = changeLogIt.next();
+//		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
+//		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
+//		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
+//		assertTrue(result.getCategory().getName().equals("Others"));		
+//	}
 	
 	@Test
 	public void testFindByLocationWithin(){
