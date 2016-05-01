@@ -2,6 +2,34 @@ body {
     padding-top: 50px;
 }
 
+.cb-div {
+    position: relative;
+    top: -10px;
+}
+
+.category-span {
+    width:80%;
+    margin-bottom: 15px;
+}
+.category-button {
+    margin-left: 5px; 
+}
+
+.profile-zip-code {
+    display: inline-block !important; 
+    width: 100%;
+}
+
+.list-image {
+    margin-right: 10px;
+}
+
+.list-header {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
 .map-glyphicon {
 	z-index: 1001; 
 	color:rgba(0,0,0,.75); 
@@ -29,7 +57,7 @@ td, th {
 
 .list-title {
 	margin-top: 0px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .list-description {

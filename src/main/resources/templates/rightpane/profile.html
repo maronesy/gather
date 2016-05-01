@@ -16,7 +16,7 @@
 
 <body>
 
-<div id="rightPane" class="rightPane container col-lg-7 col-md-7" th:fragment="profile">
+<div id="rightPane" class="rightPane container col-lg-8 col-md-8" th:fragment="profile">
     <div style="margin-right: -15px;">
 		<section class="content">
 			<div class="panel panel-default">
@@ -47,35 +47,57 @@
 								  	</div>
 								</div>
 								<div class="form-group">
-								  	<label for="profileTimeWindow">Show events within</label>
-								  	<select id="profileTimeWindow" class="form-control">
-										<option value="1">1 hour</option>
-										<option value="2">2 hours</option>
-										<option value="3">3 hours</option>
-										<option value="4">4 hours</option>
-										<option value="5">8 hours</option>
-										<option value="6">12 hours</option>
-										<option value="7">1 day</option>
-										<option value="8">3 days</option>
-										<option value="9">1 week</option>
-										<option value="10">2 weeks</option>
-										<option value="11" selected="selected">1 month</option>
-										<option value="12">3 months</option>
-										<option value="13">1 year</option>
-									</select>
+									<label for="profileTimeWindow">Show events within</label>
+									<div class="form-inline">
+									  	<select id="profileTimeWindow" class="form-control" style="width:50%;">
+											<option value="1">1 hour</option>
+											<option value="2">2 hours</option>
+											<option value="3">3 hours</option>
+											<option value="4">4 hours</option>
+											<option value="8">8 hours</option>
+											<option value="12">12 hours</option>
+											<option value="24">1 day</option>
+											<option value="72">3 days</option>
+											<option value="168">1 week</option>
+											<option value="336">2 weeks</option>
+											<option value="730" selected="selected">1 month</option>
+											<option value="2190">3 months</option>
+											<option value="8760">1 year</option>
+										</select>
+									  	<select id="profileRadius" class="form-control" style="width:49%;">
+										    <option value="2">2 mi</option>
+										    <option value="5">5 mi</option>
+										    <option value="10" selected="selected">10 mi</option>
+										    <option value="25">25 mi</option>
+										    <option value="50">50 mi</option>
+										</select>
+									</div>
 								</div>
-								<div class="form-group" id="profileMyCategories">
-								  	<label for="profileMyCategory1">My Categories</label>
-								  	<select id="profileMyCategory1" class="form-control">
-								  		<option value="--">Category</option>
-								  		<option value="removeCategory1">Remove this category</option>
-										<option value="swim">Swim</option>
-										<option value="soccer">Soccer</option>
-									</select>
+							
+								<div class="form-group">
+								  	<label>My Categories</label>
+								  	<div class="form-inline">
+								  		<span class="pull-left category-span" id="profileCategories">
+								  		</span>
+								  		<span class="pull-right">
+											<button type="button" class="btn btn-default category-button" id="addCategory"><span class="glyphicon glyphicon-plus"></span></button>
+											<button disabled="disabled" type="button" class="btn btn-default category-button" id="removeCategory"><span class="glyphicon glyphicon-minus"></span></button>
+										</span>
+									</div>
+								</div>
+								<div class="form-group profile-zip-code">
+								  	<label for="profileZipCode">Default Zip Code</label>
+								  	<div class="form-inline">
+								  		<input type="text" style="width:100%;" class="form-control" id="profileZipCode" value="" placeholder="Zip Code"/>
+								  	</div>
 								</div>
 								<div class="form-group">
-								  	<label for="profileZipCode">Default Zip Code</label>
-								  	<input type="text" class="form-control" id="profileZipCode" value="" placeholder="Zip Code"/>
+							  		<div class="checkbox cb-div">
+			  							<label>
+			    							<input id="zipCodeCheckbox" type="checkbox" style="position:relative; top:2px;" value=""/>
+			    							Use profile information as a default filter
+			  							</label>
+									</div>
 								</div>
 								<div align="middle">
 									<span style="color:red"><div class="form-group" id="profileFeedback"></div></span>

@@ -1,22 +1,50 @@
+$(document).ready(function() {
+    eventFilter();
+ });
+
 function loadEventsFirstView(userCoordinates) {
 	$('#eventListTitle').text("Nearby Event List");
 	var events = gather.global.nearEvents
-	appentToTable("eventTable", events, userCoordinates, "around you");
+	appendToTable("eventTable", events, userCoordinates, "around you");
 }
 
 function loadJoinedEvents(userCoordinates) {
 	$('#eventListTitle').text("Joined Event List");
 	var events = gather.global.joinedEvents;
-	appentToTable("eventTable", events, userCoordinates, "that you have joined");
+	appendToTable("eventTable", events, userCoordinates, "that you have joined");
 }
 
 function loadOwnedEvents(userCoordinates) {
 	$('#eventListTitle').text("Owned Event List");
 	var events = gather.global.ownedEvents;
-	appentToTable("eventTable", events, userCoordinates, "that you own");
+	appendToTable("eventTable", events, userCoordinates, "that you own");
 }
 
-function appentToTable(tableClass, events, userCoordinates, message){
+function loadFilterForm() {
+	setUpCategoryOptions("", "#filterCategory")
+}
+
+function eventFilter() {
+	$('#filterSubmit').on('click', function() {
+        var category = $("#filterCategory").val(); 
+        var time = $("#filterTime").val();
+        var radius = $("#filterRadius").val();
+        if (category == "") {
+        	category = null  // will use default values defined in getNearByEvents
+        } else {
+        	category = [category]  // category is always a list
+        }
+        if (time == "") {
+        	time = null  // will use default values defined in getNearByEvents
+        }
+        if (radius == "") {
+        	radius = null  // will use default values defined in getNearByEvents
+        }
+        mapManager.filter(time, category, radius)
+    });
+}
+
+function appendToTable(tableClass, events, userCoordinates, message){
 	if (events != null) {
 		if (events.length != 0) {
 			$('.' + tableClass).html('');
@@ -28,32 +56,28 @@ function appentToTable(tableClass, events, userCoordinates, message){
 				var lon2 = parseFloat(userCoordinates.longitude);
 				var dist = distance(lat1, lon1, lat2, lon2, 'M').toFixed(1).toString();
 				var title = events[i].name;
-//				var rating = events[i].feedbacks.rating
 				var category = events[i].category.name;
 				var unixtime = events[i].occurrences[0].timestamp;
 				var dateTime = new Date( unixtime );
 				var time = dateTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 				var date = dateTime.toLocaleDateString();
 				// provide address by latlng
-				var address = mapManager.determineAddressByCoord(lat1, lon1)
 				var description = events[i].description;
 				$('.' + tableClass).append(
 					'<tr style="cursor: pointer;" onclick="mapManager.showPop('+ eventId +');">' +
 						'<td colspan="3">  ' +
 							'<div class="media event-card"> ' +
-								'<a href="#" class="pull-left"> ' +
-									'<img height="60px;" width="60px;" src="http://content.sportslogos.net/logos/27/1756/full/yp7ll78otycmyef0hqma49n1a.gif" class="media-photo"/> ' +
-								'</a>' +
+								'<div class="list-header">' +
+								'<h4 class="list-title">'+ title +'</h4>' +
+								'</div>' +
 								'<div class="media-body">' +
-									'<span class="pull-right">'+ dist +' mi</span>' +
-									'<span style="margin-right:40px;" class="pull-right">'+ '[rating]' +'</span>' +
-									'<h4 class="list-title">'+ title +'</h4>' +
-									'<span class="pull-right"></span>' +
-									'<p style="display:none;" eventId="' + eventId + '"></p>' +
-									'<p class="list-description">Category: '+ category +'</p>' +
-									'<p class="list-description">Date: '+ date + ', ' + time +'</p>' +
-									'<p class="list-description">Place: '+ address +'</p>' +
-									'<p class="list-description">Description: '+ description +'</p>' +
+								// 	'<span class="pull-right"></span>' +
+								// 	'<p style="display:none;" eventId="' + eventId + '"></p>' +
+									'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-play"></span>'+ category +'</p>' +
+									'<p class="pull-left list-description"><span class="glyphicon-space glyphicon glyphicon-calendar"></span>'+ date + ', ' + time +'</p>' +
+								// 	'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-map-marker"></span>'+ address +'</p>' +
+									'<p class="pull-right list-description"><span class="glyphicon-space glyphicon glyphicon-map-marker"></span>'+ dist +' mi</p>' +
+								// 	'<p class="list-description"><span class="glyphicon-space glyphicon glyphicon-info-sign"></span>'+ description +'</p>' +
 								'</div>' +
 							'</div>' +
 						'</td>' +
