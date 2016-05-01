@@ -1190,6 +1190,8 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 			modalForm.data("eventDataID", eventID);
 			owner_list = createCommaList(eventData.owners);
 			participant_list = createCommaList(eventData.participants);
+			gather.global.allDisplayName=[];
+			$('#search-display-name').val('');
 			setupDisplayNamesAutocomplete("rest/registrants/displayname");
             console.log(JSON.stringify(gather.global.allDisplayName));
 			if (typeof(eventData.id) === "number") {
