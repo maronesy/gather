@@ -22,7 +22,6 @@ import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.LocationRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(GatherApplication.class)
