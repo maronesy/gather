@@ -62,8 +62,7 @@ public abstract class AbstractSeleniumTest {
  		 driver.findElement(By.id("event-occurrence1")).sendKeys(dateFormat.format(tomorrow));
  		 this.timeoutFor(1000);
  		 driver.findElement(By.id("event-save")).click();
- 		 
- 		 Assert.assertTrue(driver.getPageSource().contains(description));
+ 		 Assert.assertTrue(driver.getPageSource().contains(name));
  	 }
  	
  	protected boolean isElementHidden(WebElement welem){

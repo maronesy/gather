@@ -33,7 +33,7 @@ public class EventTest extends AbstractSeleniumTest {
 	 driver.get("http://localhost:8888");
 	 userSignIn();
 	 createNewEventWith("New Event", "this is a new event", "Soccer", 94704);
-	 
+	 this.timeoutFor(1000);
 	 userSignOut();
 	 System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
  }
