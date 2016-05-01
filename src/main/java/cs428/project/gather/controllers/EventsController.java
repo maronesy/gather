@@ -17,8 +17,33 @@ import org.springframework.validation.*;
 import org.springframework.http.*;
 import com.google.gson.*;
 
+/**
+ * 
+ * @author Team Gather
+ * This class is the Events controller in charge of event related rest call such as add, remove, and update event
+ * 
+ */
+
 @Controller("EventsController")
 public class EventsController extends AbstractGatherController {
+	
+	/**
+	 * 
+	 * This methods takes the user coordinates and retuns a list of al nearby events
+	 * 
+	 * @param request: This variable is the http request received from the frontend through the rest call to get 
+	 * 				   nearBy events
+	 * @param rawData: This variable is the data field of the request received from the frontend containing user
+	 * 				   coordinates
+	 * @param bindingResult:The controller makes this variable available any time an object is posted/put from
+	 * 					    the frontend. It will contain errors if there was an error in binding the
+	 * 					    object. The app continues to use its Error interface to report on validation
+	 * 					    or other errors as we continue to process things. Those errors then get
+	 * 					    reported back via the HTTPStatus or Status in our response data.
+	 * @return: This method returns a list of nearby events that is obtained based on the user coordinates
+	 * 		    passed into the controller 
+	 * 
+	 */
 	@RequestMapping(value = "/rest/events", method = RequestMethod.PUT)
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getNearbyEvents(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
 		EventsQueryData queryParams = EventsQueryData.parseIn(rawData, eventsQueryDataValidator, bindingResult);
@@ -30,6 +55,20 @@ public class EventsController extends AbstractGatherController {
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
 
+	/**
+	 * 
+	 * This method takes info regarding a new event, adds it to the event list, and returns an update list of events 
+	 * 
+	 * @param request: This variable is the request received from the frontend through the rest call to add an event
+	 * @param rawData: This variable is the data field of the request received from the frontend containing event info
+	 * @param bindingResult: The controller makes this variable available any time an object is posted/put from
+	 * 					     the frontend. It will contain errors if there was an error in binding the
+	 * 					     object. The app continues to use its Error interface to report on validation
+	 * 					     or other errors as we continue to process things. Those errors then get
+	 * 					     reported back via the HTTPStatus or Status in our response data.
+	 * @return: This method returns a list of updated events which includes the newly added event.
+	 * 
+	 */
 	@RequestMapping(value = "/rest/events", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> addEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
@@ -46,6 +85,21 @@ public class EventsController extends AbstractGatherController {
 		return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
 	}
 
+	/**
+	 * 
+	 * This method takes updated information about an existing event, updates the event info, and returns an updated
+	 * event list. 
+	 * 
+	 * @param request: This variable is the request received from the frontend through the rest call to update an event
+	 * @param rawData: This variable is the data field of the request received from the frontend containing updated event info
+	 * @param bindingResult: The controller makes this variable available any time an object is posted/put from
+	 * 					     the frontend. It will contain errors if there was an error in binding the
+	 * 					     object. The app continues to use its Error interface to report on validation
+	 * 					     or other errors as we continue to process things. Those errors then get
+	 * 					     reported back via the HTTPStatus or Status in our response data.
+	 * @return: This method returns a list of updated events which includes the newly added event.
+	 * 
+	 */
 	@RequestMapping(value = "/rest/events/update", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> updateEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
@@ -64,6 +118,11 @@ public class EventsController extends AbstractGatherController {
 		return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/rest/events/userJoined")
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getJoinedEventsList(HttpServletRequest request) {
 		BindingResult errors = new BindException(this, "errors");
@@ -72,6 +131,7 @@ public class EventsController extends AbstractGatherController {
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
 
+
 	@RequestMapping(value = "/rest/events/userOwned")
 	public ResponseEntity<RESTPaginatedResourcesResponseData<Event>> getOwnedEventsList(HttpServletRequest request){
 		BindingResult errors = new BindException(this, "errors");
@@ -79,6 +139,7 @@ public class EventsController extends AbstractGatherController {
 		List<Event> events = new ArrayList<Event>(getUser(request).getOwnedEvents());
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
+
 
 	@RequestMapping(value = "/rest/events/join", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
@@ -94,6 +155,7 @@ public class EventsController extends AbstractGatherController {
 		return RESTResourceResponseData.createResponse(eventToJoin, HttpStatus.CREATED);
 	}
 
+
 	@RequestMapping(value = "/rest/events/leave", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<RESTResourceResponseData<Event>> leaveEvent(HttpServletRequest request, @RequestBody String rawData, BindingResult bindingResult) {
@@ -107,6 +169,7 @@ public class EventsController extends AbstractGatherController {
 
 		return RESTResourceResponseData.createResponse(eventToLeave, HttpStatus.OK);
 	}
+
 
 	@RequestMapping(value = "/rest/events/remove", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	@ResponseBody
