@@ -5,16 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import javax.validation.constraints.AssertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
-import cs428.project.gather.data.repo.LocationRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
 
 import org.joda.time.*;
@@ -110,8 +103,15 @@ public class EventRepositoryIntegrationTest {
 	@Transactional
 	public void testSaveLoadEventWithLocation(){
 		Event testEvent = new Event("Test Event");
-		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
-//		this.locationRepo.save(location);
+//		Location location = new Location("Test Location", "6542 Nowhere Blvd", "Los Angeles", "CA", "90005", 34.0498, -118.2498);
+		Location location = new Location();
+		location.setDescription("Test Location");
+		location.setStreetAddr("6542 Nowhere Blvd");
+		location.setCity("Los Angeles");
+		location.setState("CA");
+		location.setZipCode("90005");
+		location.setLatitude(34.0498);
+		location.setLongitude(-118.2498);
 		Occurrence occur=new Occurrence("Test Occurrence",new Timestamp(DateTime.now().getMillis()));
 		testEvent.addOccurrence(occur);
 		testEvent.setLocation(location);
@@ -128,58 +128,32 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(testOccur.getDescription(),"Test Occurrence");
 		assertEquals(testEvent.getLocation().getCity(),"Los Angeles");
 		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
+	}	
 	
-	@Test
-	@Transactional
-	public void testSaveLoadEventWithFeedback(){
-		Event testEvent = new Event("Test Event");
-		Timestamp feedbackTime = new Timestamp(DateTime.now().getMillis());
-		Feedback feedback = new Feedback("What a great event!",5,feedbackTime);
-		Occurrence occur=new Occurrence("Test Occurrence",feedbackTime);
-		testEvent.addOccurrence(occur);
-		testEvent.addFeedback(feedback);
-		List<Category> foundCategory = categoryRepo.findByName("Others");
-		testEvent.setCategory(foundCategory.get(0));
-		Event result = this.eventRepo.save(testEvent);
-		
-		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<Feedback> feedbacks = foundEvent.getFeedbacks();
-		assertEquals(feedbacks.size(),1);
-		
-		Iterator<Feedback> feedbackIt = feedbacks.iterator();
-		Feedback testFeedback = feedbackIt.next();
-		assertEquals(testFeedback.getRating(), 5);
-		assertEquals(testFeedback.getReview(), "What a great event!");
-		assertEquals(testFeedback.getDatetime(),feedbackTime);
-		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
-	
-	
-	@Test
-	@Transactional
-	public void testSaveLoadEventWithChangeLog(){
-		Event testEvent = new Event("Test Event");
-		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
-		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
-		testEvent.addOccurrence(occur);
-		testEvent.addChangeLog(change);
-		List<Category> foundCategory = categoryRepo.findByName("Others");
-		testEvent.setCategory(foundCategory.get(0));
-		Event result = this.eventRepo.save(testEvent);
-		
-		Event foundEvent = this.eventRepo.findOne(result.getId());
-		Set<ChangeLog> changeLog = foundEvent.getChangeLog();
-		assertEquals(changeLog.size(),1);
-		
-		Iterator<ChangeLog> changeLogIt = changeLog.iterator();
-		ChangeLog testChangeLogEntry = changeLogIt.next();
-		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
-		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
-		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
-		assertTrue(result.getCategory().getName().equals("Others"));		
-	}
+//	@Test
+//	@Transactional
+//	public void testSaveLoadEventWithChangeLog(){
+//		Event testEvent = new Event("Test Event");
+//		Timestamp changeTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+//		ChangeLog change = new ChangeLog("Description Modified", "Soccer in the park. Everyone is welcome.", changeTime);
+//		Occurrence occur=new Occurrence("Test Occurrence",changeTime);
+//		testEvent.addOccurrence(occur);
+//		testEvent.addChangeLog(change);
+//		List<Category> foundCategory = categoryRepo.findByName("Others");
+//		testEvent.setCategory(foundCategory.get(0));
+//		Event result = this.eventRepo.save(testEvent);
+//		
+//		Event foundEvent = this.eventRepo.findOne(result.getId());
+//		Set<ChangeLog> changeLog = foundEvent.getChangeLog();
+//		assertEquals(changeLog.size(),1);
+//		
+//		Iterator<ChangeLog> changeLogIt = changeLog.iterator();
+//		ChangeLog testChangeLogEntry = changeLogIt.next();
+//		assertEquals(testChangeLogEntry.getChangeType(), "Description Modified");
+//		assertEquals(testChangeLogEntry.getAdditionalInfo(), "Soccer in the park. Everyone is welcome.");
+//		assertEquals(testChangeLogEntry.getDatetime(),changeTime);
+//		assertTrue(result.getCategory().getName().equals("Others"));		
+//	}
 	
 	@Test
 	public void testFindByLocationWithin(){
@@ -238,15 +212,25 @@ public class EventRepositoryIntegrationTest {
 		
 		List<Event> foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
 		assertEquals(foundEvents.size(), 1);
-		assertTrue(foundEvents.get(0).getName().equals("Test Event"));
 		
 		//Set upper bound for events in the next 4 hrs, should return no events
 		dt = DateTime.now().plusHours(4);
 		upperBound = new Timestamp(dt.getMillis());
 		
 		foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
-		assertEquals(foundEvents.size(), 0);	
-		assertTrue(result.getCategory().getName().equals("Others"));		
+		assertEquals(foundEvents.size(), 0);
+		
+		//Remove all occurrences
+		foundEvent.removeAllOccurrences();
+		foundEvent = this.eventRepo.save(foundEvent);
+		
+		//Set upper bound for events in the next 2 days, should now return no events
+		dt = DateTime.now().plusDays(2);
+		upperBound = new Timestamp(dt.getMillis());
+		
+		foundEvents = this.eventRepo.findByOccurrenceTimeWithin(upperBound);
+		assertEquals(foundEvents.size(), 0);
+		
 	}
 	
 	@Test

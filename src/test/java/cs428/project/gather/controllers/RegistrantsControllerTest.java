@@ -3,6 +3,7 @@ package cs428.project.gather.controllers;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,7 +27,9 @@ import com.google.gson.reflect.TypeToken;
 
 import cs428.project.gather.GatherApplication;
 import cs428.project.gather.data.form.RegistrationData;
+import cs428.project.gather.data.model.Category;
 import cs428.project.gather.data.model.Registrant;
+import cs428.project.gather.data.repo.CategoryRepository;
 import cs428.project.gather.data.repo.EventRepository;
 import cs428.project.gather.data.repo.RegistrantRepository;
 import cs428.project.gather.data.response.RESTPaginatedResourcesResponseData;
@@ -44,16 +48,21 @@ public class RegistrantsControllerTest extends ControllerTest {
 
 	@Autowired
 	EventRepository eventRepo;
+	
+	@Autowired
+	CategoryRepository categoryRepo;
 
 	@Before
 	public void setUp() {
 		eventRepo.deleteAll();
-		assertEquals(this.eventRepo.count(), 0);
+		assertEquals(eventRepo.count(), 0);
+		categoryRepo.deleteAll();
+		assertEquals(categoryRepo.count(), 0);
 		registrantRepo.deleteAll();
-		assertEquals(this.registrantRepo.count(), 0);
+		assertEquals(registrantRepo.count(), 0);
 		Registrant aUser = new Registrant("existed@email.com", "password", "existedName", 3, 10000);
-		this.registrantRepo.save(aUser);
-		assertEquals(this.registrantRepo.count(), 1);
+		registrantRepo.save(aUser);
+		assertEquals(registrantRepo.count(), 1);
 	}
 
 	@Test
@@ -66,7 +75,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 
 		// Fetching the Registrant details directly from the DB to verify the
 		// API succeeded
-		Registrant aUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		Registrant aUser = registrantRepo.findByDisplayName("testingNewUser");
 		assertTrue(aUser!=null);
 		assertEquals("testingNewUser", aUser.getDisplayName());
 		assertEquals("newEmail@email.com", aUser.getEmail());
@@ -86,7 +95,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 
 		// Fetching the Registrant details directly from the DB to verify the
 		// API succeeded
-		Registrant testUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		Registrant testUser = registrantRepo.findByDisplayName("testingNewUser");
 		assertTrue(testUser==null);
 
 	}
@@ -102,7 +111,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 		assertEquals((Integer)(-4), status); //duplicated entries
 
 		// Fetching the Registrant details directly from the DB to verify nothing added
-		assertEquals(1,this.registrantRepo.count());
+		assertEquals(1,registrantRepo.count());
 	}
 
 	@Test
@@ -116,7 +125,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 		assertEquals((Integer)(-2), status); //multiple error messages
 
 		// Fetching the Registrant details directly from the DB to verify nothing added
-		assertEquals(1,this.registrantRepo.count());
+		assertEquals(1,registrantRepo.count());
 	}
 
 	@Test
@@ -130,7 +139,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 		assertEquals((Integer)(-3), status); //multiple error messages
 
 		// Fetching the Registrant details directly from the DB to verify nothing added
-		assertEquals(1,this.registrantRepo.count());
+		assertEquals(1,registrantRepo.count());
 	}
 
 	private Map<String, Object> attemptAddUser(String email, String password, String displayName) throws JsonProcessingException {
@@ -168,7 +177,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 
 		// Fetching the Registrant details directly from the DB to verify the
 		// API succeeded
-		Registrant aUser = this.registrantRepo.findByDisplayName("testingNewUser");
+		Registrant aUser = registrantRepo.findByDisplayName("testingNewUser");
 		assertTrue(aUser!=null);
 		assertEquals("testingNewUser", aUser.getDisplayName());
 		assertEquals("newEmail@email.com", aUser.getEmail());
@@ -241,11 +250,7 @@ public class RegistrantsControllerTest extends ControllerTest {
 		requestBody.setPassword("newpassword");
 		requestBody.setEmail("new@email.com");
 		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Cookie", requestEntity.getHeaders().getFirst("Cookie"));
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(requestBody),
-				requestHeaders);
+		HttpEntity<String> httpEntity = buildEntityFromRegistrationData(requestBody, requestEntity.getHeaders());
 		
 		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/update", HttpMethod.PUT, httpEntity, String.class);
 		
@@ -258,8 +263,76 @@ public class RegistrantsControllerTest extends ControllerTest {
 		
 		//Check data in DB
 		Registrant backendUser = registrantRepo.findOne(user.getActorID());
-		assertEquals("newDisplayName", frontendUser.getDisplayName());
-		assertEquals(11111, frontendUser.getDefaultZip());
+		assertEquals("newDisplayName", backendUser.getDisplayName());
+		assertEquals(11111, backendUser.getDefaultZip());
+	}
+	
+	@Test
+	public void testUpdateUserCategoryPreference() throws JsonProcessingException {
+		
+		HashSet<String> preferences = new HashSet<String>();
+		preferences.add("Sports");
+		preferences.add("Dining");
+		preferences.add("Movies & Film");
+		for(String pref : preferences){
+			Category cat = new Category(pref);
+			categoryRepo.save(cat);
+		}
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		
+		Registrant user = registrantRepo.findOneByEmail("existed@email.com");
+		assertEquals(0, user.getPreferences().size());
+		
+		//Build form data
+		RegistrationData requestBody = new RegistrationData();
+		requestBody.setPreferences(preferences);
+		
+		HttpEntity<String> httpEntity = buildEntityFromRegistrationData(requestBody, requestEntity.getHeaders());
+		
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/update", HttpMethod.PUT, httpEntity, String.class);
+		
+		//Cannot deserialize using gson since we instruct Jackson so serialize the preference list as a list of Strings.
+//		RESTResourceResponseData<Registrant> responseData = parseRegistrantResponseData(responseStr.getBody());
+//		Registrant frontendUser = responseData.getResult();
+		
+		//Check that JSON serialized registrant contains preferences
+		assertTrue(responseStr.getBody().contains("Sports"));
+		
+		//Check data in DB
+		Registrant backendUser = registrantRepo.findOne(user.getActorID());
+		assertEquals(3, backendUser.getPreferences().size());
+	}
+	
+	@Test
+	public void testUpdateUserBadEmail() throws JsonProcessingException {
+		Registrant anotherUser = new Registrant("other@email.com", "password", "otherName", 3, 10000);
+		registrantRepo.save(anotherUser);
+		
+		HttpEntity<String> requestEntity = signInAndCheckSession("existed@email.com", "password");
+		
+		//Build form data
+		RegistrationData requestBody = new RegistrationData();
+		requestBody.setEmail("other@email.com");
+		
+		HttpEntity<String> httpEntity = buildEntityFromRegistrationData(requestBody, requestEntity.getHeaders());
+		
+		ResponseEntity<String> responseStr = restTemplate.exchange("http://localhost:8888/rest/registrants/update", HttpMethod.PUT, httpEntity, String.class);
+		
+		RESTResourceResponseData<Registrant> responseData = parseRegistrantResponseData(responseStr.getBody());
+		
+		//Check error
+		assertEquals(HttpStatus.CONFLICT, responseStr.getStatusCode());
+		assertEquals(-4, responseData.getSTATUS());
+		assertEquals("Field invalid-email:The email address already exists and claimed by another user.  Please enter another email address. ", responseData.getMessage());
+	}
+	
+	private HttpEntity<String> buildEntityFromRegistrationData(RegistrationData regData, HttpHeaders headers) throws JsonProcessingException{
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Cookie", headers.getFirst("Cookie"));
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return new HttpEntity<String>(OBJECT_MAPPER.writeValueAsString(regData),
+				requestHeaders);
 	}
 
 }

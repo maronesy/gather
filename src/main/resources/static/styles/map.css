@@ -1,4 +1,12 @@
 
+.glyphicon-space {
+	margin-right: 5px;
+}
+
+.li-space {
+	margin-bottom: 5px;
+}
+
 .participant-buttons {
 	position: relative;
     top: -10px;
@@ -12,15 +20,15 @@
 	top: 5px;
 }
 
-
 .leaflet-popup-content-wrapper {
-	width: 500px;
-	height: 250px;
+	width: 450px;
+	height: auto;
+	z-index: 1001 !important;
 }
 
 .leaflet-popup-content {
-	width: 500px !important;
-	height: 250px !important;
+	width: 450px !important;
+	height: auto !important;
 }
 
 .modal-footer {
@@ -90,36 +98,20 @@ html, body {
 	margin-top: 15px;
 }
 
-#food-location-cards {
-	margin-bottom: 0px;
-}
-
-#food-preferences-list {
+#event-preferences-list {
 	padding: 15px 15px 15px 40px;
 }
 
-#food-preferences-list .controls {
+#event-preferences-list .controls {
 	padding-left: 20px;
 }
 
-#food-specializations-list {
+#event-specializations-list {
 	padding: 15px 15px 15px 40px;
 }
 
-#food-specializations-list .controls {
+#event-specializations-list .controls {
 	padding-left: 20px;
-}
-
-#feedback-container {
-	border-width: 1px;
-	border-style: solid;
-	border-color: rgb(169, 169, 169);
-	height: 200px;
-	overflow-y: auto;
-}
-
-#user-feedback-comments {
-	width: 100%;
 }
 
 #salutation {
@@ -140,45 +132,21 @@ html, body {
 	margin-bottom: 10px;
 }
 
-.food-location-card:not(:last-child) {
-	margin-bottom:  10px;
+.new-event-location-popup hr {
+	margin: 4px 0px 4px 0px;
 }
 
-.food-location-card ul {
+.established-event-location-popup hr {
+	margin: 4px 0px 4px 0px;
+}
+
+.established-event-location-popup ul {
 	padding: 0px;
 }
 
-.food-location-card li {
-	list-style: none;
-}
-
-.food-location-card hr {
-	margin: 4px 0px 4px 0px;
-}
-
-.food-location-card-title {
-	font-weight: bold;
-}
-
-.new-food-location-popup hr {
-	margin: 4px 0px 4px 0px;
-}
-
-.established-food-location-popup hr {
-	margin: 4px 0px 4px 0px;
-}
-
-.established-food-location-popup ul {
-	padding: 0px;
-}
-
-.established-food-location-popup li {
+.established-event-location-popup li {
 	font-size:  15px;
 	list-style: none;
-}
-
-.feedback-form-input {
-	font-weight: normal;
 }
 
 .form-label {

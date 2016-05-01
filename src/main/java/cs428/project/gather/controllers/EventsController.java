@@ -24,7 +24,9 @@ public class EventsController extends AbstractGatherController {
 		EventsQueryData queryParams = EventsQueryData.parseIn(rawData, eventsQueryDataValidator, bindingResult);
 		if (bindingResult.hasErrors()) return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
 
-		List<Event> events = Event.queryForEvents(queryParams, eventRepo);
+		List<Event> events = Event.queryForEvents(queryParams, eventRepo, getUserAsOption(request), bindingResult);
+		if (bindingResult.hasErrors()) return RESTPaginatedResourcesResponseData.badResponse(bindingResult);
+
 		return RESTPaginatedResourcesResponseData.createResponse(request, events);
 	}
 
@@ -58,7 +60,7 @@ public class EventsController extends AbstractGatherController {
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event savedEventResult = this.eventRepo.save(updatedResult);
-		
+
 		return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
 	}
 
