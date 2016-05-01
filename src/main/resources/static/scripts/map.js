@@ -1268,7 +1268,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 	}
 	
 	function refreshEventGlobalVariables(){
-		getNearByEvents(hour, categories, radius);
+		getNearByEvents();
 		joinedEvents();
 		ownedEvents();
 	}
