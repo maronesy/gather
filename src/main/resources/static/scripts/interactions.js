@@ -29,8 +29,12 @@ function loadCategories(){
 }
 
 function resizeMap() {
-    var cw = $('#map-canvas').width()*1.13;
-    $('#map-canvas').css({'height':cw+'px'});
+    height = window.screen.availHeight - 300
+    if (height > 800) {
+        height = 800;
+    }
+    // var cw = $('#map-canvas').width()*1.13;
+    $('#map-canvas').css({'height':height+'px'});
 }
 
 function resizeLayout() {

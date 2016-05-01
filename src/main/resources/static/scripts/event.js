@@ -38,12 +38,20 @@ function loadCategoryForm() {
 
 function showFilterForm() {
 	$('#filter').show()
-	$('#eventList').css("height", "608px");
+	height = window.screen.availHeight - 250 - 125
+	if (height > 800) {
+        height = 800;
+    }
+	$('#eventList').css("height", height);
 }
 
 function hideFilterForm() {
 	$('#filter').hide()
-	$('#eventList').css("height", "733px");
+	height = window.screen.availHeight - 250
+	if (height > 800) {
+        height = 800;
+    }
+	$('#eventList').css("height", height);
 }
 
 function sortByAscendingTime(a, b){
