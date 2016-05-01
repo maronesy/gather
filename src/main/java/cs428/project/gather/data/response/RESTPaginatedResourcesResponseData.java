@@ -5,12 +5,27 @@ import org.springframework.http.*;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindingResult;
 
+/**
+ * 
+ * @author Team Gather
+ * This class takes a response Data Type, "T", and makes the response into pages to avoid 
+ * a single REST call return too much data at once. If multiple pages of data are returned,
+ * the information of how to get the next page of data is included.
+ * 
+ */
 public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
     protected int count             = 0;
     protected String previous       = null;
     protected String next           = null;
     protected List<T> results       = null;
 
+	/**
+	 * Create a bad request based on the binding result.
+	 * 
+	 * @param bindingResult: The binding result that contains the error information form the validator  
+	 * @return: A paginated bad request response based on the binding result.
+	 * 
+	 */
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> badResponse(BindingResult bindingResult) {
         // Build the original errorResponse
         ResponseEntity<RESTResponseData> errorResponse = RESTResponseData.buildResponse(bindingResult);
@@ -18,6 +33,14 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData<T>(errorResponse.getBody()), errorResponse.getStatusCode());
     }
 
+	/**
+	 * Create a paginated response based on the list of results.
+	 * 
+	 * @param request: The HTTP Servlet Request  
+	 * @param results: The list of results of the data type, "T"  
+	 * @return: A paginated response based on the list of results.
+	 * 
+	 */
     public static <T> ResponseEntity<RESTPaginatedResourcesResponseData<T>> createResponse(HttpServletRequest request, List<T> results) {
         int total_num_results   = results.size();
         int results_per_page    = 20;
@@ -67,10 +90,28 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
         return new ResponseEntity<RESTPaginatedResourcesResponseData<T>>(new RESTPaginatedResourcesResponseData(0, results.size(), previous, next, results.subList(start, end)), HttpStatus.OK);
     }
 
+	/**
+	 * Constructor.
+	 * Create a paginated response based on a regular response data.
+	 * 
+	 * @param data: The regular response data   
+	 * 
+	 */
     public RESTPaginatedResourcesResponseData(RESTResponseData data) {
         super(data.getSTATUS(), data.getMessage());
     }
 
+	/**
+	 * Constructor.
+	 * Create a paginated response based on parameters.
+	 * 
+	 * @param status: return status  
+	 * @param count: total count of the paginated response
+	 * @param previous: URL for the previous page
+	 * @param next: URL for the next page
+	 * @param results: The list of the data results 
+	 * 
+	 */
     public RESTPaginatedResourcesResponseData(int status, int count, String previous, String next, List<T> results) {
         super(status, "");
         this.count      = count;
@@ -79,8 +120,15 @@ public class RESTPaginatedResourcesResponseData<T> extends RESTResponseData {
         this.results    = results;
     }
 
-    public RESTPaginatedResourcesResponseData(String error_message) {
-        this.message = error_message;
+	/**
+	 * Constructor.
+	 * Create a paginated response based on a error message.
+	 * 
+	 * @param errorMessage: error message to set.   
+	 * 
+	 */
+    public RESTPaginatedResourcesResponseData(String errorMessage) {
+        this.message = errorMessage;
     }
 
     public int getCount() {
