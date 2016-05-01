@@ -1326,11 +1326,13 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				var eventDataID = modalForm.data("eventDataID");
 				updateParticipantsAndOwners(eventDataID, ownerArray, participantArray,
 						function(event){
+							$("#formParticipantFeedback").css("color", "green")
 							$("#formParticipantFeedback").html("<b><u>"+event.name+"</u></b> updated successfully.");
 							refreshEventGlobalVariables();
 							refreshEventListAndMarkers();
 						},
 						function(jqXHR, textStatus, errorThrown){
+							$("#formParticipantFeedback").css("color", "red")
 							var responseMessage = $.parseJSON(jqXHR.responseText).message;
                             $('#formParticipantFeedback').html(responseMessage);
 						});
