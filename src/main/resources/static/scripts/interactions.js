@@ -19,6 +19,7 @@ function loadCategories(){
         type : "GET",
         url : "rest/categories",
         contentType: "application/json; charset=UTF-8",
+        async: false,
         success : function(returnvalue) {
         	console.log(JSON.stringify(returnvalue));
         	var categories=returnvalue.results;
