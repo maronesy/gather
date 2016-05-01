@@ -739,26 +739,29 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 
 		refreshOccurrenceTimestamps(anEvent);
-		var unixtime = anEvent.occurrenceTimestamps[0];
+		var unixtime = mostRecentOccurrence(anEvent.occurrences)
 		var datetime = new Date( unixtime );
 		var time = datetime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
 		var date = datetime.toLocaleDateString();
-		timeDisplay = date + ', ' + time 
+		var timeDisplay = date + ', ' + time 
 		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + eCoordinates.latitude + "," + eCoordinates.longitude + "&key=AIzaSyCh3wRAk3nGvfqUwC2SjkqVBX5AwUGh8KE"
 		var full_address = ''
 		$.ajax({
-			    // async: false, commented to enhance performance by 3 seconds!
+			    // async: false, //commented to enhance performance by 3 seconds!
 			    url: url,
 			    dataType: "json",
 			    success: function(data) {
-				  if (data.status == 'ZERO_RESULTS') {
+				    if (data.status == 'ZERO_RESULTS') {
 						full_address = 'Address not found'
+
 					} else if (data.status == 'OK') {
 						// always return the first result which is most relevant.
 						full_address = data.results[0].formatted_address;
-						establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, full_address, distanceFromCaller, anEvent.description);
-						eventMarker.bindPopup(establishedEventHTML, popupOptions);
+					} else if (data.status == 'OVER_QUERY_LIMIT') {
+						full_address = 'Our server has daily limited address query from Google.'
 					}
+					establishedEventHTML = sprintf(establishedEventHTML, anEvent.id, anEvent.name, anEvent.category.name, timeDisplay, full_address, distanceFromCaller, anEvent.description);
+					eventMarker.bindPopup(establishedEventHTML, popupOptions);
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
                     var responseMessage = $.parseJSON(jqXHR.responseText).message;
@@ -948,7 +951,7 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 					}
 					currentUserCoordinates = CurrentUserCoordinates;
 					if (showmap) {
-						processUserCoordinates(CurrentUserCoordinates, defaultTimeWindow, categories, radius);
+						processUserCoordinates(defaultTimeWindow, categories, radius);
 					}
 					flag = true;
 				}

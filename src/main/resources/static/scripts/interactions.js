@@ -85,6 +85,7 @@ function enterZip() {
                     $('#zipCodeErrorBox').html('Zip code field is empty');
                 } else {
                 	validateZipCode(zipCodeErrorBox, zipCode) 
+                    $('#zipCode').val('');
                 }
                 $('#zipSearching').hide();
             }, 100);
