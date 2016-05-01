@@ -29,7 +29,7 @@ function loadCategories(){
 }
 
 function resizeMap() {
-    height = window.screen.availHeight - 300
+    height = window.screen.availHeight - 311
     if (height > 800) {
         height = 800;
     }
