@@ -5,11 +5,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller("HomeController")
 public class HomeController {
+	
+	/**
+	 * 
+	 * @return the index home page
+	 */
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
 	}
-
+	
+	/**
+	 * 
+	 * @return the registration form page
+	 */
 	@RequestMapping(value = "/registerform")
 	public String register() {
 		return "registerform";
