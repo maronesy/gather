@@ -358,7 +358,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 
 		var newOptions={};
 		var catArray = gather.global.categories;
-		//console.log(JSON.stringify(catArray));
 		var $categories = $( "#event-category" );
 		$categories.empty();
 		for (var i = 0; i < catArray.length; i++) {
@@ -534,7 +533,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				} else if (validateEventDescription(eventDescription) == false) {
 					$('#formEventFeedback').html('Event description must be between than 5 and 120 characters');
 				} else {
-					//event.preventDefault();
 					storeEventFormData();
 					submitEventForm();
 					clearEventForm();
