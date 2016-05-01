@@ -189,6 +189,11 @@
 						<version>2.19.1</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+          			<excludes>
+            			<exclude>%regex[.*selenium.*Test.*]</exclude>
+          			</excludes>
+        		</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.github.klieber</groupId>
