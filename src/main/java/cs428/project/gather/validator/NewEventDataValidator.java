@@ -11,6 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/***
+ * 
+ * @author Team Gather
+ * 
+ * This class validates the name, coordinates, description, category, and occurrence information when creating a new event.
+ * It also ensures the event to be created will not be a duplicate.
+ *
+ */
 @Component
 public class NewEventDataValidator extends AbstractEventDataValidator {
 	@Autowired

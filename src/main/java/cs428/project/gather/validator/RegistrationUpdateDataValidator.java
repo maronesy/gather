@@ -8,6 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ * 
+ * This class validates the password, display name, and email address and old password of RegistrationData when a user requests to update their information.
+ *
+ */
 @Component
 public class RegistrationUpdateDataValidator extends AbstractValidator {
 	@Override
