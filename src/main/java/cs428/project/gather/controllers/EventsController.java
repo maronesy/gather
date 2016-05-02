@@ -42,7 +42,6 @@ public class EventsController extends AbstractGatherController {
 		if (bindingResult.hasErrors()) return RESTResourceResponseData.<Event>badResponse(bindingResult);
 
 		Event savedEventResult = this.eventRepo.save(newEvent);
-		System.out.println("DistanceFromCaller: " + newEventData.distanceFromCaller());
 		return RESTResourceResponseData.createResponse(savedEventResult, HttpStatus.CREATED);
 	}
 
