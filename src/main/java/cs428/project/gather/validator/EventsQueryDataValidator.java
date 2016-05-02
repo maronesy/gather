@@ -5,6 +5,12 @@ import cs428.project.gather.data.form.EventsQueryData;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/***
+ * 
+ * @author Team Gather
+ *
+ * This class validates that queries for events have valid time windows, coordinates, and radius fields.
+ */
 @Component
 public class EventsQueryDataValidator extends AbstractValidator {
 	@Override
