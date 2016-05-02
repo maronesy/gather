@@ -160,14 +160,19 @@ function eventFilter() {
     });
 }
 
-function mostRecentOccurrence (occurrences) {
-	for(j = 0; j < occurrences.length; j++){
-		if (occurrences[j].timestamp > Date.now()) {
-			var unixtime = occurrences[j].timestamp;
+function mostRecentOccurrence(occurrences) {
+	var timestamps = [];
+	for (var i = 0; i < occurrences.length; i++) {
+		var timestamp = occurrences[i].timestamp;
+		timestamps.push(timestamp);
+	}
+	timestamps.sort();
+	for (var j = 0; j < timestamps.length; j++) {
+		if (timestamps[j] > Date.now()) {
+			var unixtime = timestamps[j];
 			return unixtime
 		}
 	}
-	
 }
 
 function calculateDistanceAndTime (events, userCoordinates) {
