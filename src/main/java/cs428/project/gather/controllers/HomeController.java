@@ -24,13 +24,4 @@ public class HomeController {
 		return "registerform";
 	}
 
-	@RequestMapping(value = "/registrants")
-	public String registrants() {
-		return "registrants";
-	}
-
-	@RequestMapping(value = "/zipcode")
-	public String zipcode() {
-		return "zipcode";
-	}
 }
