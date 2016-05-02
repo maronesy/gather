@@ -1,6 +1,5 @@
 package cs428.project.gather.data.model;
 
-
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -9,6 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.springframework.util.Assert;
+
+/**
+ * 
+ * @author Team Gather
+ * 
+ * This is the occurrence class used for constructing occurrence objects that are used for the Events
+ *
+ */
 
 @Entity
 public class Occurrence {

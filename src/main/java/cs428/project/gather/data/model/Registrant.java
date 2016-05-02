@@ -15,6 +15,14 @@ import com.fasterxml.jackson.annotation.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ * 
+ * This is the Registrant class used for constructing registrant objects for users and their profile settings
+ *
+ */
+
 @Entity
 public class Registrant extends Actor {
 	private @Column(nullable=false) String password;
@@ -139,6 +147,9 @@ public class Registrant extends Actor {
 		return Collections.unmodifiableSet(preferences);
 	}
 
+	/**
+	 * @return This methods returns the user preference
+	 */
 	@JsonProperty("preferences")
 	public List<String> getPreferencesList() {
 		List<String> prefs = new ArrayList<String>();
@@ -147,10 +158,27 @@ public class Registrant extends Actor {
 		} return prefs;
 	}
 
+	/**
+	 * 
+	 * @param registrationData: information about the user
+	 * @param categoryRepo: the category repository object
+	 * @param errors: Used for reporting errors if the build registrant was unsuccessful
+	 * @return the new Registrant
+	 * 
+	 */
 	public static Registrant buildRegistrantFrom(RegistrationData registrationData, CategoryRepository categoryRepo, Errors errors) {
 		return (new Registrant()).updateUsing(registrationData, categoryRepo, errors);
 	}
 
+	/**
+	 * This method takes event and user info and add the user to the participant list of the event
+	 * 
+	 * @param joinEventData: Data passed in about the event desired to be joined
+	 * @param eventRepo: The event repository object
+	 * @param errors: Used for reporting errors if the join event was unsuccessful
+	 * @return returns the event that was joined
+	 * 
+	 */
 	public Event joinEvent(EventsQueryData joinEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = joinEventData.getEventId();
 		Event eventToJoin = eventRepo.findOne(eventId);
@@ -165,7 +193,16 @@ public class Registrant extends Actor {
 		eventRepo.save(eventToJoin);
 		return eventToJoin;
 	}
-
+	
+	/**
+	 * This method removes an event from the database
+	 * 
+	 * @param removeEventData: Information about the event to be removed
+	 * @param eventRepo: An event repository object
+	 * @param errors: Used for reporting errors if the remove event was unsuccessful
+	 * @return returns the events which was removed
+	 * 
+	 */
 	public Event removeEvent(EventsQueryData removeEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = removeEventData.getEventId();
 		Event targetEvent = eventRepo.findOne(eventId);
@@ -177,6 +214,15 @@ public class Registrant extends Actor {
 		return targetEvent;
 	}
 
+	/**
+	 * This method updates user info based on the passed in Registrant fields
+	 * 
+	 * @param updateInfo: Information about the registrant to be updates
+	 * @param categoryRepo: a category object
+	 * @param errors: Used for reporting errors if the update registrant was unsuccessful
+	 * @return returns the updated registrant
+	 * 
+	 */
 	public Registrant updateUsing(RegistrationData updateInfo, CategoryRepository categoryRepo, Errors errors) {
 		if (updateInfo.getShowEventsAroundZipCode() != null) {
 			setShowEventsAroundZipCode(updateInfo.getShowEventsAroundZipCode());
@@ -228,6 +274,16 @@ public class Registrant extends Actor {
 		return this;
 	}
 
+	/**
+	 * This method is used when the user want to leave an event
+	 * 
+	 * @param leaveEventData: Info about the event the user wants to leave
+	 * @param eventRepo: An event repository object
+	 * @param errors: Used for reporting errors if the user cannot leave event
+	 * 
+	 * @return returns the event that the user has left
+	 * 
+	 */
 	public Event leaveEvent(EventsQueryData leaveEventData, EventRepository eventRepo, Errors errors) {
 		Long eventId = leaveEventData.getEventId();
 		Event eventToLeave = eventRepo.findOne(eventId);
@@ -250,6 +306,15 @@ public class Registrant extends Actor {
 		return eventToLeave;
 	}
 
+	/**
+	 * This method validates the user the password, email, and display name before updating 
+	 * 
+	 * @param updateInfo: User information
+	 * @param registrantRepo: a registrant repository object
+	 * @param errors: Used for reporting errors if any of the fields is not valid
+	 * @return returns true if all fields are validated
+	 * 
+	 */
 	public boolean validateUserDependentFields(RegistrationData updateInfo, RegistrantRepository registrantRepo, Errors errors) {
 		if (updateInfo.getPassword() != null && ! updateInfo.getOldPassword().equals(getPassword())) {
 			errors.reject("-3", "The old password for confirmation is incorrect; cannot update to new password.");
