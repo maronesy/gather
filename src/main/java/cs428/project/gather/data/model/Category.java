@@ -9,6 +9,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+/**
+ * 
+ * @author Team Gather
+ * This is the category class which provide a set of predefined categories to the application
+ *
+ */
 @Entity
 public class Category {
 	private @Id @GeneratedValue Long id;

@@ -2,6 +2,13 @@ package cs428.project.gather.data.model;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * 
+ * @author Team Gather
+ *
+ * It provides three different user types to the app which are anonymousUser, registerUser, and admin
+ *
+ */
 
 public enum ActorType
 {
@@ -21,6 +28,14 @@ public enum ActorType
 		return value;
 	}
 
+	/**
+	 * This method compares the input and if it is equal to one of the actor types it sets the SelectedActorType
+	 * to the that actor type
+	 * 
+	 * @param value passed in from the calling object
+	 * @return returns the ActorType selectedActorType which is set in the for loop
+	 * 
+	 */
 	public static ActorType fromValue(String value)
 	{
 		ActorType selectedActorType = null;

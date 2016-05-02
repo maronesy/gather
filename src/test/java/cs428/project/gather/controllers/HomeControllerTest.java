@@ -39,15 +39,5 @@ public class HomeControllerTest {
 	public void testRegister() throws Exception {
 		mvc.perform(get("/registerform.do")).andExpect(status().isOk()).andExpect(view().name("registerform"));
 	}
-	
-	@Test
-	public void testRegistrants() throws Exception {
-		mvc.perform(get("/registrants.do")).andExpect(status().isOk()).andExpect(view().name("registrants"));
-	}
-	
-	@Test
-	public void testZipcode() throws Exception {
-		mvc.perform(get("/zipcode.do")).andExpect(status().isOk()).andExpect(view().name("zipcode"));
-	}
 
 }

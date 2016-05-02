@@ -7,6 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ *
+ * This class validates a users email and password when they want to sign in.
+ *
+ */
 @Component
 public class SignInDataValidator extends AbstractValidator
 {

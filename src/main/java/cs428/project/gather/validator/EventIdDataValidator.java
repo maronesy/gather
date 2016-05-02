@@ -5,6 +5,13 @@ import cs428.project.gather.data.form.EventsQueryData;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/***
+ * 
+ * @author Team Gather
+ * 
+ * This class validates that event ID queries do not use a null or negative ID.
+ *
+ */
 @Component
 public class EventIdDataValidator extends AbstractValidator {
 	@Override
