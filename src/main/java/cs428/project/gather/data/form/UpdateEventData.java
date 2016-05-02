@@ -8,11 +8,27 @@ import java.util.*;
 import com.google.gson.*;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ * This class represents the data object to update existing events 
+ * 
+ */
 public class UpdateEventData extends NewEventData {
 	private Long eventId;
 	private List<String> owners = null;
 	private List<String> participants= null;
 
+	/**
+	 * Parse the raw JSON data in String and validate the data, then set the 
+	 * Error code accordingly.
+	 * 
+	 * @param rawData: The raw JSON data in String
+	 * @param validator: The validator object to validate the input data
+	 * @param errors: The error object to pass to the validator for different error code 
+	 * @return: A paginated bad request response based on the binding result.
+	 * 
+	 */
 	public static UpdateEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
 		Gson gson = GsonHelper.getGson();
@@ -21,6 +37,13 @@ public class UpdateEventData extends NewEventData {
 		return updateEventData;
 	}
 
+	/**
+	 * Validate this object and save the Error status
+	 * 
+	 * @param validator: The validator object to validate the input data
+	 * @param errors: The error object to pass to the validator for different error code 
+	 * 
+	 */
 	public void validate(AbstractValidator validator, Errors errors) {
 		validator.validate(this, errors);
 	}
