@@ -10,8 +10,20 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+/**
+ * 
+ * @author Team Gather
+ * Utility class to help parse the raw JSON string into object.
+ * 
+ */
 public class GsonHelper {
 	
+	/**
+	 * Get a GSON parser to manage the date types as long values (timestamps)
+	 * 
+	 * @return a GSON parser
+	 * 
+	 */
 	public static Gson getGson(){
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {

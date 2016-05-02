@@ -4,9 +4,21 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * 
+ * @author Team Gather
+ * Utility class to help signout and delete the session cookies.
+ * 
+ */
 public final class SignOutHelper {
 	private SignOutHelper() { }
 
+	/**
+	 * Mark the current session in request to be invalid
+	 * 
+	 * @param request: HTTP request
+	 * 
+	 */
 	public static void invalidateSession(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		if(session != null) {
@@ -14,6 +26,13 @@ public final class SignOutHelper {
 		}
 	}
 
+	/**
+	 * Delete the session cookie
+	 * 
+	 * @param request: HTTP request
+	 * @param response: HTTP response
+	 * 
+	 */
 	public static void deleteSessionCookie(HttpServletRequest request, HttpServletResponse response) {
 		ServletContext servletContext = request.getServletContext();
 		SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
