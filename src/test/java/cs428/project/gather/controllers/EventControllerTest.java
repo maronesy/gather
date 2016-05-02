@@ -213,9 +213,8 @@ public class EventControllerTest extends ControllerTest {
 
 		//Setup coords
 		Coordinates eCoor = getTestCoordinates();
-		Coordinates uCoor = getTestCoordinates();
 
-		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L, uCoor,
+		attemptAddEvent("EventOne", eCoor, "DescOne", "Swim", System.nanoTime() + 10000L,
 				requestEntity.getHeaders());
 
 		//Verify that event now exists in backend
@@ -228,7 +227,7 @@ public class EventControllerTest extends ControllerTest {
 	}
 
 	private ResponseEntity<String> attemptAddEvent(String name, Coordinates eCoor, String description, String category,
-			long time, Coordinates uCoor, HttpHeaders header) throws JsonProcessingException {
+			long time, HttpHeaders header) throws JsonProcessingException {
 		// Building the Request body data
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		List<Long> occurrences = new ArrayList<Long>();
@@ -238,7 +237,6 @@ public class EventControllerTest extends ControllerTest {
 		requestBody.put("eventCategory", category);
 		occurrences.add(time);
 		requestBody.put("eventOccurrences", occurrences);
-		requestBody.put("callerCoordinates", uCoor);
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Cookie", header.getFirst("Cookie"));
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -479,7 +477,6 @@ public class EventControllerTest extends ControllerTest {
 
 		//Get coords
 		Coordinates eCoor = getTestCoordinates();
-		Coordinates uCoor = getTestCoordinates();
 
 		//Test the conditions before the update
 		assertEquals("Event1", event1.getName());
@@ -493,7 +490,7 @@ public class EventControllerTest extends ControllerTest {
 
 		// Test modifying the event
 		attemptUpdateEvent(event1, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
-				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
+				requestEntity.getHeaders(), newParticipant, newOwner);
 
 		// Verify the event got updated
 		Event afterUpdate = eventRepo.findOne(event1.getId());
@@ -533,7 +530,6 @@ public class EventControllerTest extends ControllerTest {
 
 		//Get coords
 		Coordinates eCoor = getTestCoordinates();
-		Coordinates uCoor = getTestCoordinates();
 
 		//Test the conditions before the update
 		assertEquals("EventOne", eventOne.getName());
@@ -547,7 +543,7 @@ public class EventControllerTest extends ControllerTest {
 
 		// Test modifying the event
 		attemptUpdateEvent(eventOne, "EventOneUpdated", eCoor, "DescOneUpdated", "Soccer", System.nanoTime() + 20000L,
-				uCoor, requestEntity.getHeaders(), newParticipant, newOwner);
+				requestEntity.getHeaders(), newParticipant, newOwner);
 
 		// Verify that nothing changed
 		Event afterUpdate = eventRepo.findOne(eventOne.getId());
@@ -763,7 +759,7 @@ public class EventControllerTest extends ControllerTest {
 	}
 
 	private ResponseEntity<String> attemptUpdateEvent(Event event, String name, Coordinates eCoor, String description,
-			String category, long time, Coordinates uCoor, HttpHeaders header, Registrant participantToRemove,
+			String category, long time, HttpHeaders header, Registrant participantToRemove,
 			Registrant ownerToAdd) throws JsonProcessingException {
 		
 		long eventId=event.getId();
@@ -791,7 +787,6 @@ public class EventControllerTest extends ControllerTest {
 		requestBody.put("eventCoordinates", eCoor);
 		requestBody.put("eventDescription", description);
 		requestBody.put("eventCategory", category);
-		requestBody.put("callerCoordinates", uCoor);
 		requestBody.put("eventOccurrences", occurrences);
 		requestBody.put("owners", owners);
 		requestBody.put("participants", participants);
