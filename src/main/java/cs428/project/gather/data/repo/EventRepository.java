@@ -44,9 +44,9 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	 * Returns a list of events within an lat-long box.
 	 *
 	 * @param lowerLat lower latitude.
-	 * @param upperLat upper latitude.
+	 * @param uppLat upper latitude.
 	 * @param lowerLon lower longitude.
-	 * @param upperLat upper longitude.
+	 * @param upperLon upper longitude.
 	 * @return a list of found events by location
 	 */
 	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.location l WHERE l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
@@ -62,14 +62,14 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
 	List<Event> findByOccurrenceTimeWithin(Timestamp upperBound);
 
 	/**
-	 * Returns a list of events within an lat-long box and occurrence.
-	 *
-	 * @param lowerLat lower latitude.
-	 * @param upperLat upper latitude.
-	 * @param lowerLon lower longitude.
-	 * @param upperLat upper longitude.
-	 * @param upperBound occurrence upper bound.
-	 * @return a list of found events by location and occurrence
+	 * Returns a list of events within a lat-long box and upper time threshold.
+	 * 
+	 * @param lowerLat
+	 * @param uppLat
+	 * @param lowerLon
+	 * @param upperLon
+	 * @param upperTime
+	 * @return
 	 */
 	@Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE o.timestamp > CURRENT_TIMESTAMP AND o.timestamp < ?5 AND l.latitude BETWEEN ?1 AND ?2 AND l.longitude BETWEEN ?3 AND ?4")
 	List<Event> findByLocationAndOccurrenceTimeWithin(double lowerLat, double uppLat, double lowerLon, double upperLon, Timestamp upperTime);
@@ -86,14 +86,14 @@ public interface EventRepository  extends CrudRepository<Event, Long> {
     List<Event> findByLocationWithinKmRadius(double latitude, double longitude, double radiusKm);
     
     /**
-	 * Returns a list of events within an radius and occurrence.
-	 *
-	 * @param latitude latitude.
-	 * @param longitude latitude.
-	 * @param radiusKm radius in KM.
-	 * @param upperBound occurrence upper bound.
-	 * @return a list of found events by a radius on a given coordinate and occurrence.
-	 */
+     * Returns a list of events within an lat-long box and time.
+     * 
+     * @param name
+     * @param latitude
+     * @param longitude
+     * @param time
+     * @return
+     */
     @Query("SELECT DISTINCT e FROM Event e INNER JOIN e.occurrences o INNER JOIN e.location l WHERE e.name = ?1 AND l.latitude = ?2 AND l.longitude = ?3 AND o.timestamp = ?4")
     List<Event> findByNameAndLocationAndTime(String name, double latitude, double longitude, Timestamp time);
 }
