@@ -13,6 +13,15 @@ import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ *
+ * This is the main model class of the application in charge of all the event variables and the association 
+ * between the event and different classes in the model
+ * 
+ */
+
 @Entity
 public class Event {
     private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
@@ -174,6 +183,17 @@ public class Event {
         return true;
     }
 
+    /**
+     * This method takes data regarding the events requested and user and finds and returns a list of events near
+     * the user
+     * 
+     * @param queryParams: This variable is the information regarding the events the the user wants returned
+     * @param eventRepo: This variable is used to fetch the desired events from the event repo
+     * @param maybeUser: This variable is the registrant object of the user
+     * @param errors: This variable is in charge of return an error if the maybeUser variable is null
+     * @return The method will return a list of events matching the query parameters
+     * 
+     */
     public static List<Event> queryForEvents(EventsQueryData queryParams, EventRepository eventRepo, Registrant maybeUser, Errors errors) {
         Set<String> filterCategories = queryParams.getCategories();
         if (queryParams.getUseRegistrantProfile() == true) {
@@ -221,6 +241,17 @@ public class Event {
         return categoryFilteredEvents;
     }
 
+    /**
+     * 
+     * This method creates an event base on the parameters and returns it
+     * 
+     * @param newEventData: Information about the new event
+     * @param owner: The owner trying to clear the event
+     * @param categoryRepo: The category repository
+     * @param errors: Used for reporting errors if event creation is unsuccessful
+     * @return The newly created event is returned
+     * 
+     */
     public static Event buildEventFrom(NewEventData newEventData, Registrant owner, CategoryRepository categoryRepo, Errors errors) {
         Event newEvent = new Event(newEventData.getEventName());
         newEvent.setDescription(newEventData.getEventDescription());
@@ -246,6 +277,17 @@ public class Event {
         return newEvent;
     }
 
+    /**
+     * This method update the information of an existing event
+     * 
+     * @param updateEventData: Updates that the user wants to make to the event
+     * @param owner: The user making the updates
+     * @param registrantRepo: The Registrant repository
+     * @param categoryRepo: The Category repository
+     * @param errors: Used for reporting errors if event update is unsuccessful
+     * @return: returns the updated event
+     * 
+     */
     public Event updateEventUsing(UpdateEventData updateEventData, Registrant owner, RegistrantRepository registrantRepo, CategoryRepository categoryRepo, Errors errors) {
         if (! this.containsOwner(owner,errors)) {
             return this;

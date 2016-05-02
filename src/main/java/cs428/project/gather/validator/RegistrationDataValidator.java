@@ -8,6 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ * 
+ * This class validates the password, display name, email address and default search radius of RegistrationData for creation of a new user.
+ *
+ */
 @Component
 public class RegistrationDataValidator extends AbstractValidator {
 	@Autowired

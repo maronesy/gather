@@ -4,6 +4,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.validation.Validator;
 
+/***
+ * 
+ * @author Team Gather
+ *
+ * Super class to all our validators. Provides email and URL pattern matching.
+ */
 public abstract class AbstractValidator implements Validator {
 	// This ridiculously long regular expression conforms to the official RFC 2822 standard.
 	// See http://tools.ietf.org/html/rfc2822#section-3.4.1 and http://www.regular-expressions.info/email.html for more information.

@@ -11,6 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+/***
+ * 
+ * @author Team Gather
+ *
+ * This class serves as a superclass to EventDataValidators providing a common interface and set of helper methods.
+ */
 @Component
 public abstract class AbstractEventDataValidator extends AbstractValidator {
 	@Autowired
