@@ -13,6 +13,12 @@ import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
+/**
+ * 
+ * @author Team Gather
+ *
+ */
+
 @Entity
 public class Event {
     private static final double ONE_MILE_IN_DEGREES_LATITUDE = 0.014554;
