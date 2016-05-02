@@ -18,7 +18,6 @@ public class NewEventData {
 	public static final String EVENT_DESCRIPTION_FIELD_NAME = "eventDescription";
 	public static final String EVENT_CATEGORY_FIELD_NAME = "eventCategory";
 	public static final String EVENT_TIME_FIELD_NAME = "eventTime";
-	public static final String CALLER_COORDS_FIELD_NAME = "callerCoordinates";
 
 	private String eventName;
 	private Coordinates eventCoordinates;
@@ -26,7 +25,6 @@ public class NewEventData {
 	private String eventCategory;
 	//private long eventTime;
 	private List<Long> eventOccurrences = null;
-	private Coordinates callerCoordinates;
 
 	public static NewEventData parseIn(String rawData, AbstractValidator validator, Errors errors) {
 		System.out.println("rawData: " + rawData);
@@ -69,18 +67,6 @@ public class NewEventData {
 
 	public void setEventCategory(String eventCategory) {
 		this.eventCategory = eventCategory;
-	}
-
-	public Coordinates getCallerCoodinates() {
-		return callerCoordinates;
-	}
-
-	public void setCallerCoodinates(Coordinates callerCoodinates) {
-		this.callerCoordinates = callerCoodinates;
-	}
-
-	public double distanceFromCaller() {
-		return GeodeticHelper.getDistanceBetweenCoordinates(getCallerCoodinates(), getEventCoodinates());
 	}
 
 	public List<Long> getOccurrences() {

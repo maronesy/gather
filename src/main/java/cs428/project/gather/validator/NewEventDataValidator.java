@@ -39,7 +39,6 @@ public class NewEventDataValidator extends AbstractEventDataValidator {
 			validateEventDescription(newEventData, errors);
 			validateEventCategory(newEventData, errors);
 			validateEventOccurrences(newEventData, errors);
-			validateCallerCoordinates(newEventData, errors);
 			validateNotDuplicateEvent(newEventData, errors);
 		}
 
@@ -114,14 +113,4 @@ public class NewEventDataValidator extends AbstractEventDataValidator {
 		return false;
 	}
 
-	@Override
-	boolean nullCallerCoordinatesCheck(Coordinates callerCoords, Errors errors) {
-		if(callerCoords == null)
-		{
-			String message = "Field required-" + NewEventData.CALLER_COORDS_FIELD_NAME;
-			errors.reject("-1", message+":User coordinates is a required field.");
-			return true;
-		}
-		return false;
-	}
 }
