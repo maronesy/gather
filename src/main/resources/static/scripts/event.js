@@ -164,9 +164,10 @@ function mostRecentOccurrence (occurrences) {
 	for(j = 0; j < occurrences.length; j++){
 		if (occurrences[j].timestamp > Date.now()) {
 			var unixtime = occurrences[j].timestamp;
+			return unixtime
 		}
 	}
-	return unixtime
+	
 }
 
 function calculateDistanceAndTime (events, userCoordinates) {

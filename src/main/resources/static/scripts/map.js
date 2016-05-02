@@ -626,7 +626,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventDescription: eventData.newEventFormData.eventDescription,
 				eventCategory: eventData.newEventFormData.eventCategory,
 				eventOccurrences: eventData.newEventFormData.eventOccurrences,
-				callerCoordinates: currentUserCoordinates
 			};
 			var url = "rest/events"
 		} else {
@@ -637,7 +636,6 @@ function MapManager(mapboxAccessToken, mapboxMapID) {
 				eventDescription: eventData.description,
 				eventCategory: eventData.category.name,
 				eventOccurrences: eventData.occurrenceTimestamps,
-				callerCoordinates: currentUserCoordinates
 			};
 			var url = "rest/events/update"
 		}
