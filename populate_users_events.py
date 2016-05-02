@@ -16,10 +16,10 @@ SD_zipcode = [91901,91902, 91903, 91905, 91906, 91908, 91909, 91910, 91911, 9191
 92169, 92170, 92171, 92172, 92173, 92174, 92175, 92176, 92177, 92178, 92179, 92182, 92184, 92186, 92187, 
 92190, 92191, 92192, 92193, 92194, 92195, 92196, 92197, 92198, 92199 ]
 
-lat_min = 32.6
-lat_max = 32.87
-lon_min = -117.15
-lon_max = -116.95
+lat_min = 32.5
+lat_max = 32.97
+lon_min = -117.25
+lon_max = -116.85
 
 SD_city = ['Alpine', 'Bonita', 'Borrega Springs', 'Borrego Springs', 'Campo', 'Cardiff', 
 'Cardiff-by-the-Sea', 'Carlsbad', 'Chula Vista', 'Coronado', 'Del Mar', 'El Cajon', 'Encinitas', 
@@ -30,22 +30,24 @@ SD_city = ['Alpine', 'Bonita', 'Borrega Springs', 'Borrego Springs', 'Campo', 'C
 'Santee', 'Solana Beach', 'Spring Valley', 'Valley Center', 'Vista']
 
 state = 'CA'
-num = 50
+num = 150
+user_num = 50
 f = open('fakeuser.txt','w+')
 
 # Registrant aUser = new Registrant("testuser@email.com","password","testDisplayName",10L,3,10000);
 # Registrant registrantResult = this.registrantRepo.save(aUser);
 
+time_win = [1, 2, 3, 4, 8, 12, 24, 72, 168 ,336, 730, 2190, 8760]
 for i in range(num):
     fake_person = fk.Faker()
     email = fake_person.email()
     password = 'password'
     user_name = fake_person.user_name()
     reliability = np.random.randint(1,11)
-    time_window = np.random.randint(1,24)
+    time_window = np.random.randint(0,13)
     zip_code = SD_zipcode[np.random.randint(0,len(SD_zipcode))]
-    f.write('Registrant User%i = new Registrant("%s","%s","%s",%i,%i,%i);\n'\
-        % (i, email, password, user_name, reliability, time_window, zip_code))
+    f.write('Registrant User%i = new Registrant("%s","%s","%s",%i,%i);\n'\
+        % (i, email, password, user_name, time_win[time_window], zip_code))
     f.write('this.registrantRepo.save(User%i);\n' % (i))
 
 f.close()
@@ -64,7 +66,9 @@ f.close()
 
 f = open('fakeevents.txt','w+')
 occurrence = ['Meeting', 'Competition', 'Practice', 'Practice', 'Scrimmage' ]
-categories = ['Swim', 'Rowing', 'Soccer']
+categories = ['arts', 'book', 'community', 'education', 'fitness', 
+              'food', 'games', 'hobbies', 'movies', 'music', 'outdoors', 
+              'sports', 'tech']
 
 for i in range(num):
     fake_data = fk.Factory.create()
@@ -75,32 +79,38 @@ for i in range(num):
     zip_code = SD_zipcode[np.random.randint(0,len(SD_zipcode))]
     lat = np.random.uniform(lat_min,lat_max)
     lon = np.random.uniform(lon_min,lon_max)
-    user_id = np.random.randint(0,num)
+    user_id = np.random.randint(0,user_num)
     description = fake_data.text(max_nb_chars=100)
-    category = categories[np.random.randint(0,3)]
+    category = categories[np.random.randint(0,13)]
 
 
     f.write('Event newEvent%i = new Event("%s");\n' % (i,title))
     f.write('Location newLoc%i = new Location("%s", "%s", "%s", "%s", "%i", %f, %f);\n' %
         (i, word, address, city, state, zip_code, lat, lon))
     f.write('newEvent%i.addOwner(User%i);\n' % (i,user_id))
+    f.write('newEvent%i.addParticipant(User%i);\n' % (i,user_id))
+    for k in range(np.random.randint(1,10)):
+        f.write('newEvent%i.addParticipant(User%i);\n' % (i,np.random.randint(0,user_num)))
     f.write('newEvent%i.setLocation(newLoc%i);\n' % (i, i))
     for j in range(np.random.randint(1,5)):
-        datetime = np.random.randint(0,100)
+        datetime = np.random.randint(0,150)
         f.write('Occurrence newOccur%i_%i = new Occurrence("%s", new Timestamp(DateTime.now().plusDays(%i).getMillis()));\n' %
             (i, j, occurrence[j], datetime))
         f.write('newEvent%i.addOccurrence(newOccur%i_%i);\n' % (i,i,j))
 
     f.write('newEvent%i.setDescription("%s");\n' % (i,description))
-    f.write('newEvent%i.setCategory("%s");\n' % (i,category))
+    f.write('newEvent%i.setCategory(%s);\n' % (i,category))
     f.write('this.eventRepo.save(newEvent%i);\n' % i)
 
+# for i in range(num):
+#     f.write('this.eventRepo.save(newEvent%i);\n' % i)
 # aUser.joinEvent(testEvent);
 
-f = open('fakejoin.txt','w+')
+# f = open('fakejoin.txt','w+')
 
-for i in range(num):
-    for j in range(np.random.randint(1,7)):
-        f.write('User%i.joinEvent(newEvent%i);\n' % (i,np.random.randint(0,num)))
+# for i in range(user_num):
+#     for j in range(np.random.randint(1,10)):
+#         f.write('newEvent%i.addParticipant(User%i);\n' % (i,np.random.randint(0,user_num)))
 
 f.close()
+
