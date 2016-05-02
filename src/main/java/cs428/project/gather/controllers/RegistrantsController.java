@@ -15,7 +15,7 @@ import org.springframework.http.*;
 /**
  * 
  * @author Team Gather
- * This class is the Events controller in charge of user related rest call such as add, registration,
+ * This class is the registrant controller in charge of user related rest call such as add, registration,
  * getting registration info, and updating user info.
  * 
  */
@@ -25,7 +25,7 @@ public class RegistrantsController extends AbstractGatherController {
 	
 	/**
 	 * 
-	 * This method takes user information and adds a new registrant to the database based on the received data.
+	 * This method takes user information and adds a new registrant to the database based on the received data
 	 * 
 	 * @param request: This variable is the request received from the frontend through the rest call to register the user
 	 * @param rawData: This variable is the data field of the request received from the frontend containing email,
