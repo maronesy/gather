@@ -10,6 +10,7 @@ Hiren Bhavsar - hbhavsa2
 Max Gabreski - gabresk2
 Benson Ma - bjma2
 Souhayl Maronesy - marones2
+Heeho Park - hdpark2
 Kai Song - kaisong2
 
 INSTALLATION
