@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    sessionCheck();
     locateMe();
     resizeLayout();
     resizeMap();
@@ -10,7 +11,6 @@ $(document).ready(function() {
     onLoadSessionCheck();
     headerSelect();
     loadCategories();
-    sessionCheck();
  });
 
 function loadCategories(){
@@ -24,14 +24,18 @@ function loadCategories(){
         	console.log(JSON.stringify(returnvalue));
         	var categories=returnvalue.results;
             gather.global.categories = categories;
-            loadFilterForm();
+            loadCategoryForm();
         }
     });
 }
 
 function resizeMap() {
-    var cw = $('#map-canvas').width()*1.13;
-    $('#map-canvas').css({'height':cw+'px'});
+    height = window.screen.availHeight - 311
+    if (height > 800) {
+        height = 800;
+    }
+    // var cw = $('#map-canvas').width()*1.13;
+    $('#map-canvas').css({'height':height+'px'});
 }
 
 function resizeLayout() {
@@ -86,6 +90,7 @@ function enterZip() {
                     $('#zipCodeErrorBox').html('Zip code field is empty');
                 } else {
                 	validateZipCode(zipCodeErrorBox, zipCode) 
+                    $('#zipCode').val('');
                 }
                 $('#zipSearching').hide();
             }, 100);
