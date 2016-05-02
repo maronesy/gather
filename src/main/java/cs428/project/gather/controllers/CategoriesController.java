@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class CategoriesController extends AbstractGatherController {
 	
 	/**
+	 * This method returns a list of default categories
 	 * 
 	 * @param request: This is the request received from the front-end through the rest call  
 	 * @return: A list of default categories is returned to the front end
